@@ -4,6 +4,7 @@ package com.corinne.corinne_be.controller;
 
 import com.corinne.corinne_be.dto.user_dto.ProfileResponseDto;
 import com.corinne.corinne_be.dto.user_dto.UserInfoResponesDto;
+import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.KakaoService;
 import com.corinne.corinne_be.service.UserService;
@@ -40,7 +41,13 @@ public class UserRestController {
     public UserInfoResponesDto Userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.UserInfo(userDetails);
     }
+    //회원정보 수정
+    @PutMapping("/api/user/info")
+    public void InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody UserRequestdto userRequestdto){
+        userService.InfoUpdate(userDetails,userRequestdto);
+    }
 
+    //프로필이미지 수정
     @PutMapping("/api/user/image")
     public ProfileResponseDto registImage(@RequestParam("image") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return userService.registImage(file, userDetails);

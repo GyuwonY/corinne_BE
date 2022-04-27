@@ -1,5 +1,7 @@
 package com.corinne.corinne_be.model;
 
+import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
+import com.corinne.corinne_be.security.UserDetailsImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,11 +35,8 @@ public class User {
     @Column(nullable = false)
     private Long accountBalance;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private Long kakaoId;
-
-
-
 
     public User(String nickname, String password, String userEmail, Long accountBalance, Long kakaoId) {
        this.nickname = nickname;
@@ -46,7 +45,15 @@ public class User {
        this.accountBalance = accountBalance;
        this.kakaoId = kakaoId;
     }
-    public void update(String imageUrl){
+    //회원정보 수정
+    public void infoUpdate(UserRequestdto userRequestdto){
+        this.nickname = userRequestdto.getNickname();
+        this.password = userRequestdto.getPassword();
+    }
+
+
+    //프로필 이미지 수정
+    public void profileImgUpdate(String imageUrl){
         this.imageUrl = imageUrl;
     }
 }
