@@ -5,10 +5,13 @@ package com.corinne.corinne_be.controller;
 import com.corinne.corinne_be.dto.user_dto.ProfileResponseDto;
 import com.corinne.corinne_be.dto.user_dto.UserInfoResponesDto;
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
+import com.corinne.corinne_be.dto.user_dto.UserResponesDto;
+import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.KakaoService;
 import com.corinne.corinne_be.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -19,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-
+@Slf4j
 @RestController
 public class UserRestController {
     private final UserService userService;
@@ -43,8 +46,9 @@ public class UserRestController {
     }
     //회원정보 수정
     @PutMapping("/api/user/info")
-    public void InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody UserRequestdto userRequestdto){
+    public UserResponesDto InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
         userService.InfoUpdate(userDetails,userRequestdto);
+        return new UserResponesDto(userDetails,userRequestdto);
     }
 
     //프로필이미지 수정
