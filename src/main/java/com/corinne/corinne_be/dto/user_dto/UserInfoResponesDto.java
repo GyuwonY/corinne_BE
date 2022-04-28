@@ -10,6 +10,9 @@ public class UserInfoResponesDto {
     private String nickname;
     private String imageUrl;
 
+
+
+
     public UserInfoResponesDto(UserDetailsImpl userDetails) {
 
         this.userId = userDetails.getUser().getUserId();

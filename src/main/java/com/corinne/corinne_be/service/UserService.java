@@ -14,6 +14,7 @@ import com.corinne.corinne_be.s3.S3Uploader;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 
 import com.corinne.corinne_be.utils.ErrorCode;
+import com.corinne.corinne_be.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,21 +34,30 @@ public class UserService {
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final Validator validator;
 
-    //회원정보조희
+    //회원정보 조희
     public UserInfoResponesDto UserInfo(UserDetailsImpl userDetails){
 
         return new UserInfoResponesDto(userDetails);
     }
     //회원정보 수정
     @Transactional
-    public void InfoUpdate(UserDetailsImpl userDetails, UserRequestdto userRequestdto){
+    public String InfoUpdate(UserDetailsImpl userDetails, UserRequestdto userRequestdto){
+        String msg = "정보 수정이 완료되었습니다";
         Long userId = userDetails.getUser().getUserId();
         User user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+        userRequestdto.setUserEmail(userDetails.getUsername());
+        try{
+            validator.userValidate(userRequestdto);
+        }catch (IllegalArgumentException e){
+            msg = e.getMessage();
+            return msg;
+        }
         userRequestdto.setPassword(encoder.encode(userRequestdto.getPassword()));
         user.infoUpdate(userRequestdto);
+        return msg;
     }
-
 
     //이미지수정
     @Transactional

@@ -6,7 +6,6 @@ import com.corinne.corinne_be.dto.user_dto.ProfileResponseDto;
 import com.corinne.corinne_be.dto.user_dto.UserInfoResponesDto;
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
 import com.corinne.corinne_be.dto.user_dto.UserResponesDto;
-import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.KakaoService;
 import com.corinne.corinne_be.service.UserService;
@@ -20,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.*;
 import java.io.IOException;
 
 @Slf4j
@@ -46,9 +46,8 @@ public class UserRestController {
     }
     //회원정보 수정
     @PutMapping("/api/user/info")
-    public UserResponesDto InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
-        userService.InfoUpdate(userDetails,userRequestdto);
-        return new UserResponesDto(userDetails,userRequestdto);
+    public String InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
+        return userService.InfoUpdate(userDetails,userRequestdto);
     }
 
     //프로필이미지 수정

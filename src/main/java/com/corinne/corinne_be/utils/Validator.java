@@ -21,22 +21,24 @@ public class Validator {
     }
 
 
-    public void signupValidate(UserRequestdto userRequestdto) throws IllegalArgumentException {
-        if (userRepository.findByUserEmail(userRequestdto.getUserEmail()).isPresent()) {
-            throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
-        }
-
-        if(!Pattern.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", userRequestdto.getUserEmail())){
-            throw new IllegalArgumentException("이메일 형식의 ID를 입력 해주세요.");
-        }
-
+    public void userValidate(UserRequestdto userRequestdto) throws IllegalArgumentException {
         if(!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,16}$",userRequestdto.getPassword())){
-            throw new IllegalArgumentException("비밀번호는 영문자와 숫자를 포함해야합니다.");
+            throw new IllegalArgumentException("비밀번호는 영문자와 숫자를 포함 또는 4~16자입니다");
         }
 
         if(userRequestdto.getPassword().contains(userRequestdto.getUserEmail())){
             throw new IllegalArgumentException("ID가 포함되지 않은 비밀번호를 사용해주세요.");
         }
+        if (userRepository.findByNickname(userRequestdto.getNickname()).isPresent()) {
+            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        }
+//        if (userRepository.findByUserEmail(userRequestdto.getUserEmail()).isPresent()) {
+//            throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
+//        }
+//
+//        if(!Pattern.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", userRequestdto.getUserEmail())){
+//            throw new IllegalArgumentException("이메일 형식의 ID를 입력 해주세요.");
+//        }
     }
 
 //    public Page<PostListDto> overPages(List<PostListDto> boardsList, int start, int end, Pageable pageable, int page) {
