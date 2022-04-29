@@ -59,7 +59,7 @@ public class KakaoService {
 
         String token = forceLogin(kakaoUser);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set("Authorization", token);
 
         System.out.println(token);
         return  ResponseEntity.ok()
