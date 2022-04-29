@@ -9,7 +9,6 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 @Table(name = "tbl_user")
@@ -37,6 +36,15 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private Long kakaoId;
+
+    @Column(nullable = false)
+    private int exp;
+
+    @Column(nullable = false)
+    private boolean firstLogin;
+
+    @Column(nullable = false)
+    private double lastFluctuation;
 
     public User(String nickname, String password, String userEmail, Long accountBalance, Long kakaoId) {
        this.nickname = nickname;

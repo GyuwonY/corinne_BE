@@ -3,8 +3,7 @@ package com.corinne.corinne_be.service;
 
 
 
-import com.corinne.corinne_be.controller.UserRestController;
-import com.corinne.corinne_be.dto.ErrorReponseDto;
+
 import com.corinne.corinne_be.dto.user_dto.*;
 import com.corinne.corinne_be.model.User;
 
@@ -13,7 +12,6 @@ import com.corinne.corinne_be.repository.UserRepository;
 import com.corinne.corinne_be.s3.S3Uploader;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 
-import com.corinne.corinne_be.utils.ErrorCode;
 import com.corinne.corinne_be.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +39,13 @@ public class UserService {
 
         return new UserInfoResponesDto(userDetails);
     }
-    //회원정보 수정
+
+    /**
+     * 회원정보 수정
+     * @param userDetails
+     * @param userRequestdto
+     * @return msg
+     */
     @Transactional
     public String InfoUpdate(UserDetailsImpl userDetails, UserRequestdto userRequestdto){
         String msg = "정보 수정이 완료되었습니다";
