@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     public static final String AUTH_HEADER = "Authorization";
     public static final String TOKEN_TYPE = "BEARER";
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
@@ -22,17 +21,6 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         final UserDetailsImpl userDetails = ((UserDetailsImpl) authentication.getPrincipal());
         // Token 생성
         final String token = JwtTokenUtils.generateJwtToken(userDetails);
-        try {
-            response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
-            String data =Long.toString(userDetails.getUser().getUserId());
-            String msg = new String (objectMapper.writeValueAsString(data).getBytes("UTF-8"), "ISO-8859-1");
-            response.getOutputStream()
-                    .println(msg);
-            response.setStatus(HttpServletResponse.SC_OK);
-        }catch (Exception e){
-
-        }
-
+        response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
     }
-
 }

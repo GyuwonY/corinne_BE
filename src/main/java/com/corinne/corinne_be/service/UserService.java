@@ -1,10 +1,21 @@
 package com.corinne.corinne_be.service;
 
 
+
+
+
+import com.corinne.corinne_be.dto.user_dto.*;
 import com.corinne.corinne_be.model.User;
+
 import com.corinne.corinne_be.repository.UserRepository;
+
+import com.corinne.corinne_be.s3.S3Uploader;
 import com.corinne.corinne_be.security.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import com.corinne.corinne_be.utils.Validator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,44 +23,54 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class UserService {
+
+    private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final Validator validator;
 
-    @Autowired
-    public UserService(UserRepository userRepository, Validator validator, PasswordEncoder encoder, S3Uploader s3Uploader){
-        this.userRepository = userRepository;
-        this.validator = validator;
-        this.encoder = encoder;
-        this.s3Uploader = s3Uploader;
+    //회원정보 조희
+    public UserInfoResponesDto UserInfo(UserDetailsImpl userDetails){
+
+        return new UserInfoResponesDto(userDetails);
     }
 
-    // 회원가입
-    public String signup(SignupRequestDto signupRequestDto) {
-        String msg = "회원 가입이 완료되었습니다.";
-
-        try {
-            // 회원가입 검증
-            validator.signupValidate(signupRequestDto);
-
+    /**
+     * 회원정보 수정
+     * @param userDetails
+     * @param userRequestdto
+     * @return msg
+     */
+    @Transactional
+    public String InfoUpdate(UserDetailsImpl userDetails, UserRequestdto userRequestdto){
+        String msg = "정보 수정이 완료되었습니다";
+        Long userId = userDetails.getUser().getUserId();
+        User user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+        userRequestdto.setUserEmail(userDetails.getUsername());
+        try{
+            validator.userValidate(userRequestdto);
         }catch (IllegalArgumentException e){
             msg = e.getMessage();
             return msg;
         }
-
-        signupRequestDto.setPassword(encoder.encode(signupRequestDto.getPassword()));
-        userRepository.save(new User(signupRequestDto));
+        userRequestdto.setPassword(encoder.encode(userRequestdto.getPassword()));
+        user.infoUpdate(userRequestdto);
         return msg;
     }
 
+    //이미지수정
     @Transactional
     public ProfileResponseDto registImage(MultipartFile file, UserDetailsImpl userDetails) throws IOException {
         Long userId = userDetails.getUser().getUserId();
         User user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-        UserImage userImage = new UserImage(s3Uploader.upload(file, "static"));
-        userImageRepository.save(userImage);
-        user.update(userImage);
-        return new ProfileResponseDto(userImage);
+        String imgurl = s3Uploader.upload(file, "static");
+        user.profileImgUpdate(imgurl);
+        return new ProfileResponseDto(imgurl);
     }
+
 }

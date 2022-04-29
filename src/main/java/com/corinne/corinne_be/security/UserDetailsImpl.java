@@ -19,19 +19,13 @@ public class UserDetailsImpl implements UserDetails {
         return user;
     }
 
-    public Long getId() {
-        return user.getUserId();
-    }
-
     @Override
     public String getPassword() {
         return user.getPassword();
     }
 
     @Override
-    public String getUsername() {
-        return user.getUserEmail();
-    }
+    public String getUsername() {return user.getUserEmail();}
 
     @Override
     public boolean isAccountNonExpired() {
