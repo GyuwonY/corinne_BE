@@ -29,8 +29,8 @@ public class MinuteCandle {
     private int endPrice;
 
     @Column(nullable = false)
-    private int date;
+    private int tradeDate;
 
     @Column(nullable = false)
-    private int time;
+    private int tradeTime;
 }
