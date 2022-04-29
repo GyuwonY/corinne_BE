@@ -13,15 +13,34 @@ public class Coin {
     private Long coinId;
 
     @ManyToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "userId")
     private User user;
 
     @Column(nullable = false)
-    private String coinName;
+    private String tiker;
 
     @Column(nullable = false)
-    private Long buyPrice;
+    private double buyPrice;
 
     @Column(nullable = false)
-    private Long amount;
+    private int amount;
+
+    public Coin() {
+    }
+
+    public Coin(User user, String tiker, double buyPrice, int amount) {
+        this.user = user;
+        this.tiker = tiker;
+        this.buyPrice = buyPrice;
+        this.amount = amount;
+    }
+
+    public void update(double buyPrice, int amount) {
+        this.buyPrice = buyPrice;
+        this.amount = amount;
+    }
+
+    public void update(int amount) {
+        this.amount = amount;
+    }
 }

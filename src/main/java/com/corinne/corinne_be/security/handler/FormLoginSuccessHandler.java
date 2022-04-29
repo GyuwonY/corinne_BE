@@ -22,6 +22,7 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         final UserDetailsImpl userDetails = ((UserDetailsImpl) authentication.getPrincipal());
         // Token 생성
         final String token = JwtTokenUtils.generateJwtToken(userDetails);
+        System.out.println(token);
         try {
             response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
             String data =Long.toString(userDetails.getUser().getUserId());

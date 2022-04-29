@@ -27,4 +27,21 @@ public class User {
     @Column(nullable = false)
     private Long accountBalance;
 
+    @Column(nullable = false)
+    private int exp;
+
+    @Column(nullable = false)
+    private boolean firstLogin;
+
+    @Column(nullable = false)
+    private double lastFluctuation;
+
+
+
+    public User() {
+    }
+
+    public void update(Long accountBalance) {
+        this.accountBalance = accountBalance;
+    }
 }
