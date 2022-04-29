@@ -27,7 +27,7 @@ public class UserService {
 
     // 회원가입
     public String signup(SignupRequestDto signupRequestDto) {
-        String msg = "회원 가입이 완료되었습니다.";
+        String msg = "회원 가입이 완료되었습니다qwqwqqww.";
 
         try {
             // 회원가입 검증
