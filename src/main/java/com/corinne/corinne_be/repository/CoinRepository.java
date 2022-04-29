@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface CoinRepository extends JpaRepository<Coin, Long> {
 
     List<Coin> findAllByUser_UserId(Long userId);
-    Optional<Coin> findByCoinNameAndUser_UserId(String coinName, Long userId);
-    Optional<Coin> findByCoinName(String coinName);
+    Optional<Coin> findByTikerAndUser_UserId(String tiker, Long userId);
+    Optional<Coin> findByTiker(String tiker);
 }

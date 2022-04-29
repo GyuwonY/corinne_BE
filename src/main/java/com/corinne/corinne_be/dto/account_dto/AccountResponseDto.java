@@ -9,14 +9,14 @@ public class AccountResponseDto {
 
     private double lastFluctuation;
     private Long accountBalance;
-    private int totalBalance;
+    private Long totalBalance;
     private double fluctuationRate;
     private List<CoinsDto> coins;
 
     public AccountResponseDto() {
     }
 
-    public AccountResponseDto(double lastFluctuation, Long accountBalance, int totalBalance, double fluctuationRate, List<CoinsDto> coins) {
+    public AccountResponseDto(double lastFluctuation, Long accountBalance, Long totalBalance, double fluctuationRate, List<CoinsDto> coins) {
         this.lastFluctuation = lastFluctuation;
         this.accountBalance = accountBalance;
         this.totalBalance = totalBalance;

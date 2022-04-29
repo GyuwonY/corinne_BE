@@ -27,9 +27,9 @@ public class AccountRestController {
     }
     
     // 모의 투자 페이지 자산
-    @GetMapping("/api/account/balance/{coinName}")
-    public ResponseEntity<?> getSimpleBalance(@PathVariable String coinName, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return accountService.getSimpleBalance(coinName, userDetails.getUser());
+    @GetMapping("/api/account/balance/{tiker}")
+    public ResponseEntity<?> getSimpleBalance(@PathVariable String tiker, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return accountService.getSimpleBalance(tiker, userDetails.getUser());
     }
 
 }

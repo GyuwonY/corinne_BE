@@ -36,8 +36,6 @@ public class TransactionService {
     }
 
 
-
-
     //코인 거래 내역
     public ResponseEntity<?> getTransactional(int page, int size, String sortBy, User user) {
 
@@ -46,18 +44,9 @@ public class TransactionService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Transaction> entities = transactionRepository.findAllByUser_UserId(user.getUserId(),pageable);
-        Page<TransactionResponseDto> transactionResponseDtos = entities.map(transaction -> {
+        Page<TransactionResponseDto> transactionDtos =  pageReturnSwitch(entities);
 
-            String coin = transaction.getTiker();
-            String type = transaction.getType();
-            int price = transaction.getPrice();
-            String tradeAt = transaction.getTradeAt().format(
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss")
-            );
-            return  new TransactionResponseDto(coin,type,price,tradeAt);
-        });
-
-        return new ResponseEntity<>(transactionResponseDtos, HttpStatus.OK);
+        return new ResponseEntity<>(transactionDtos, HttpStatus.OK);
     }
 
     // 해당 코인 거래내역
@@ -67,59 +56,81 @@ public class TransactionService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Transaction> entities = transactionRepository.findAllByCoinNameAndUser_UserId(coinName,user.getUserId(),pageable);
-        Page<TransactionResponseDto> transactionResponseDtos = entities.map(transaction -> {
-                String coin = transaction.getTiker();
-                String type = transaction.getType();
-                int price = transaction.getPrice();
-                String tradeAt = transaction.getTradeAt().format(
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss")
-                );
-                return  new TransactionResponseDto(coin,type,price,tradeAt);
-        });
+        Page<Transaction> entities = transactionRepository.findAllByTikerAndUser_UserId(coinName,user.getUserId(),pageable);
+        Page<TransactionResponseDto> transactionDtos =  pageReturnSwitch(entities);
 
-        return new ResponseEntity<>(transactionResponseDtos, HttpStatus.OK);
+        return new ResponseEntity<>(transactionDtos, HttpStatus.OK);
     }
+
+    // 페이징시 리턴값 교체 리팩토링 메소드
+    public Page<TransactionResponseDto> pageReturnSwitch(Page<Transaction> entities){
+
+        return entities.map(transaction -> {
+            String tiker = transaction.getTiker();
+            String type = transaction.getType();
+            int price = transaction.getPrice();
+            String tradeAt = transaction.getTradeAt().format(
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss")
+            );
+            return  new TransactionResponseDto(tiker,type,price,tradeAt);
+        });
+    }
+
 
     // 매수
     @Transactional
     public ResponseEntity<?> buy(BuyRequestDto buyRequestDto, User user) {
 
-        Coin coin = coinRepository.findByCoinNameAndUser_UserId(buyRequestDto.getTiker(), user.getUserId()).orElse(null);
+        Coin coin = coinRepository.findByTikerAndUser_UserId(buyRequestDto.getTiker(), user.getUserId()).orElse(null);
 
         Long accountBalance = user.getAccountBalance();
 
+        // 보유한 코인의 현재가 or 평균가
+        double buyPrice = 0.0;
+        // 보유한 코인 총 값
+        int amount = 0;
+
         if(coin != null){
+            // 이전 코인과 지금 코인의 평균가 계산
+            double avgPrice = BigDecimal.valueOf(buyRequestDto.getTradePrice() + coin.getBuyPrice()).divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP).doubleValue();
+            buyPrice = avgPrice;
+            // 이전 코인과 지금 코인의 평균가에 따른 현재 코인량
+            BigDecimal preBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(coin.getAmount())).divide(BigDecimal.valueOf(coin.getBuyPrice()),RoundingMode.CEILING);
+            BigDecimal nowBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(buyRequestDto.getBuyAmount())).divide(BigDecimal.valueOf(buyRequestDto.getTradePrice()),RoundingMode.CEILING);
+            int coinBalance = preBalance.add(nowBalance).intValue();
+            amount = coinBalance;
             // 보유한 코인량 변경
-            BigDecimal coinBalanceCal = new BigDecimal(coin.getAmount() * buyRequestDto.getTradePrice());
-            int coinBalance = coinBalanceCal.divide(BigDecimal.valueOf(coin.getBuyPrice()), RoundingMode.HALF_EVEN).intValue() + buyRequestDto.getBuyAmount();
-            coin.update(buyRequestDto.getTradePrice(), coinBalance);
+            coin.update(avgPrice, coinBalance);
         } else {
-            Coin saveCoin = new Coin(user, buyRequestDto.getTiker(),buyRequestDto.getTradePrice(),buyRequestDto.getBuyAmount());
+            buyPrice = buyRequestDto.getTradePrice();
+            amount = buyRequestDto.getBuyAmount();
+            Coin saveCoin = new Coin(user, buyRequestDto.getTiker(),buyPrice,amount);
+
             coinRepository.save(saveCoin);
         }
 
+        // 구매할때 사용한 포인트 차감 저장
         user.update(accountBalance - buyRequestDto.getBuyAmount());
         userRepository.save(user);
 
         TransactionDto transactionDto = new TransactionDto(user,"buy",buyRequestDto.getBuyAmount(), buyRequestDto.getTiker());
         Transaction transaction = new Transaction(transactionDto);
 
+        // 거래 내역 저장
         Transaction saveTran = transactionRepository.save(transaction);
 
         String tradeAt = saveTran.getTradeAt().format(
                 DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
 
-        BuyResponseDto buyResponseDto = new BuyResponseDto(user.getAccountBalance(),buyRequestDto.getTradePrice(),buyRequestDto.getBuyAmount(),"buy",tradeAt);
-
-
+        BuyResponseDto buyResponseDto = new BuyResponseDto(user.getAccountBalance(),buyPrice,amount,"buy",tradeAt);
+        
         return new ResponseEntity<>(buyResponseDto, HttpStatus.OK);
     }
 
     // 매도
     @Transactional
     public ResponseEntity<?> sell(SellRequestDto sellRequestDto, User user) {
-        Coin coin = coinRepository.findByCoinNameAndUser_UserId(sellRequestDto.getTiker(), user.getUserId()).orElse(null);
+        Coin coin = coinRepository.findByTikerAndUser_UserId(sellRequestDto.getTiker(), user.getUserId()).orElse(null);
 
         Long accountBalance = user.getAccountBalance();
 
@@ -129,7 +140,7 @@ public class TransactionService {
         
         // 보유한 코인량 변경
         BigDecimal coinBalanceCal = BigDecimal.valueOf(coin.getBuyPrice() * sellRequestDto.getSellAmount());
-        int coinBalance = coin.getAmount() - coinBalanceCal.divide(new BigDecimal(sellRequestDto.getTradePrice()), RoundingMode.HALF_EVEN).intValue();
+        int coinBalance = coin.getAmount() - coinBalanceCal.divide(new BigDecimal(sellRequestDto.getTradePrice()), RoundingMode.CEILING).intValue();
 
         if(coinBalance < 0){
             return  new ResponseEntity<>("코인 보유량을 확인해주세요",HttpStatus.BAD_REQUEST);
@@ -139,11 +150,13 @@ public class TransactionService {
         }
         else{
             coin.update(coinBalance);
-            user.update(accountBalance + sellRequestDto.getSellAmount());
-            userRepository.save(user);
         }
-
+        
+        // 매도한 만큼 포인트 증가
         user.update(accountBalance + sellRequestDto.getSellAmount());
+        userRepository.save(user);
+
+        // 매도 거래내역 추가
         TransactionDto transactionDto = new TransactionDto(user,"sell",sellRequestDto.getSellAmount(),sellRequestDto.getTiker());
         Transaction transaction = new Transaction(transactionDto);
         Transaction saveTran = transactionRepository.save(transaction);

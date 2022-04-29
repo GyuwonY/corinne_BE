@@ -11,6 +11,6 @@ import java.util.List;
 public interface DateCandleRepository extends JpaRepository<DateCandle, Long> {
     Page<DateCandle> findAll(Pageable pageable);
 
-    List<DateCandle> findAllByDate(LocalDateTime date);
+    List<DateCandle> findAllByDate(int date);
 
 }

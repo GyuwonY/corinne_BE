@@ -19,6 +19,7 @@ public class TransactionRestController {
         this.transactionService = transactionService;
     }
 
+    // 거래내역
     @GetMapping("/api/transaction/{page}")
     public ResponseEntity<?>  getTransactional(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
@@ -28,6 +29,7 @@ public class TransactionRestController {
         return transactionService.getTransactional(pageNum,size,sortBy,userDetails.getUser());
     }
 
+    // 해당 코인 거래 내역
     @GetMapping("/api/transaction/{coinName}/{page}")
     public ResponseEntity<?>  getSpecifiedTranstnal(@PathVariable String coinName,@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
@@ -42,7 +44,6 @@ public class TransactionRestController {
     public ResponseEntity<?>  buy(@RequestBody BuyRequestDto buyRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return transactionService.buy(buyRequestDto,userDetails.getUser());
     }
-
 
 
     // 매도

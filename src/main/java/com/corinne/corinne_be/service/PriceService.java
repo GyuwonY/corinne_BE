@@ -76,7 +76,7 @@ public class PriceService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
 
-        List<DateCandle> dateCandles = dateCandleRepository.findAllByDate(dateTime);
+        List<DateCandle> dateCandles = dateCandleRepository.findAllByDate(1);
 
         List<DateReponseDto> dateReponseDtos = new ArrayList<>();
 

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionRepository  extends JpaRepository<Transaction, Long> {
     Page<Transaction> findAllByUser_UserId(Long userId, Pageable pageable);
-    Page<Transaction> findAllByCoinNameAndUser_UserId(String coinName,Long userId, Pageable pageable);
+    Page<Transaction> findAllByTikerAndUser_UserId(String coinName,Long userId, Pageable pageable);
 }
