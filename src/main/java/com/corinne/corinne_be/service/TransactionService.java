@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -191,6 +193,26 @@ public class TransactionService {
         }
 
         return new ResponseEntity<>(new UserTranResponseDto(tranDtos),HttpStatus.OK);
+    }
+
+    // 코린이 회원 중 특정 코인 매수 카운트
+    public ResponseEntity<?> getBuyCount(String tiker) {
+
+        // 초기화 시점인 월요일 9시 기준
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        String mondayDate = dateFormat.format(cal.getTime());
+        mondayDate += " 09:00:00.000";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
+        LocalDateTime endDate = LocalDateTime.now();
+
+        //코린이 회원 중 특정 코인 매수 카운트
+        Long buyCount = transactionRepository.countByTikerAndTypeAndTradeAtBetween(tiker,"buy",startDate,endDate);
+
+        return new ResponseEntity<>(new BuyCountDto(buyCount),HttpStatus.OK);
     }
 }
 

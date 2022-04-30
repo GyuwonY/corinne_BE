@@ -57,6 +57,12 @@ public class TransactionController {
     public ResponseEntity<?> getUserTranstnal(@PathVariable Long userId){
         return transactionService.getUserTranstnal(userId);
     }
+
+    // 코린이 회원 중 특정 코인 매수 카운트
+    @GetMapping("/api/transaction/buycount/{tiker}")
+    public ResponseEntity<?> getBuyCount(@PathVariable String tiker){
+        return transactionService.getBuyCount(tiker);
+    }
 }
 
 
