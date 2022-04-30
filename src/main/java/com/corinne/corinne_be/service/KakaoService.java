@@ -38,6 +38,8 @@ public class KakaoService {
 
         Long accountBalance = 1000000L;
 
+        boolean firstLogin = true;
+
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
@@ -53,7 +55,7 @@ public class KakaoService {
             String passwordCreate = UUID.randomUUID().toString();
             String password = encode.encode(passwordCreate);
             String userEmail = kakaoUserInfoDto.getEmail();
-            kakaoUser = new User(nickname, password, userEmail, accountBalance, kakaoId);
+            kakaoUser = new User(nickname, password, userEmail, accountBalance, kakaoId,firstLogin);
             userRepository.save(kakaoUser);
         }
 
