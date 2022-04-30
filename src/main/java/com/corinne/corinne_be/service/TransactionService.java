@@ -140,7 +140,7 @@ public class TransactionService {
                 buyRequestDto.getBuyAmount(), buyRequestDto.getTiker(), buyRequestDto.getLeverage());
         Transaction transaction = new Transaction(transactionDto);
 
-        // 거래 내역 저장
+        // 거래 내역 입력
         Transaction saveTran = transactionRepository.save(transaction);
 
         String tradeAt = saveTran.getTradeAt().format(
