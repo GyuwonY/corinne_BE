@@ -9,6 +9,9 @@ public class UserInfoResponesDto {
     private String userEmail;
     private String nickname;
     private String imageUrl;
+    private Long accountBalance;
+    private int exp;
+    private boolean firstLogin;
 
 
 
@@ -23,6 +26,8 @@ public class UserInfoResponesDto {
         }catch (NullPointerException e){
             this.imageUrl = "기본이미지";
         }
-
+        this.exp = userDetails.getUser().getExp();
+        this.accountBalance = userDetails.getUser().getAccountBalance();
+        this.firstLogin = userDetails.getUser().isFirstLogin();
     }
 }

@@ -15,6 +15,9 @@ public class DateCandle {
     private Long candleId;
 
     @Column(nullable = false)
+    private String tiker;
+
+    @Column(nullable = false)
     private int highPrice;
 
     @Column(nullable = false)
