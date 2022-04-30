@@ -6,11 +6,13 @@ import com.corinne.corinne_be.dto.account_dto.CoinsDto;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.CoinRepository;
+import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -18,13 +20,17 @@ import java.util.List;
 
 @Service
 public class AccountService {
-    ;
+
     private final CoinRepository coinRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public AccountService( CoinRepository coinRepository) {
+    public AccountService(CoinRepository coinRepository, UserRepository userRepository) {
         this.coinRepository = coinRepository;
+        this.userRepository = userRepository;
     }
+
+
 
 
     // 보유 자산
@@ -111,6 +117,16 @@ public class AccountService {
         int coinBalance = coinBalanceTampCal.divide(BigDecimal.valueOf(coin.getBuyPrice()), RoundingMode.CEILING).intValue();
 
         return  new ResponseEntity<>(new AccountSimpleDto(accountBalance,coinBalance),HttpStatus.OK);
+    }
+
+    // 보유 자산 리셋
+    @Transactional
+    public ResponseEntity<?> resetAccount(User user) {
+
+        user.update(1000000L);
+        userRepository.save(user);
+
+        return  new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

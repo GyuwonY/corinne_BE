@@ -5,9 +5,7 @@ import com.corinne.corinne_be.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AccountRestController {
@@ -32,4 +30,25 @@ public class AccountRestController {
         return accountService.getSimpleBalance(tiker, userDetails.getUser());
     }
 
+    // 보유 자산 리셋
+    @PutMapping("/api/accoint/reset")
+    public ResponseEntity<?> resetAccount(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return accountService.resetAccount(userDetails.getUser());
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

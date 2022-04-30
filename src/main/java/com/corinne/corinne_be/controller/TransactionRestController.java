@@ -51,6 +51,12 @@ public class TransactionRestController {
     public ResponseEntity<?>  sell(@RequestBody SellRequestDto sellRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return transactionService.sell(sellRequestDto,userDetails.getUser());
     }
+
+    // 상대방 최근 거래 내역 보기
+    @GetMapping("/api/user/transaction/{userId}")
+    public ResponseEntity<?> getUserTranstnal(@PathVariable Long userId){
+        return transactionService.getUserTranstnal(userId);
+    }
 }
 
 

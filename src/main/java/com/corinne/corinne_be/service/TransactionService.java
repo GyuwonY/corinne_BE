@@ -19,7 +19,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -167,6 +170,27 @@ public class TransactionService {
         SellResponseDto sellResponseDto = new SellResponseDto(user.getAccountBalance(),sellRequestDto.getTradePrice(),sellRequestDto.getSellAmount(),"sell",tradeAt);
 
         return new ResponseEntity<>(sellResponseDto,HttpStatus.OK);
+    }
+
+    // 상대방 최근 거래내역 보기
+    public ResponseEntity<?> getUserTranstnal(Long userId) {
+
+        List<Transaction> transactionList = transactionRepository.findTop5ByUser_UserIdOrderByTradeAtDesc(userId);
+
+
+        List<UserTransactionDto> tranDtos = new ArrayList<>();
+
+        for(Transaction transaction : transactionList){
+            String tiker = transaction.getTiker();
+            String type = transaction.getType();
+            int price = transaction.getPrice();
+            String tradeAt = transaction.getTradeAt().format(
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
+
+            tranDtos.add(new UserTransactionDto(tiker,type,price,tradeAt));
+        }
+
+        return new ResponseEntity<>(new UserTranResponseDto(tranDtos),HttpStatus.OK);
     }
 }
 
