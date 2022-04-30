@@ -14,6 +14,9 @@ public class MinuteCandle {
     private Long candleId;
 
     @Column(nullable = false)
+    private String tiker;
+
+    @Column(nullable = false)
     private int highPrice;
 
     @Column(nullable = false)
@@ -26,6 +29,8 @@ public class MinuteCandle {
     private int endPrice;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private int tradeDate;
 
+    @Column(nullable = false)
+    private int tradeTime;
 }
