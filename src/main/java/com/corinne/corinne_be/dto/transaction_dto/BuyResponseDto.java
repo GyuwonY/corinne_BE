@@ -7,14 +7,14 @@ public class BuyResponseDto {
 
     private Long accountBalance;
     private double buyPrice;
-    private int amount;
+    private Long amount;
     private String type;
     private String tradeAt;
 
     public BuyResponseDto() {
     }
 
-    public BuyResponseDto(Long accountBalance, double buyPrice, int amount, String type, String tradeAt) {
+    public BuyResponseDto(Long accountBalance, double buyPrice, Long amount, String type, String tradeAt) {
         this.accountBalance = accountBalance;
         this.buyPrice = buyPrice;
         this.amount = amount;

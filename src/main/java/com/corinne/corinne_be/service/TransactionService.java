@@ -5,6 +5,7 @@ import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.CoinRepository;
+import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.repository.TransactionRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,14 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final CoinRepository coinRepository;
     private final UserRepository userRepository;
+    private final RedisRepository redisRepository;
 
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,UserRepository userRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,UserRepository userRepository, RedisRepository redisRepository) {
         this.transactionRepository = transactionRepository;
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
+        this.redisRepository = redisRepository;
     }
 
 
@@ -86,39 +89,55 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<?> buy(BuyRequestDto buyRequestDto, User user) {
 
-        Coin coin = coinRepository.findByTikerAndUser_UserId(buyRequestDto.getTiker(), user.getUserId()).orElse(null);
-
+        Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(buyRequestDto.getTiker(),
+                user.getUserId(), buyRequestDto.getLeverage()).orElse(null);
         Long accountBalance = user.getAccountBalance();
 
         // 보유한 코인의 현재가 or 평균가
         double buyPrice = 0.0;
         // 보유한 코인 총 값
-        int amount = 0;
+        Long amount = 0L;
 
         if(coin != null){
             // 이전 코인과 지금 코인의 평균가 계산
-            double avgPrice = BigDecimal.valueOf(buyRequestDto.getTradePrice() + coin.getBuyPrice()).divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP).doubleValue();
+            double avgPrice = BigDecimal.valueOf(buyRequestDto.getTradePrice() + coin.getBuyPrice()).
+                    divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP).doubleValue();
             buyPrice = avgPrice;
+
             // 이전 코인과 지금 코인의 평균가에 따른 현재 코인량
-            BigDecimal preBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(coin.getAmount())).divide(BigDecimal.valueOf(coin.getBuyPrice()),RoundingMode.CEILING);
-            BigDecimal nowBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(buyRequestDto.getBuyAmount())).divide(BigDecimal.valueOf(buyRequestDto.getTradePrice()),RoundingMode.CEILING);
-            int coinBalance = preBalance.add(nowBalance).intValue();
+            BigDecimal preBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(coin.getAmount())).
+                    divide(BigDecimal.valueOf(coin.getBuyPrice()),RoundingMode.CEILING);
+            BigDecimal nowBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(buyRequestDto.getBuyAmount())).
+                    divide(BigDecimal.valueOf(buyRequestDto.getTradePrice()),RoundingMode.CEILING);
+
+            Long coinBalance = preBalance.add(nowBalance).longValue();
             amount = coinBalance;
+
             // 보유한 코인량 변경
             coin.update(avgPrice, coinBalance);
         } else {
             buyPrice = buyRequestDto.getTradePrice();
             amount = buyRequestDto.getBuyAmount();
-            Coin saveCoin = new Coin(user, buyRequestDto.getTiker(),buyPrice,amount);
+            Coin saveCoin = new Coin(user, buyRequestDto);
 
             coinRepository.save(saveCoin);
+        }
+
+        //redis 현재가를 이용한 파산 구현을 위한 리스트 저장
+        if(buyRequestDto.getLeverage() == 50){
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+                    BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.98)).setScale(0,RoundingMode.FLOOR).intValue()));
+        }else if(buyRequestDto.getLeverage() == 100){
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+                    BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.99)).setScale(0,RoundingMode.FLOOR).intValue()));
         }
 
         // 구매할때 사용한 포인트 차감 저장
         user.update(accountBalance - buyRequestDto.getBuyAmount());
         userRepository.save(user);
 
-        TransactionDto transactionDto = new TransactionDto(user,"buy",buyRequestDto.getBuyAmount(), buyRequestDto.getTiker());
+        TransactionDto transactionDto = new TransactionDto(user, "buy", buyRequestDto.getTradePrice(),
+                buyRequestDto.getBuyAmount(), buyRequestDto.getTiker(), buyRequestDto.getLeverage());
         Transaction transaction = new Transaction(transactionDto);
 
         // 거래 내역 저장
@@ -135,34 +154,44 @@ public class TransactionService {
     // 매도
     @Transactional
     public ResponseEntity<?> sell(SellRequestDto sellRequestDto, User user) {
-        Coin coin = coinRepository.findByTikerAndUser_UserId(sellRequestDto.getTiker(), user.getUserId()).orElse(null);
+        Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(sellRequestDto.getTiker(), user.getUserId(), sellRequestDto.getLeverage()).orElse(null);
 
         Long accountBalance = user.getAccountBalance();
 
         if(coin == null){
             return  new ResponseEntity<>("보유한 코인이 아닙니다",HttpStatus.BAD_REQUEST);
         }
-        
-        // 보유한 코인량 변경
-        BigDecimal coinBalanceCal = BigDecimal.valueOf(coin.getBuyPrice() * sellRequestDto.getSellAmount());
-        int coinBalance = coin.getAmount() - coinBalanceCal.divide(new BigDecimal(sellRequestDto.getTradePrice()), RoundingMode.CEILING).intValue();
 
-        if(coinBalance < 0){
-            return  new ResponseEntity<>("코인 보유량을 확인해주세요",HttpStatus.BAD_REQUEST);
+        BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
+        BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
+        BigDecimal sellPrice = BigDecimal.valueOf(sellRequestDto.getTradePrice());
+        BigDecimal leverage = BigDecimal.valueOf(sellRequestDto.getLeverage());
+        BigDecimal sellAmount = BigDecimal.valueOf(sellRequestDto.getSellAmount());
+        //등략률
+        BigDecimal fluctuation = (sellPrice.subtract(buyPrice)).multiply(leverage).divide(buyPrice,2, RoundingMode.HALF_UP);
+        //판매 가능 금액
+        BigDecimal sellable = amount.multiply(fluctuation).subtract(amount);
+        //판매 비율
+        BigDecimal sellRate = sellAmount.divide(sellable, 2, RoundingMode.HALF_UP);
+
+
+        if(sellable.intValue() > sellRequestDto.getSellAmount()){
+            Long leftover = amount.subtract(amount.multiply(sellRate)).longValue();
+            if (leftover == 0L){
+                coinRepository.delete(coin);
+            }else if(leftover < 0L){
+                return new ResponseEntity<>("보유한 코인이 아닙니다",HttpStatus.BAD_REQUEST);
+            }else {
+                coin.update(leftover);
+            }
         }
-        else if(coinBalance == 0){
-            coinRepository.deleteById(coin.getCoinId());
-        }
-        else{
-            coin.update(coinBalance);
-        }
-        
-        // 매도한 만큼 포인트 증가
+
         user.update(accountBalance + sellRequestDto.getSellAmount());
         userRepository.save(user);
 
         // 매도 거래내역 추가
-        TransactionDto transactionDto = new TransactionDto(user,"sell",sellRequestDto.getSellAmount(),sellRequestDto.getTiker());
+        TransactionDto transactionDto = new TransactionDto(user, "sell", sellRequestDto.getTradePrice(),
+                sellRequestDto.getSellAmount(), sellRequestDto.getTiker(), sellRequestDto.getLeverage());
         Transaction transaction = new Transaction(transactionDto);
         Transaction saveTran = transactionRepository.save(transaction);
 
@@ -173,6 +202,7 @@ public class TransactionService {
 
         return new ResponseEntity<>(sellResponseDto,HttpStatus.OK);
     }
+
 
     // 상대방 최근 거래내역 보기
     public ResponseEntity<?> getUserTranstnal(Long userId) {

@@ -100,23 +100,10 @@ public class AccountService {
     // 모의투자페이지 자산
     public ResponseEntity<?> getSimpleBalance(String tiker, User user) {
 
-        // ---> 임의로 넣은 현재가 가격 현재가 수정 필수
-        int currentTempPrice = 100;
-
-        Coin coin = coinRepository.findByTikerAndUser_UserId(tiker,user.getUserId()).orElse(null);
-
-        // 현재 보유한 코인 balance 현재가 수정 필수
+        List<Coin> coins = coinRepository.findAllByTikerAndUser_UserId(tiker,user.getUserId());
         Long accountBalance = user.getAccountBalance();
 
-        if(coin == null){
-            return  new ResponseEntity<>(new AccountSimpleDto(accountBalance,0),HttpStatus.OK);
-        }
-
-        // ---> 임의로 넣은 현재가 가격 현재가 수정 필수
-        BigDecimal coinBalanceTampCal = new BigDecimal(currentTempPrice * coin.getAmount());
-        int coinBalance = coinBalanceTampCal.divide(BigDecimal.valueOf(coin.getBuyPrice()), RoundingMode.CEILING).intValue();
-
-        return  new ResponseEntity<>(new AccountSimpleDto(accountBalance,coinBalance),HttpStatus.OK);
+        return  new ResponseEntity<>(new AccountSimpleDto(accountBalance, coins) ,HttpStatus.OK);
     }
 
     // 보유 자산 리셋

@@ -7,13 +7,14 @@ public class SellRequestDto {
 
     private String tiker;
     private int tradePrice;
-    private int sellAmount;
+    private Long sellAmount;
+    private int leverage;
 
 
     public SellRequestDto() {
     }
 
-    public SellRequestDto(String tiker, int tradePrice, int sellAmount) {
+    public SellRequestDto(String tiker, int tradePrice, Long sellAmount) {
         this.tiker = tiker;
         this.tradePrice = tradePrice;
         this.sellAmount = sellAmount;
