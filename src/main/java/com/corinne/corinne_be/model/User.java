@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "tbl_user")
 public class User {
 
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column
     private Long userId;
@@ -45,21 +45,22 @@ public class User {
     private double lastFluctuation;
 
     public User(String nickname, String password, String userEmail, Long accountBalance, Long kakaoId, boolean firstLogin) {
-       this.nickname = nickname;
-       this.password = password;
-       this.userEmail = userEmail;
-       this.accountBalance = accountBalance;
-       this.kakaoId = kakaoId;
-       this.firstLogin = firstLogin;
+        this.nickname = nickname;
+        this.password = password;
+        this.userEmail = userEmail;
+        this.accountBalance = accountBalance;
+        this.kakaoId = kakaoId;
+        this.firstLogin = firstLogin;
     }
+
     //회원정보 수정
-    public void infoUpdate(UserRequestdto userRequestdto){
+    public void infoUpdate(UserRequestdto userRequestdto) {
         this.nickname = userRequestdto.getNickname();
     }
 
 
     //프로필 이미지 수정
-    public void profileImgUpdate(String imageUrl){
+    public void profileImgUpdate(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
