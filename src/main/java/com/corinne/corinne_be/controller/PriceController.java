@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class PriceRestController {
+public class PriceController {
 
     private final PriceService priceService;
 
     @Autowired
-    public PriceRestController(PriceService priceService) {
+    public PriceController(PriceService priceService) {
         this.priceService = priceService;
     }
 

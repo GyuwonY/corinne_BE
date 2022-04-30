@@ -8,12 +8,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class AccountRestController {
+public class AccountController {
 
     private final AccountService accountService;
 
     @Autowired
-    public AccountRestController(AccountService accountService) {
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
 
     }

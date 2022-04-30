@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class RankRestController {
+public class RankController {
 
     private final RankService rankService;
 
     @Autowired
-    public RankRestController(RankService rankService) {
+    public RankController(RankService rankService) {
         this.rankService = rankService;
     }
 
