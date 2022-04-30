@@ -1,21 +1,9 @@
 package com.corinne.corinne_be.scheduler;
 
-import com.corinne.corinne_be.dto.user_dto.RankDto;
-import com.corinne.corinne_be.dto.user_dto.RankResponseDto;
-import com.corinne.corinne_be.model.Coin;
-import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.CoinRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class WeekReset {

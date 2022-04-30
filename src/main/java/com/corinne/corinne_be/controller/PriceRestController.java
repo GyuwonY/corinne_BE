@@ -18,24 +18,24 @@ public class PriceRestController {
     }
 
     // 분봉
-    @GetMapping("/api/price/minute/{page}")
-    public ResponseEntity<?> getMinute(@PathVariable int page){
+    @GetMapping("/api/price/minute/{tiker}/{page}")
+    public ResponseEntity<?> getMinute(@PathVariable String tiker, @PathVariable int page){
 
         int pageNum = page - 1;
         int size = 3;
-        String sortBy = "date";
-        return priceService.getMinute(pageNum,size,sortBy);
+        String sortBy = "tradeTime";
+        return priceService.getMinute(tiker,pageNum,size,sortBy);
     }
 
 
     // 일봉
-    @GetMapping("/api/price/date/{page}")
-    public ResponseEntity<?> getDate(@PathVariable int page){
+    @GetMapping("/api/price/date/{tiker}/{page}")
+    public ResponseEntity<?> getDate(@PathVariable String tiker, @PathVariable int page){
 
         int pageNum = page - 1;
         int size = 3;
-        String sortBy = "date";
-        return priceService.getdate(pageNum,size,sortBy);
+        String sortBy = "tradeDate";
+        return priceService.getdate(tiker,pageNum,size,sortBy);
     }
 
     // 일별 등락률 랭크

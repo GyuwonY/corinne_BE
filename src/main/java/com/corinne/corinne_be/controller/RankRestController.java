@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,10 +20,10 @@ public class RankRestController {
     }
 
     // 랭킹리스트
-    @GetMapping("/api/rank")
-    public ResponseEntity<?> getRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    @GetMapping("/api/rank/{page}")
+    public ResponseEntity<?> getRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return rankService.getRank(userDetails.getUser());
+        return rankService.getRank(page, userDetails.getUser());
     }
 
     // 상위 랭킹 리스트

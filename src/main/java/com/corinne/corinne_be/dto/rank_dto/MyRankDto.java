@@ -1,4 +1,4 @@
-package com.corinne.corinne_be.dto.user_dto;
+package com.corinne.corinne_be.dto.rank_dto;
 
 import lombok.Getter;
 
