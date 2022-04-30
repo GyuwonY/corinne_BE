@@ -62,6 +62,10 @@ public class User {
     public void profileImgUpdate(String imageUrl){
         this.imageUrl = imageUrl;
     }
+
+    public void update(long accountBalance) {
+        this.accountBalance = accountBalance;
+    }
 }
 
 
