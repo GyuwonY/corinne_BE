@@ -1,6 +1,7 @@
 package com.corinne.corinne_be.model;
 
-import lombok.Getter;
+import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
+import lombok.Getter;;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
@@ -17,18 +18,29 @@ public class Transaction {
     private Long transactionId;
 
     @ManyToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "userId")
     private User user;
 
     @Column(nullable = false)
     private String type;
 
     @Column(nullable = false)
-    private Long price;
+    private int price;
 
     @Column(nullable = false)
-    private String coinName;
+    private String tiker;
 
     @CreatedDate
     private LocalDateTime tradeAt;
+
+    public Transaction(TransactionDto transactionDto) {
+        this.user = transactionDto.getUser();
+        this.type = transactionDto.getType();
+        this.price = transactionDto.getPrice();
+        this.tiker = transactionDto.getTiker();
+    }
+
+    public Transaction() {
+    }
+
 }

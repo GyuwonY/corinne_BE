@@ -30,5 +30,5 @@ public class DateCandle {
     private int endPrice;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private int tradeDate;
 }
