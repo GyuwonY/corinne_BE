@@ -7,12 +7,12 @@ import java.util.List;
 @Getter
 public class UserTranResponseDto {
 
-    private List<UserTransactionDto> userTranDtos;
+    private List<TransactionResponseDto> content;
 
     public UserTranResponseDto() {
     }
 
-    public UserTranResponseDto(List<UserTransactionDto> userTranDtos) {
-        this.userTranDtos = userTranDtos;
+    public UserTranResponseDto(List<TransactionResponseDto> tranDtos) {
+        this. content = tranDtos;
     }
 }

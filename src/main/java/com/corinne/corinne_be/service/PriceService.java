@@ -9,6 +9,7 @@ import com.corinne.corinne_be.model.MinuteCandle;
 import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.repository.DateCandleRepository;
 import com.corinne.corinne_be.repository.MinuteCandleRepository;
+import com.corinne.corinne_be.repository.RedisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,11 +34,14 @@ public class PriceService {
 
     private final MinuteCandleRepository minuteCandleRepository;
     private final DateCandleRepository dateCandleRepository;
+    private final RedisRepository redisRepository;
+
 
     @Autowired
-    public PriceService(MinuteCandleRepository minuteCandleRepository, DateCandleRepository dateCandleRepository) {
+    public PriceService(MinuteCandleRepository minuteCandleRepository, DateCandleRepository dateCandleRepository, RedisRepository redisRepository) {
         this.minuteCandleRepository = minuteCandleRepository;
         this.dateCandleRepository = dateCandleRepository;
+        this.redisRepository = redisRepository;
     }
 
 
@@ -129,17 +133,16 @@ public class PriceService {
         for(DateCandle dateCandle : dateCandles){
 
             // ---> 임의로 넣은 현재가 가격 현재가 수정 필수
-            int currentTempPrice = 100;
+            int currentPrice = redisRepository.getTradePrice(dateCandle.getTiker());
 
             String tiker = dateCandle.getTiker();
 
-            int tradePrice = currentTempPrice;
             int endPrice = dateCandle.getEndPrice();
 
-            BigDecimal fluctuationRateCal = new BigDecimal((tradePrice - endPrice) * 100);
+            BigDecimal fluctuationRateCal = new BigDecimal((currentPrice - endPrice) * 100);
             double fluctuationRate = fluctuationRateCal.divide(BigDecimal.valueOf(endPrice),2,RoundingMode.HALF_EVEN).doubleValue();
 
-            DateReponseDto dateReponseDto = new DateReponseDto(tiker,tradePrice,fluctuationRate);
+            DateReponseDto dateReponseDto = new DateReponseDto(tiker,currentPrice,fluctuationRate);
 
             dateReponseDtos.add(dateReponseDto);
         }

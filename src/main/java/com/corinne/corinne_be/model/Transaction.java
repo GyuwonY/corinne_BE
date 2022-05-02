@@ -1,9 +1,12 @@
 package com.corinne.corinne_be.model;
 
 import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -25,10 +28,16 @@ public class Transaction {
     private String type;
 
     @Column(nullable = false)
-    private int price;
+    private int buyprice;
+
+    @Column(nullable = false)
+    private Long amount;
 
     @Column(nullable = false)
     private String tiker;
+
+    @Column(nullable = false)
+    private int leverage;
 
     @CreatedDate
     private LocalDateTime tradeAt;
@@ -36,8 +45,10 @@ public class Transaction {
     public Transaction(TransactionDto transactionDto) {
         this.user = transactionDto.getUser();
         this.type = transactionDto.getType();
-        this.price = transactionDto.getPrice();
+        this.buyprice = transactionDto.getPrice();
+        this.amount = transactionDto.getAmount();
         this.tiker = transactionDto.getTiker();
+        this.leverage = transactionDto.getLeverage();
     }
 
     public Transaction() {

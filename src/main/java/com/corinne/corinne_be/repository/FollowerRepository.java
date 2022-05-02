@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FollowerRepository extends JpaRepository<Follower, Long> {
+    boolean existsByUser_UserIdAndFollower_UserId(Long userId, Long followerId);
     Optional<Follower> findByUser_UserIdAndFollower_UserId(Long userId, Long followerId);
 
     List<Follower> findAllByUser(User user);
@@ -19,5 +20,4 @@ public interface FollowerRepository extends JpaRepository<Follower, Long> {
     void deleteByUserAndFollower(User user, User follower);
 
     boolean existsByUserAndFollower(User user, User follower);
-
 }

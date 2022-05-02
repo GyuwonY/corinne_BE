@@ -3,9 +3,13 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.account_dto.AccountResponseDto;
 import com.corinne.corinne_be.dto.account_dto.AccountSimpleDto;
 import com.corinne.corinne_be.dto.account_dto.CoinsDto;
+import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
 import com.corinne.corinne_be.model.Coin;
+import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.CoinRepository;
+import com.corinne.corinne_be.repository.RedisRepository;
+import com.corinne.corinne_be.repository.TransactionRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,60 +27,60 @@ public class AccountService {
 
     private final CoinRepository coinRepository;
     private final UserRepository userRepository;
+    private final RedisRepository redisRepository;
+    private final TransactionRepository transactionRepository;
 
     @Autowired
-    public AccountService(CoinRepository coinRepository, UserRepository userRepository) {
+    public AccountService(CoinRepository coinRepository, UserRepository userRepository, RedisRepository redisRepository, TransactionRepository transactionRepository) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
+        this.redisRepository = redisRepository;
+        this.transactionRepository = transactionRepository;
     }
-
 
 
 
     // 보유 자산
    public ResponseEntity<?> getBalance(User user) {
 
-        // ---> 임의로 넣은 현재가 가격 현재가 수정 필수
-        int currentTempPrice = 100;
-
         // 사용 가능한 포인트
         Long accountBalance = user.getAccountBalance();
 
-        // 총  보우 코인 재산
-       long totalCoinBalance = 0;
+        // 총  보유 코인 재산
+       Long totalCoinBalance = 0L;
         // 보유중인 코인 리스트
         List<Coin> haveCoins = coinRepository.findAllByUser_UserId(user.getUserId());
         
         // 보유중인 코인 정보 리스트
        List<CoinsDto> coins = new ArrayList<>();
 
-
-       List<Integer> coinBalances = new ArrayList<>();
+       List<Long> coinBalances = new ArrayList<>();
 
         for(Coin coin : haveCoins){
+
             String tiker = coin.getTiker();
-            double buyPrice = coin.getBuyPrice();
 
-            // 코인의 현재가 수정 필수
-            int tradePrice = currentTempPrice;
+            // 살 당시 코인 현재가
+            BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
+            // 현재가
+            BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()));
+            // 래버리지
+            BigDecimal leverage = BigDecimal.valueOf(coin.getLeverage());
+            // 구매 총금액
+            BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
+            // 래버리지 적용한 수익률
+            BigDecimal fluctuationRate = currentPrice.subtract(buyPrice).multiply(leverage).divide(buyPrice,2,RoundingMode.HALF_UP);
+            // 현재 해당 코인의 가치
+            Long coinBalance = fluctuationRate.add(BigDecimal.valueOf(1)).multiply(amount).setScale(0,RoundingMode.CEILING).longValue();
 
-            // 현재 수익률 계산 현재가 수정 필수
-            BigDecimal fluctuationtempCal = BigDecimal.valueOf(((double) tradePrice - buyPrice) * 100);
-            double coinfluctuationRate = fluctuationtempCal.divide(new BigDecimal(buyPrice),2, RoundingMode.HALF_EVEN).doubleValue();
+            totalCoinBalance += coinBalance;
+            coinBalances.add(coinBalance);
 
-            // 현재 보유한 코인 balance 현재가 수정 필수
-            BigDecimal coinBalanceTampCal = new BigDecimal(tradePrice*coin.getAmount());
-            int currentcoinBalance = coinBalanceTampCal.divide(new BigDecimal(buyPrice), RoundingMode.CEILING).intValue();
-
-            totalCoinBalance += currentcoinBalance;
-            coinBalances.add(currentcoinBalance);
-
-
-            CoinsDto coinsDto = new CoinsDto(tiker,buyPrice,tradePrice,coinfluctuationRate);
+            CoinsDto coinsDto = new CoinsDto(tiker,buyPrice.doubleValue(),currentPrice.intValue(),leverage.intValue(),fluctuationRate.doubleValue() * 100 );
             coins.add(coinsDto);
         }
 
-        Long totalBalance = totalCoinBalance  + accountBalance;
+       Long totalBalance = totalCoinBalance  + accountBalance;
 
        // 수익률 계산
         BigDecimal temp = new BigDecimal(totalBalance - 1000000);
@@ -100,10 +104,12 @@ public class AccountService {
     // 모의투자페이지 자산
     public ResponseEntity<?> getSimpleBalance(String tiker, User user) {
 
-        List<Coin> coins = coinRepository.findAllByTikerAndUser_UserId(tiker,user.getUserId());
+        Coin coin = coinRepository.findByTikerAndUser_UserId(tiker,user.getUserId()).orElse(null);
+        if(coin == null){
+            return  new ResponseEntity<>("보유한 코인이 아닙니다" ,HttpStatus.BAD_REQUEST);
+        }
         Long accountBalance = user.getAccountBalance();
-
-        return  new ResponseEntity<>(new AccountSimpleDto(accountBalance, coins) ,HttpStatus.OK);
+        return  new ResponseEntity<>(new AccountSimpleDto(accountBalance, coin.getBuyPrice() , coin.getAmount(), coin.getLeverage()) ,HttpStatus.OK);
     }
 
     // 보유 자산 리셋
@@ -112,6 +118,14 @@ public class AccountService {
 
         user.update(1000000L);
         userRepository.save(user);
+
+        // 보유 코인 지우기
+        coinRepository.deleteAllByUser_UserId(user.getUserId());
+
+        // 리셋 내역 추가
+        TransactionDto transactionDto = new TransactionDto(user, "reset", 0, 1000000L, "reset", 1);
+        Transaction transaction = new Transaction(transactionDto);
+        transactionRepository.save(transaction);
 
         return  new ResponseEntity<>(HttpStatus.OK);
     }
