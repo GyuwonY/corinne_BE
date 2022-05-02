@@ -33,8 +33,8 @@ public class RedisRepository {
     /**
      * 실시간 데이터 현재가 리턴
      */
-    public Long getTradePrice(String tiker){
-        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), Long.class);
+    public int getTradePrice(String tiker){
+        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), Integer.class);
     }
 
     public void saveBankruptcy(BankruptcyDto dto){
