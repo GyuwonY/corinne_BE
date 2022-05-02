@@ -1,8 +1,10 @@
 package com.corinne.corinne_be.model;
 
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
+import com.corinne.corinne_be.security.UserDetailsImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -32,8 +34,8 @@ public class User {
     @Column(nullable = false)
     private Long accountBalance;
 
-//    @Column(nullable = false, unique = true)
-//    private Long kakaoId;
+    @Column(nullable = false, unique = true)
+    private Long kakaoId;
 
     @Column(nullable = false)
     private int exp;
@@ -44,16 +46,17 @@ public class User {
     @Column(nullable = false)
     private double lastFluctuation;
 
-    public User(String nickname, String password, String userEmail, Long accountBalance, boolean firstLogin) {
+    public User(String nickname, String password, String userEmail, Long accountBalance, Long kakaoId) {
        this.nickname = nickname;
        this.password = password;
        this.userEmail = userEmail;
        this.accountBalance = accountBalance;
-       this.firstLogin = firstLogin;
+       this.kakaoId = kakaoId;
     }
     //회원정보 수정
     public void infoUpdate(UserRequestdto userRequestdto){
         this.nickname = userRequestdto.getNickname();
+        this.password = userRequestdto.getPassword();
     }
 
 
