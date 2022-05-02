@@ -32,8 +32,8 @@ public class User {
     @Column(nullable = false)
     private Long accountBalance;
 
-    @Column(nullable = false, unique = true)
-    private Long kakaoId;
+//    @Column(nullable = false, unique = true)
+//    private Long kakaoId;
 
     @Column(nullable = false)
     private int exp;
@@ -44,12 +44,11 @@ public class User {
     @Column(nullable = false)
     private double lastFluctuation;
 
-    public User(String nickname, String password, String userEmail, Long accountBalance, Long kakaoId, boolean firstLogin) {
+    public User(String nickname, String password, String userEmail, Long accountBalance, boolean firstLogin) {
        this.nickname = nickname;
        this.password = password;
        this.userEmail = userEmail;
        this.accountBalance = accountBalance;
-       this.kakaoId = kakaoId;
        this.firstLogin = firstLogin;
     }
     //회원정보 수정
@@ -63,9 +62,8 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
-    public void update(long accountBalance) {
-        this.accountBalance = accountBalance;
-    }
+    //보유자산 리셋
+    public void update(long accountBalance) {this.accountBalance = accountBalance;}
 }
 
 

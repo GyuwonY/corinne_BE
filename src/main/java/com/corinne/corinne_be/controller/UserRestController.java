@@ -37,9 +37,9 @@ public class UserRestController {
 
     //카카오로그인
     @GetMapping("/user/kakao/callback")
-    public String kakao(@RequestParam String code) throws JsonProcessingException {
+    public MsgReponseDto kakao(@RequestParam String code) throws JsonProcessingException {
         kakaoService.kakao(code);
-        return "redirect:/user/signup";
+        return new MsgReponseDto(HttpStatus.OK, null);
     }
     //회원정보조희
     @GetMapping("/api/user/info")
