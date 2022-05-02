@@ -102,14 +102,14 @@ public class TransactionService {
         if(coin != null){
             // 이전 코인과 지금 코인의 평균가 계산
             double avgPrice = BigDecimal.valueOf(buyRequestDto.getTradePrice() + coin.getBuyPrice()).
-                    divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP).doubleValue();
+                    divide(BigDecimal.valueOf(2),8,RoundingMode.HALF_UP).doubleValue();
             buyPrice = avgPrice;
 
             // 이전 코인과 지금 코인의 평균가에 따른 현재 코인량
             BigDecimal preBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(coin.getAmount())).
-                    divide(BigDecimal.valueOf(coin.getBuyPrice()),RoundingMode.CEILING);
+                    divide(BigDecimal.valueOf(coin.getBuyPrice()),0,RoundingMode.CEILING);
             BigDecimal nowBalance = BigDecimal.valueOf(avgPrice).multiply(BigDecimal.valueOf(buyRequestDto.getBuyAmount())).
-                    divide(BigDecimal.valueOf(buyRequestDto.getTradePrice()),RoundingMode.CEILING);
+                    divide(BigDecimal.valueOf(buyRequestDto.getTradePrice()),0,RoundingMode.CEILING);
 
             Long coinBalance = preBalance.add(nowBalance).longValue();
             amount = coinBalance;
@@ -169,21 +169,24 @@ public class TransactionService {
         BigDecimal leverage = BigDecimal.valueOf(sellRequestDto.getLeverage());
         BigDecimal sellAmount = BigDecimal.valueOf(sellRequestDto.getSellAmount());
         //등략률
-        BigDecimal fluctuation = (sellPrice.subtract(buyPrice)).multiply(leverage).divide(buyPrice,2, RoundingMode.HALF_UP);
+        BigDecimal fluctuation = (sellPrice.subtract(buyPrice)).multiply(leverage).divide(buyPrice,8, RoundingMode.HALF_EVEN);
+        System.out.println(fluctuation);
         //판매 가능 금액
         BigDecimal sellable = amount.multiply(fluctuation).add(amount);
         //판매 비율
         BigDecimal sellRate = sellAmount.divide(sellable, 2, RoundingMode.HALF_UP);
 
-        if(sellable.intValue() > sellRequestDto.getSellAmount()){
+        System.out.println(sellable.intValue());
+        System.out.println(sellRequestDto.getSellAmount());
+        if(sellable.intValue() >= sellRequestDto.getSellAmount()){
             Long leftover = amount.subtract(amount.multiply(sellRate)).longValue();
             if (leftover == 0L){
                 coinRepository.delete(coin);
-            }else if(leftover < 0L){
-                return new ResponseEntity<>("보유한 코인이 아닙니다",HttpStatus.BAD_REQUEST);
-            }else {
+            } else {
                 coin.update(leftover);
             }
+        } else {
+            return new ResponseEntity<>("보유한 금액보다 큰 금액을 팔 수 없습니다",HttpStatus.BAD_REQUEST);
         }
 
         user.update(accountBalance + sellRequestDto.getSellAmount());
