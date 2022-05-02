@@ -1,5 +1,6 @@
 package com.corinne.corinne_be.dto.user_dto;
 
+import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import lombok.Getter;
 
@@ -9,6 +10,9 @@ public class UserInfoResponesDto {
     private String userEmail;
     private String nickname;
     private String imageUrl;
+    private Long accountBalance;
+    private int exp;
+    private boolean firstLogin;
 
 
 
@@ -23,6 +27,14 @@ public class UserInfoResponesDto {
         }catch (NullPointerException e){
             this.imageUrl = "기본이미지";
         }
+        this.exp = userDetails.getUser().getExp();
+        this.accountBalance = userDetails.getUser().getAccountBalance();
+        this.firstLogin = userDetails.getUser().isFirstLogin();
+    }
 
+    public UserInfoResponesDto(User followUser) {
+        this.userId = followUser.getUserId();
+        this.userEmail = followUser.getUserEmail();;
+        this.nickname = followUser.getNickname();
     }
 }

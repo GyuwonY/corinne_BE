@@ -2,6 +2,7 @@ package com.corinne.corinne_be.controller;
 
 
 
+import com.corinne.corinne_be.dto.MsgReponseDto;
 import com.corinne.corinne_be.dto.user_dto.ProfileResponseDto;
 import com.corinne.corinne_be.dto.user_dto.UserInfoResponesDto;
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +37,9 @@ public class UserRestController {
 
     //카카오로그인
     @GetMapping("/user/kakao/callback")
-    public ResponseEntity<?> kakao(@RequestParam String code) throws JsonProcessingException {
-        return kakaoService.kakao(code);
+    public MsgReponseDto kakao(@RequestParam String code) throws JsonProcessingException {
+        kakaoService.kakao(code);
+        return new MsgReponseDto(HttpStatus.OK, null);
     }
     //회원정보조희
     @GetMapping("/api/user/info")
@@ -44,13 +47,13 @@ public class UserRestController {
         return userService.UserInfo(userDetails);
     }
     //회원정보 수정
-    @PutMapping("/api/user/info")
-    public String InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
+    @PatchMapping("/user/signup")
+    public MsgReponseDto InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
         return userService.InfoUpdate(userDetails,userRequestdto);
     }
 
     //프로필이미지 수정
-    @PutMapping("/api/user/image")
+    @PatchMapping("/api/user/image")
     public ProfileResponseDto registImage(@RequestParam("image") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return userService.registImage(file, userDetails);
     }

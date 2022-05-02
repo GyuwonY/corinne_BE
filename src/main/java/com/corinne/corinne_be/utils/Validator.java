@@ -22,15 +22,19 @@ public class Validator {
 
 
     public void userValidate(UserRequestdto userRequestdto) throws IllegalArgumentException {
-        if(!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,16}$",userRequestdto.getPassword())){
-            throw new IllegalArgumentException("비밀번호는 영문자와 숫자를 포함 또는 4~16자입니다");
-        }
+//        if(!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,16}$",userRequestdto.getPassword())){
+//            throw new IllegalArgumentException("비밀번호는 영문자와 숫자를 포함 또는 4~16자입니다");
+//        }
 
-        if(userRequestdto.getPassword().contains(userRequestdto.getUserEmail())){
-            throw new IllegalArgumentException("ID가 포함되지 않은 비밀번호를 사용해주세요.");
-        }
+//        if(userRequestdto.getPassword().contains(userRequestdto.getUserEmail())){
+//            throw new IllegalArgumentException("ID가 포함되지 않은 비밀번호를 사용해주세요.");
+//        }
         if (userRepository.findByNickname(userRequestdto.getNickname()).isPresent()) {
             throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+        }
+        if(!Pattern.matches("^[ㄱ-ㅎ가-힣a-z0-9-_]{4,9}$",userRequestdto.getNickname())){
+            System.out.println("tss");
+            throw new IllegalArgumentException("닉네임은 특수문자를 제외한 4~9 자입니다");
         }
 //        if (userRepository.findByUserEmail(userRequestdto.getUserEmail()).isPresent()) {
 //            throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
