@@ -20,4 +20,9 @@ public class Follower {
     @JoinColumn(name = "follower")
     private User follower;
 
+    public Follower(User user, User follower){
+        this.user = user;
+        this.follower = follower;
+    }
+
 }

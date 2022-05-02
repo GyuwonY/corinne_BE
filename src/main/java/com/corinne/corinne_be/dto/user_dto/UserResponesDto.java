@@ -1,5 +1,6 @@
 package com.corinne.corinne_be.dto.user_dto;
 
+import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import lombok.Getter;
 
@@ -16,4 +17,5 @@ public class UserResponesDto {
         this.userEmail = userDetails.getUsername();
         this.nickname = userRequestdto.getNickname();
     }
+
 }
