@@ -4,6 +4,7 @@ package com.corinne.corinne_be.service;
 
 
 
+import com.corinne.corinne_be.dto.MsgReponseDto;
 import com.corinne.corinne_be.dto.user_dto.*;
 import com.corinne.corinne_be.model.User;
 
@@ -16,6 +17,7 @@ import com.corinne.corinne_be.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,23 +46,21 @@ public class UserService {
      * 회원정보 수정
      * @param userDetails
      * @param userRequestdto
-     * @return msg
+     * @return MsgReponseDto
      */
     @Transactional
-    public String InfoUpdate(UserDetailsImpl userDetails, UserRequestdto userRequestdto){
-        String msg = "정보 수정이 완료되었습니다";
+    public MsgReponseDto InfoUpdate(UserDetailsImpl userDetails, UserRequestdto userRequestdto){
         Long userId = userDetails.getUser().getUserId();
         User user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
         userRequestdto.setUserEmail(userDetails.getUsername());
         try{
             validator.userValidate(userRequestdto);
         }catch (IllegalArgumentException e){
-            msg = e.getMessage();
-            return msg;
+            String msg = e.getMessage();
+            return new MsgReponseDto(HttpStatus.BAD_REQUEST, msg);
         }
-        userRequestdto.setPassword(encoder.encode(userRequestdto.getPassword()));
         user.infoUpdate(userRequestdto);
-        return msg;
+        return new MsgReponseDto(HttpStatus.OK,null);
     }
 
     //이미지수정

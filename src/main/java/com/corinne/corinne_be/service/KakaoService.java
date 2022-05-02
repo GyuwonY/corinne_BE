@@ -38,22 +38,23 @@ public class KakaoService {
 
         Long accountBalance = 1000000L;
 
+        boolean firstLogin = true;
+
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
         // 2. 토큰으로 카카오 API 호출
         KakaoUserInfoDto kakaoUserInfoDto = getKakaoUserInfo(accessToken);
 
-        Long kakaoId = kakaoUserInfoDto.getId();
-        System.out.println(kakaoId);
-        User kakaoUser = userRepository.findByKakaoId(kakaoId)
+        String userEmail = kakaoUserInfoDto.getEmail();
+        System.out.println(userEmail);
+        User kakaoUser = userRepository.findByUserEmail(userEmail)
                 .orElse(null);
         if (kakaoUser == null) {
             String nickname = kakaoUserInfoDto.getNickname();
             String passwordCreate = UUID.randomUUID().toString();
             String password = encode.encode(passwordCreate);
-            String userEmail = kakaoUserInfoDto.getEmail();
-            kakaoUser = new User(nickname, password, userEmail, accountBalance, kakaoId);
+            kakaoUser = new User(nickname, password, userEmail, accountBalance, firstLogin);
             userRepository.save(kakaoUser);
         }
 

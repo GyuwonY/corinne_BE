@@ -10,6 +10,4 @@ public class UserRequestdto {
     private Long userId;
     private String userEmail;
     private String nickname;
-    private String password;
-
 }
