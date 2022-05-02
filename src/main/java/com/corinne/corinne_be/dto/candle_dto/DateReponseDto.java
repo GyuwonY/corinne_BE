@@ -6,14 +6,14 @@ import lombok.Getter;
 public class DateReponseDto {
 
     private String tiker;
-    private int tradePrice;
+    private Long tradePrice;
     private double fluctuationRate;
 
 
     public DateReponseDto() {
     }
 
-    public DateReponseDto(String tiker, int tradePrice, double fluctuationRate) {
+    public DateReponseDto(String tiker, Long tradePrice, double fluctuationRate) {
         this.tiker = tiker;
         this.tradePrice = tradePrice;
         this.fluctuationRate = fluctuationRate;

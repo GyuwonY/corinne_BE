@@ -25,7 +25,10 @@ public class Transaction {
     private String type;
 
     @Column(nullable = false)
-    private int price;
+    private int buyprice;
+
+    @Column(nullable = false)
+    private Long amount;
 
     @Column(nullable = false)
     private String tiker;
@@ -36,7 +39,8 @@ public class Transaction {
     public Transaction(TransactionDto transactionDto) {
         this.user = transactionDto.getUser();
         this.type = transactionDto.getType();
-        this.price = transactionDto.getPrice();
+        this.buyprice = transactionDto.getPrice();
+        this.amount = transactionDto.getAmount();
         this.tiker = transactionDto.getTiker();
     }
 

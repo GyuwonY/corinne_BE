@@ -6,6 +6,7 @@ import com.corinne.corinne_be.model.Follower;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.CoinRepository;
 import com.corinne.corinne_be.repository.FollowerRepository;
+import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,12 +26,14 @@ public class RankService {
     private final CoinRepository coinRepository;
     private final UserRepository userRepository;
     private final FollowerRepository followerRepository;
+    private final RedisRepository redisRepository;
 
     @Autowired
-    public RankService(CoinRepository coinRepository, UserRepository userRepository, FollowerRepository followerRepository) {
+    public RankService(CoinRepository coinRepository, UserRepository userRepository, FollowerRepository followerRepository, RedisRepository redisRepository) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.followerRepository = followerRepository;
+        this.redisRepository = redisRepository;
     }
 
 
@@ -60,8 +62,7 @@ public class RankService {
             BigDecimal rateCal = new BigDecimal(10000);
             double fluctuationRate = temp.divide(rateCal,2,RoundingMode.HALF_EVEN).doubleValue();
 
-            Follower follower = followerRepository.findByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId()).orElse(null);
-            boolean follow = follower != null;
+            boolean follow = followerRepository.existsByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId());
 
             RankDto rankListDto = new RankDto(user.getUserId(), user.getNickname(),user.getImageUrl(),totalBalance,fluctuationRate, follow);
             rankDtos.add(rankListDto);
@@ -173,20 +174,25 @@ public class RankService {
     }
 
     // 보유 코인 값 구하기
-    public int getTotalCoinBalance(List<Coin> coins){
-        int totalcoinBalance = 0;
+    public Long getTotalCoinBalance(List<Coin> coins){
+        Long totalcoinBalance = 0L;
 
         for(Coin coin : coins){
-            // ---> 임의로 넣은 현재가 가격 현재가 수정 필수
-            int currentTempPrice = 100;
-
-            // 현재 보유 코인값 계산  수정 필수
-            BigDecimal temp = new BigDecimal(coin.getAmount() * currentTempPrice);
+            
+            // 살 당시 코인 현재가
             BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
-            BigDecimal currentPrice = temp.divide(buyPrice, RoundingMode.CEILING);
+            // 현재가
+            BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()));
+            // 래버리지
+            BigDecimal leverage = BigDecimal.valueOf(coin.getLeverage());
+            // 구매 총금액
+            BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
+            // 래버리지 적용한 수익률
+            BigDecimal fluctuationRate = currentPrice.subtract(buyPrice).multiply(leverage).divide(buyPrice,2,RoundingMode.HALF_UP);
+            // 현재 해당 코인의 가치
+            Long coinBalance = fluctuationRate.add(BigDecimal.valueOf(1)).multiply(amount).setScale(0,RoundingMode.CEILING).longValue();
 
-
-            totalcoinBalance += currentPrice.intValue();
+            totalcoinBalance += coinBalance;
         }
         return totalcoinBalance;
     }

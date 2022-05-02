@@ -76,11 +76,12 @@ public class TransactionService {
         return entities.map(transaction -> {
             String tiker = transaction.getTiker();
             String type = transaction.getType();
-            int price = transaction.getPrice();
+            int buyPrice = transaction.getBuyprice();
+            Long amount = transaction.getAmount();
             String tradeAt = transaction.getTradeAt().format(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss")
             );
-            return  new TransactionResponseDto(tiker,type,price,tradeAt);
+            return  new TransactionResponseDto(tiker,type,buyPrice,amount,tradeAt);
         });
     }
 
@@ -210,16 +211,17 @@ public class TransactionService {
         List<Transaction> transactionList = transactionRepository.findTop5ByUser_UserIdOrderByTradeAtDesc(userId);
 
 
-        List<UserTransactionDto> tranDtos = new ArrayList<>();
+        List<TransactionResponseDto> tranDtos = new ArrayList<>();
 
         for(Transaction transaction : transactionList){
             String tiker = transaction.getTiker();
             String type = transaction.getType();
-            int price = transaction.getPrice();
+            int price = transaction.getBuyprice();
+            Long amount = transaction.getAmount();
             String tradeAt = transaction.getTradeAt().format(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
 
-            tranDtos.add(new UserTransactionDto(tiker,type,price,tradeAt));
+            tranDtos.add(new TransactionResponseDto(tiker,type,price,amount,tradeAt));
         }
 
         return new ResponseEntity<>(new UserTranResponseDto(tranDtos),HttpStatus.OK);
