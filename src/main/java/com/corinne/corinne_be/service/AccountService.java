@@ -3,10 +3,13 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.account_dto.AccountResponseDto;
 import com.corinne.corinne_be.dto.account_dto.AccountSimpleDto;
 import com.corinne.corinne_be.dto.account_dto.CoinsDto;
+import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
 import com.corinne.corinne_be.model.Coin;
+import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.CoinRepository;
 import com.corinne.corinne_be.repository.RedisRepository;
+import com.corinne.corinne_be.repository.TransactionRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,12 +28,14 @@ public class AccountService {
     private final CoinRepository coinRepository;
     private final UserRepository userRepository;
     private final RedisRepository redisRepository;
+    private final TransactionRepository transactionRepository;
 
     @Autowired
-    public AccountService(CoinRepository coinRepository, UserRepository userRepository, RedisRepository redisRepository) {
+    public AccountService(CoinRepository coinRepository, UserRepository userRepository, RedisRepository redisRepository, TransactionRepository transactionRepository) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
+        this.transactionRepository = transactionRepository;
     }
 
 
@@ -71,7 +76,7 @@ public class AccountService {
             totalCoinBalance += coinBalance;
             coinBalances.add(coinBalance);
 
-            CoinsDto coinsDto = new CoinsDto(tiker,buyPrice.doubleValue(),currentPrice.longValue(),leverage.intValue(),fluctuationRate.doubleValue() );
+            CoinsDto coinsDto = new CoinsDto(tiker,buyPrice.doubleValue(),currentPrice.intValue(),leverage.intValue(),fluctuationRate.doubleValue() * 100 );
             coins.add(coinsDto);
         }
 
@@ -113,6 +118,14 @@ public class AccountService {
 
         user.update(1000000L);
         userRepository.save(user);
+
+        // 보유 코인 지우기
+        coinRepository.deleteAllByUser_UserId(user.getUserId());
+
+        // 리셋 내역 추가
+        TransactionDto transactionDto = new TransactionDto(user, "reset", 0, 1000000L, "reset", 1);
+        Transaction transaction = new Transaction(transactionDto);
+        transactionRepository.save(transaction);
 
         return  new ResponseEntity<>(HttpStatus.OK);
     }

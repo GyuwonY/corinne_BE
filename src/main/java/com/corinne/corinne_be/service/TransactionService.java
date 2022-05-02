@@ -171,10 +171,9 @@ public class TransactionService {
         //등략률
         BigDecimal fluctuation = (sellPrice.subtract(buyPrice)).multiply(leverage).divide(buyPrice,2, RoundingMode.HALF_UP);
         //판매 가능 금액
-        BigDecimal sellable = amount.multiply(fluctuation).subtract(amount);
+        BigDecimal sellable = amount.multiply(fluctuation).add(amount);
         //판매 비율
         BigDecimal sellRate = sellAmount.divide(sellable, 2, RoundingMode.HALF_UP);
-
 
         if(sellable.intValue() > sellRequestDto.getSellAmount()){
             Long leftover = amount.subtract(amount.multiply(sellRate)).longValue();

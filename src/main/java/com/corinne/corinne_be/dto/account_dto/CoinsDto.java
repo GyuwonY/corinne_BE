@@ -9,7 +9,7 @@ public class CoinsDto {
 
     private String coin;
     private double buyPrice;
-    private Long tradePrice;
+    private int tradePrice;
     private int leverage;
     private double fluctuationRate;
     private double importanceRate;
@@ -17,7 +17,7 @@ public class CoinsDto {
     public CoinsDto() {
     }
 
-    public CoinsDto(String coin, double buyPrice,Long tradePrice,int leverage, double fluctuationRate) {
+    public CoinsDto(String coin, double buyPrice,int tradePrice,int leverage, double fluctuationRate) {
         this.coin = coin;
         this.buyPrice = buyPrice;
         this.leverage = leverage;

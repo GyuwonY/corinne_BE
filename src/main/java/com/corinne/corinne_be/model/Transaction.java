@@ -33,6 +33,9 @@ public class Transaction {
     @Column(nullable = false)
     private String tiker;
 
+    @Column(nullable = false)
+    private int leverage;
+
     @CreatedDate
     private LocalDateTime tradeAt;
 
@@ -42,6 +45,7 @@ public class Transaction {
         this.buyprice = transactionDto.getPrice();
         this.amount = transactionDto.getAmount();
         this.tiker = transactionDto.getTiker();
+        this.leverage = transactionDto.getLeverage();
     }
 
     public Transaction() {
