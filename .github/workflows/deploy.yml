@@ -5,7 +5,7 @@ on:
 
 name: Deploy String boot to Amazon EC2
 env:
-  PROJECT_NAME: action_codedeploy
+  PROJECT_NAME: corinne_BE
 
 jobs:
   deploy:
