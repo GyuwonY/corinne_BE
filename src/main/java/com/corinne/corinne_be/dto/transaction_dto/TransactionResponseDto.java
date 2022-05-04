@@ -12,15 +12,17 @@ public class TransactionResponseDto {
     private int price;
     private Long amount;
     private String tradeAt;
+    private int leverage;
 
     public TransactionResponseDto() {
     }
 
-    public TransactionResponseDto(String tiker, String type, int price, Long amount, String tradeAt) {
+    public TransactionResponseDto(String tiker, String type, int price, Long amount, String tradeAt, int leverage) {
         this.tiker = tiker;
         this.type = type;
         this.price = price;
         this.amount = amount;
         this.tradeAt = tradeAt;
+        this.leverage = leverage;
     }
 }

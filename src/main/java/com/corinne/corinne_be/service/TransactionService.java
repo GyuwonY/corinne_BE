@@ -79,9 +79,9 @@ public class TransactionService {
             int buyPrice = transaction.getBuyprice();
             Long amount = transaction.getAmount();
             String tradeAt = transaction.getTradeAt().format(
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss")
-            );
-            return  new TransactionResponseDto(tiker,type,buyPrice,amount,tradeAt);
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
+            int leverage = transaction.getLeverage();
+            return  new TransactionResponseDto(tiker,type,buyPrice,amount,tradeAt,leverage);
         });
     }
 
@@ -131,6 +131,12 @@ public class TransactionService {
         }else if(buyRequestDto.getLeverage() == 100){
             redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
                     BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.99)).setScale(0,RoundingMode.FLOOR).intValue()));
+        }else if(buyRequestDto.getLeverage() == 25){
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+                    BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.96)).setScale(0,RoundingMode.FLOOR).intValue()));
+        }else if(buyRequestDto.getLeverage() == 75){
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+                    BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.98777777777777777)).setScale(0,RoundingMode.FLOOR).intValue()));
         }
 
         // 구매할때 사용한 포인트 차감 저장
@@ -222,8 +228,8 @@ public class TransactionService {
             Long amount = transaction.getAmount();
             String tradeAt = transaction.getTradeAt().format(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
-
-            tranDtos.add(new TransactionResponseDto(tiker,type,price,amount,tradeAt));
+            int leverage = transaction.getLeverage();
+            tranDtos.add(new TransactionResponseDto(tiker,type,price,amount,tradeAt, leverage));
         }
 
         return new ResponseEntity<>(new UserTranResponseDto(tranDtos),HttpStatus.OK);

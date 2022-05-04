@@ -1,6 +1,7 @@
 package com.corinne.corinne_be.config;
 
 
+import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.security.filter.FilterSkipMatcher;
 import com.corinne.corinne_be.security.filter.FormLoginFilter;
 import com.corinne.corinne_be.security.filter.JwtAuthFilter;
@@ -33,15 +34,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final RedisRepository redisRepository;
 
     public WebSecurityConfig(
             JWTAuthProvider jwtAuthProvider,
             HeaderTokenExtractor headerTokenExtractor,
-            CustomLogoutSuccessHandler customLogoutSuccessHandler
+            CustomLogoutSuccessHandler customLogoutSuccessHandler,
+            RedisRepository redisRepository
     ) {
         this.jwtAuthProvider = jwtAuthProvider;
         this.headerTokenExtractor = headerTokenExtractor;
         this.customLogoutSuccessHandler = customLogoutSuccessHandler;
+        this.redisRepository = redisRepository;
     }
 
     @Bean
@@ -111,7 +115,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FormLoginSuccessHandler formLoginSuccessHandler() {
-        return new FormLoginSuccessHandler();
+        return new FormLoginSuccessHandler(redisRepository);
     }
 
     @Bean
