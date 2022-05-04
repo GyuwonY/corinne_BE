@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "tbl_datecandle")
+@Table(name = "tbl_daycandle")
 public class DateCandle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column
-    private Long candleId;
+    private Long dayCandleId;
 
     @Column(nullable = false)
     private String tiker;
@@ -31,4 +31,7 @@ public class DateCandle {
 
     @Column(nullable = false)
     private int tradeDate;
+
+    @Column(nullable = false)
+    private Long tradeVolume;
 }
