@@ -1,12 +1,12 @@
-# This workflow will build a Java project with Gradle
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-# Repo Action 페이지에 나타날 이름 
-name: corinne
+name: Spring Boot with Gradle CI/CD
 
-# Event Trigger
-# master branch에 push 또는 pull request가 발생할 경우 동작
-# branch 단위 외에도, tag나 cron 식 등을 사용할 수 있음 
 on:
   push:
     branches: [ master ]
@@ -15,20 +15,70 @@ on:
 
 jobs:
   build:
-    # 실행 환경 지정
-    runs-on: ubuntu-latest
+    #build 이름 설정 (빌드 체크위해서 설정함)
+    name : build
+    runs-on: ubuntu-20.04
+    env:
+      JASYPT_ENCRYPTOR_PASSWORD : ${{ SECRETS.JASYPT_ENCRYPTOR_PASSWORD }}
 
-    # Task의 sequence를 명시한다.
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    
-    - name: Build with Gradle
-      run: ./gradlew clean build
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+        # 전송할 파일을 담을 디렉토리 생성
+      - name: Make Directory for deliver
+        run: mkdir deploy
+
+        # Jar file Copy
+      - name: Copy Jar
+        run: cp ./build/libs/*.jar ./deploy/
+
+        # appspec.yml file Copy
+      - name: Copy appspec
+        run: cp ./appspec.yml ./deploy/
+
+        # script file Copy
+      - name: Copy shell
+        run: cp ./scripts/* ./deploy/
+
+        # 압축파일 형태로 전달(codedeploy는 zip형식만 읽을 수 있음)
+      - name: Make zip file
+        run: zip -r -qq -j ./poug-build.zip ./deploy
+
+
+        # AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{SECRETS.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{SECRETS.AWS_SECRET_ACCESS_KEY}}
+          aws-region: ap-northeast-2
+        
+        # S3로 업로드
+      - name: Upload to AWS S3
+        run: aws s3 cp --region ap-northeast-2 --acl private ./poug-build.zip s3://poug-springboot-builds/poug/poug-build.zip
+        ####
+        # Deploy
+      - name: poug-deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{SECRETS.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{SECRETS.AWS_SECRET_ACCESS_KEY}}
+        run: |
+          aws deploy create-deployment \
+          --application-name final \
+          --deployment-group-name final_project \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=poug-springboot-builds,bundleType=zip,key=poug/poug-build.zip \
+          --region ap-northeast-2

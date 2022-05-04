@@ -1,0 +1,11 @@
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(RO+yg7U/g7bY/W42u3qg6qR2IOjciuc+j7YWGuojNU4=)
+      secretKey: ENC(zACCExWmxdU2odVmwvNoI8tEIYKTUoSxn52IFe2yAkXx4geGOIyFs4h3EMOV0j93FI15h3SSW5o=)
+    s3:
+      bucket: minipjtimagebucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

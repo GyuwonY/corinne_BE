@@ -45,6 +45,7 @@ dependencies {
     implementation group: 'software.amazon.awssdk', name: 'aws-core', version: '2.3.7'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
 }
 
