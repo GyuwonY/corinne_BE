@@ -55,7 +55,7 @@ jobs:
 
         # 압축파일 형태로 전달(codedeploy는 zip형식만 읽을 수 있음)
       - name: Make zip file
-        run: zip -r -qq -j ./corinne-build.zip ./deploy
+        run: zip -r -qq -j ./corinne-build.zip . -i ./deploy
 
 
         # AWS credentials
