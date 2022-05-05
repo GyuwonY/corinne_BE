@@ -12,9 +12,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-env:
-  S3_BUCKET_NAME: minipjtimagebucket
-  PROJECT_NAME: Corinne
+
 jobs:
   build:
     #build 이름 설정 (빌드 체크위해서 설정함)
@@ -82,5 +80,5 @@ jobs:
           --application-name corinne-deploy \
           --deployment-group-name corinne_project \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=poug-springboot-builds,bundleType=zip,key=poug/poug-build.zip \
+          --s3-location bucket=minipjtimagebucket,bundleType=zip,key=corinne/corinne-build.zip \
           --region ap-northeast-2
