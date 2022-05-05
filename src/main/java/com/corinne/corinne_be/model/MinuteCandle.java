@@ -11,7 +11,7 @@ public class MinuteCandle {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Id
     @Column
-    private Long candleId;
+    private Long minuteCandleId;
 
     @Column(nullable = false)
     private String tiker;
