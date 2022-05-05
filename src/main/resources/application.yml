@@ -1,8 +1,18 @@
 spring:
+  datasource:
+    url: ENC(J0UDQbqtTheFoVaAlLacI9IURII3ysOFXT2HcqXarsqCtLYxkJoee1exrI/QTrBBDw2VrAQGvT7rp39XLBvEkQIqj61ov1N1yJNtSC9ubiH6zcWDjrz654D9bfR6ljx57Uc3cBUmPGI=)
+    username: ENC(kAyhgNbC1NQmr2U3E2rQvg==)
+    password: ENC(vabDoZnneKfHdiUF24k8JCASv/VA/e8J)
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
   redis:
     host: 127.0.0.1
     port: 6379
 
+
 jasypt:
   encryptor:
-    bean: jasyptStringEncryptor
+    bean : jasyptStringEncryptor
