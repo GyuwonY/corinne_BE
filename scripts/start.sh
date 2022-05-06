@@ -2,8 +2,7 @@ ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
-REPOSITORY=/home/ec2-user/app
-PROJECT_NAME=springboot-intro
+REPOSITORY=/home/ubuntu/sparta
 
 echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/deploy/*.jar $REPOSITORY/"
@@ -24,6 +23,8 @@ echo "> $JAR_NAME 실행"
 IDLE_PROFILE=$(find_idle_profile)
 
 echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
+
+cd /home/ubuntu/sparta
 
 nohup java -jar \
     -Dspring.profiles.active=$IDLE_PROFILE \
