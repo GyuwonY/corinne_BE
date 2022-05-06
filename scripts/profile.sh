@@ -1,43 +1,41 @@
 #!/usr/bin/env bash
-# bash는 return value가 안되니 *제일 마지막줄에 echo로 해서 결과 출력*후, 클라이언트에서 값을 사용한다
-# 쉬고 있는 profile 찾기: real1이 사용중이면 real2가 쉬고 있고, 반대면 real1이 쉬고 있음
+# profile.sh
+# 미사용 중인 profile을 잡는다.
+
 function find_idle_profile()
 {
+    # curl 결과로 연결할 서비스 결정
     RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
-    SERVICE_URL=$(changePortToReal)
+
     if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
     then
-        CURRENT_PROFILE=${SERVICE_URL}
+        CURRENT_PROFILE=real2
     else
         CURRENT_PROFILE=$(curl -s http://localhost/profile)
     fi
+
+    # IDLE_PROFILE : nginx와 연결되지 않은 profile
     if [ ${CURRENT_PROFILE} == real1 ]
     then
       IDLE_PROFILE=real2
     else
       IDLE_PROFILE=real1
     fi
+
+    # bash script는 값의 반환이 안된다.
+    # echo로 결과 출력 후, 그 값을 잡아서 사용한다.
     echo "${IDLE_PROFILE}"
 }
+
 # 쉬고 있는 profile의 port 찾기
 function find_idle_port()
 {
     IDLE_PROFILE=$(find_idle_profile)
+
     if [ ${IDLE_PROFILE} == real1 ]
     then
       echo "8081"
     else
       echo "8082"
     fi
-}
-function changePortToReal()
-{
-    CURRENT_PORT=$(cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38)
-    if [ ${CURRENT_PORT} == 8081 ]
-    then
-        SERVICE_URL=real1
-    else
-        SERVICE_URL=real2
-    fi
-    echo "${SERVICE_URL}"
 }
