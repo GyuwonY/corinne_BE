@@ -9,6 +9,8 @@ echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/*.jar $REPOSITORY/"
 echo "${JASYPT_ENCRYPTOR_PASSWORD}"
 
+JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD}
+
 cp $REPOSITORY/*.jar $REPOSITORY/
 
 echo "> 새 어플리케이션 배포"
