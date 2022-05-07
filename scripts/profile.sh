@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # profile.sh
 # 미사용 중인 profile을 잡는다.
 
