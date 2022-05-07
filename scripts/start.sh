@@ -2,14 +2,11 @@
 ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
-source ${ABSDIR}/password.sh
 REPOSITORY=/home/ubuntu/sparta/deploy
 
 echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/*.jar $REPOSITORY/"
-echo "${JASYPT_ENCRYPTOR_PASSWORD}"
 
-JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD}
 echo "$JASYPT_ENCRYPTOR_PASSWORD"
 
 cp $REPOSITORY/*.jar $REPOSITORY/
