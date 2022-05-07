@@ -16,7 +16,8 @@ public class CorinneBeApplication {
 
     public static final String APPLICATION_LOCATIONS = "spring.config.location="
             + "classpath:/application.yml"
-            +",classpath:/application.properties";
+//            +",classpath:/application.properties"
+            +",classpath:/aws.yml";
 
 
     public static void main(String[] args) {

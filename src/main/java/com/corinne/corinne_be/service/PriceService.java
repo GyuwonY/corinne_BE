@@ -132,7 +132,6 @@ public class PriceService {
 
         for(DateCandle dateCandle : dateCandles){
 
-            // ---> 임의로 넣은 현재가 가격 현재가 수정 필수
             int currentPrice = redisRepository.getTradePrice(dateCandle.getTiker());
 
             String tiker = dateCandle.getTiker();
