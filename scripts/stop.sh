@@ -1,6 +1,8 @@
 ABSPATH=$(readlink -f $0)
 # ABSDIR : 현재 stop.sh 파일 위치의 경로
+echo "> $ABSPATH PATH 확인"
 ABSDIR=$(dirname $ABSPATH)
+echo "> $ABSDIR PATH 확인"
 # import profile.sh
 source ${ABSDIR}/profile.sh
 
