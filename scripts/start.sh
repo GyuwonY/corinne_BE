@@ -2,14 +2,10 @@
 ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
-source ${ABSDIR}/password.sh
 REPOSITORY=/home/ubuntu/sparta/deploy
 
 echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/*.jar $REPOSITORY/"
-echo "${JASYPT_ENCRYPTOR_PASSWORD}"
-
-JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD}
 
 cp $REPOSITORY/*.jar $REPOSITORY/
 
@@ -27,6 +23,8 @@ echo "> $JAR_NAME 실행"
 IDLE_PROFILE=$(find_idle_profile)
 
 echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
+
+cd /home/ubuntu/sparta/deploy
 
 nohup java -jar \
     -Dspring.config.location=classpath:/application.yml,classpath:/aws.yml,classpath:/application-$IDLE_PROFILE.properties \
