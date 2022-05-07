@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on : ubuntu-20.04
     env:
-      JASYPT_ENCRYPTOR_PASSWORD: ${{ SECRETS.JASYPT_ENCRYPTOR_PASSWORD }}
+      JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
 
     steps:
       - name: Checkout
