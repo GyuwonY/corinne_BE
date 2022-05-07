@@ -27,5 +27,6 @@ echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
 cd /home/ubuntu/sparta
 
 nohup java -jar \
+    -Dspring.config.location=classpath:/application.yml,classpath:/aws.yml,classpath:/application-$IDLE_PROFILE.properties \
     -Dspring.profiles.active=$IDLE_PROFILE \
     -Djasypt.encryptor.password=$JASYPT_ENCRYPTOR_PASSWORD corinne_BE-0.0.1-SNAPSHOT.jar > nohup.out 2>&1 &
