@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 ABSPATH=$(readlink -f $0)
 # ABSDIR : 현재 stop.sh 파일 위치의 경로
 ABSDIR=$(dirname $ABSPATH)
