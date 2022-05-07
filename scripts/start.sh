@@ -28,3 +28,5 @@ nohup java -jar \
     -Dspring.config.location=classpath:/application.yml,classpath:/aws.yml,classpath:/application-$IDLE_PROFILE.properties \
     -Dspring.profiles.active=$IDLE_PROFILE \
     $REPOSITORY$JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
+
+exit 1
