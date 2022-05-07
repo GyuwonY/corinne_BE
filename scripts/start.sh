@@ -10,6 +10,7 @@ echo "> cp $REPOSITORY/*.jar $REPOSITORY/"
 echo "${JASYPT_ENCRYPTOR_PASSWORD}"
 
 JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD}
+echo "JASYPT_ENCRYPTOR_PASSWORD"
 
 cp $REPOSITORY/*.jar $REPOSITORY/
 
@@ -33,3 +34,4 @@ nohup java -jar \
     -Dspring.profiles.active=$IDLE_PROFILE \
     -Djasypt.encryptor.password=$JASYPT_ENCRYPTOR_PASSWORD \
     $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
+exit 1
