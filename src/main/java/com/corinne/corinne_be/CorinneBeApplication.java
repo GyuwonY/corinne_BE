@@ -15,7 +15,6 @@ import java.util.Calendar;
 public class CorinneBeApplication {
 
     public static void main(String[] args) {
-        System.out.println(System.getenv("JASYPT_ENCRYPTOR_PASSWORD"));
         SpringApplication.run(CorinneBeApplication.class, args);
     }
 

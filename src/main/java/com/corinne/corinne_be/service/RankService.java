@@ -129,7 +129,7 @@ public class RankService {
             rankDtoList.add(rankDtos.get(i));
         }
 
-        return  new ResponseEntity<>(new RankTopDto(rankDtoList), HttpStatus.OK);
+        return new ResponseEntity<>(new RankTopDto(rankDtoList), HttpStatus.OK);
     }
 
     // 내 랭킹
