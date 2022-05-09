@@ -4,13 +4,11 @@ import com.corinne.corinne_be.dto.account_dto.AccountResponseDto;
 import com.corinne.corinne_be.dto.account_dto.AccountSimpleDto;
 import com.corinne.corinne_be.dto.account_dto.CoinsDto;
 import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
+import com.corinne.corinne_be.model.Bookmark;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
-import com.corinne.corinne_be.repository.CoinRepository;
-import com.corinne.corinne_be.repository.RedisRepository;
-import com.corinne.corinne_be.repository.TransactionRepository;
-import com.corinne.corinne_be.repository.UserRepository;
+import com.corinne.corinne_be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +27,15 @@ public class AccountService {
     private final UserRepository userRepository;
     private final RedisRepository redisRepository;
     private final TransactionRepository transactionRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Autowired
-    public AccountService(CoinRepository coinRepository, UserRepository userRepository, RedisRepository redisRepository, TransactionRepository transactionRepository) {
+    public AccountService(CoinRepository coinRepository, UserRepository userRepository, RedisRepository redisRepository, TransactionRepository transactionRepository, BookmarkRepository bookmarkRepository) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
         this.transactionRepository = transactionRepository;
+        this.bookmarkRepository = bookmarkRepository;
     }
 
 
@@ -126,6 +126,34 @@ public class AccountService {
         TransactionDto transactionDto = new TransactionDto(user, "reset", 0, 1000000L, "reset", 1);
         Transaction transaction = new Transaction(transactionDto);
         transactionRepository.save(transaction);
+
+        return  new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 즐겨찾기 등록
+    public ResponseEntity<?> inputBookmark(String tiker, User user) {
+
+        if(bookmarkRepository.existsByUserIdAndTiker(user.getUserId(), tiker)){
+            return  new ResponseEntity<>("이미 즐겨찾기 되어있는 코인입니다",HttpStatus.BAD_REQUEST);
+        }
+
+        // 즐겨찾기 등록
+        Bookmark bookmark = new Bookmark(user.getUserId(),tiker);
+        bookmarkRepository.save(bookmark);
+
+        return  new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 즐겨찾기 삭제
+    public ResponseEntity<?> deleteBookmark(String tiker, User user) {
+
+        Bookmark bookmark = bookmarkRepository.findByUserIdAndTiker(user.getUserId(),tiker).orElse(null);
+
+        if(bookmark == null){
+            return  new ResponseEntity<>("이미 삭제된 즐겨찾기 목록입니다",HttpStatus.BAD_REQUEST);
+        }
+
+        bookmarkRepository.delete(bookmark);
 
         return  new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,5 +1,6 @@
 package com.corinne.corinne_be.controller;
 
+import com.corinne.corinne_be.dto.account_dto.BookMarkDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,18 @@ public class AccountController {
     @PutMapping("/api/accoint/reset")
     public ResponseEntity<?> resetAccount(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return accountService.resetAccount(userDetails.getUser());
+    }
+
+    // 즐겨찾기 추가
+    @GetMapping("/api/account/bookmark/{tiker}")
+    public ResponseEntity<?> inputBookmark(@PathVariable String tiker, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return accountService.inputBookmark(tiker, userDetails.getUser());
+    }
+
+    // 즐겨찾기 삭제
+    @DeleteMapping("/api/account/bookmark")
+    public ResponseEntity<?> deleteBookmark(@RequestBody BookMarkDto bookMarkDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return accountService.deleteBookmark(bookMarkDto.getTiker(), userDetails.getUser());
     }
 
 }
