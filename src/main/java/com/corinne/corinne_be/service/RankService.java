@@ -3,10 +3,7 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.rank_dto.*;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.User;
-import com.corinne.corinne_be.repository.CoinRepository;
-import com.corinne.corinne_be.repository.FollowerRepository;
-import com.corinne.corinne_be.repository.RedisRepository;
-import com.corinne.corinne_be.repository.UserRepository;
+import com.corinne.corinne_be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +22,15 @@ public class RankService {
     private final CoinRepository coinRepository;
     private final UserRepository userRepository;
     private final FollowerRepository followerRepository;
+    private final TransactionRepository transactionRepository;
     private final RedisRepository redisRepository;
 
     @Autowired
-    public RankService(CoinRepository coinRepository, UserRepository userRepository, FollowerRepository followerRepository, RedisRepository redisRepository) {
+    public RankService(CoinRepository coinRepository, UserRepository userRepository, FollowerRepository followerRepository, TransactionRepository transactionRepository, RedisRepository redisRepository) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.followerRepository = followerRepository;
+        this.transactionRepository = transactionRepository;
         this.redisRepository = redisRepository;
     }
 
@@ -63,7 +62,12 @@ public class RankService {
 
             boolean follow = followerRepository.existsByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId());
 
-            RankDto rankListDto = new RankDto(user.getUserId(), user.getNickname(),user.getImageUrl(),totalBalance,fluctuationRate, follow);
+            int restCount = transactionRepository.countByUser_UserIdAndType(user.getUserId(),"reset").intValue();
+
+            int exp = user.getExp();
+
+            RankDto rankListDto = new RankDto(user.getUserId(), user.getNickname(),user.getImageUrl(),totalBalance,fluctuationRate, follow,restCount,exp);
+
             rankDtos.add(rankListDto);
         }
 
@@ -125,7 +129,10 @@ public class RankService {
         rankDtos = rankDtos.stream().sorted(Comparator.comparing(RankInfoDto::getTotalBalance).reversed()).collect(Collectors.toList());
 
         List<RankInfoDto> rankDtoList = new ArrayList<>();
-        for(int i = 0; i < 3; i++){
+
+        int size = Math.min(rankDtos.size(), 3);
+
+        for(int i = 0; i < size; i++){
             rankDtoList.add(rankDtos.get(i));
         }
 
@@ -187,7 +194,7 @@ public class RankService {
             // 구매 총금액
             BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
             // 래버리지 적용한 수익률
-            BigDecimal fluctuationRate = currentPrice.subtract(buyPrice).multiply(leverage).divide(buyPrice,2,RoundingMode.HALF_UP);
+            BigDecimal fluctuationRate = currentPrice.subtract(buyPrice).multiply(leverage).divide(buyPrice,8,RoundingMode.HALF_EVEN);
             // 현재 해당 코인의 가치
             Long coinBalance = fluctuationRate.add(BigDecimal.valueOf(1)).multiply(amount).setScale(0,RoundingMode.CEILING).longValue();
 

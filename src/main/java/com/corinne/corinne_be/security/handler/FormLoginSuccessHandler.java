@@ -1,6 +1,5 @@
 package com.corinne.corinne_be.security.handler;
 
-import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.security.jwt.JwtTokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +15,6 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
     public static final String AUTH_HEADER = "Authorization";
     public static final String TOKEN_TYPE = "BEARER";
     private ObjectMapper objectMapper = new ObjectMapper();
-    private final RedisRepository redisRepository;
 
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
@@ -24,7 +22,6 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         final UserDetailsImpl userDetails = ((UserDetailsImpl) authentication.getPrincipal());
         // Token 생성
         final String token = JwtTokenUtils.generateJwtToken(userDetails);
-        redisRepository.enterTopic(Long.toString(userDetails.getUser().getUserId()));
         try {
             response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
             String data =Long.toString(userDetails.getUser().getUserId());

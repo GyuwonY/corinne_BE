@@ -1,7 +1,5 @@
 package com.corinne.corinne_be.config;
 
-
-import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.security.filter.FilterSkipMatcher;
 import com.corinne.corinne_be.security.filter.FormLoginFilter;
 import com.corinne.corinne_be.security.filter.JwtAuthFilter;
@@ -34,18 +32,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
-    private final RedisRepository redisRepository;
 
     public WebSecurityConfig(
             JWTAuthProvider jwtAuthProvider,
             HeaderTokenExtractor headerTokenExtractor,
-            CustomLogoutSuccessHandler customLogoutSuccessHandler,
-            RedisRepository redisRepository
+            CustomLogoutSuccessHandler customLogoutSuccessHandler
     ) {
         this.jwtAuthProvider = jwtAuthProvider;
         this.headerTokenExtractor = headerTokenExtractor;
         this.customLogoutSuccessHandler = customLogoutSuccessHandler;
-        this.redisRepository = redisRepository;
     }
 
     @Bean
@@ -62,7 +57,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web
                 .ignoring()
                 .antMatchers("/h2-console/**");
@@ -115,7 +109,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FormLoginSuccessHandler formLoginSuccessHandler() {
-        return new FormLoginSuccessHandler(redisRepository);
+        return new FormLoginSuccessHandler();
     }
 
     @Bean
