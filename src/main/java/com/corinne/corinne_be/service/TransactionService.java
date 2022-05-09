@@ -121,21 +121,21 @@ public class TransactionService {
             amount = buyRequestDto.getBuyAmount();
             Coin saveCoin = new Coin(user, buyRequestDto);
 
-            coinRepository.save(saveCoin);
+            coin = coinRepository.save(saveCoin);
         }
 
         //redis 현재가를 이용한 파산 구현을 위한 리스트 저장
         if(buyRequestDto.getLeverage() == 50){
-            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(), coin.getCoinId(),
                     BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.98)).setScale(0,RoundingMode.FLOOR).intValue()));
         }else if(buyRequestDto.getLeverage() == 100){
-            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(), coin.getCoinId(),
                     BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.99)).setScale(0,RoundingMode.FLOOR).intValue()));
         }else if(buyRequestDto.getLeverage() == 25){
-            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(), coin.getCoinId(),
                     BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.96)).setScale(0,RoundingMode.FLOOR).intValue()));
         }else if(buyRequestDto.getLeverage() == 75){
-            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(),
+            redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(), coin.getCoinId(),
                     BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.98777777777777777)).setScale(0,RoundingMode.FLOOR).intValue()));
         }
 
@@ -169,6 +169,10 @@ public class TransactionService {
             return  new ResponseEntity<>("보유한 코인이 아닙니다",HttpStatus.BAD_REQUEST);
         }
 
+        if(coin.getLeverage() != 1L){
+            redisRepository.deleteBankruptcy(coin.getCoinId(), coin.getTiker());
+        }
+
         BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
         BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
         BigDecimal sellPrice = BigDecimal.valueOf(sellRequestDto.getTradePrice());
@@ -182,8 +186,6 @@ public class TransactionService {
         //판매 비율
         BigDecimal sellRate = sellAmount.divide(sellable, 2, RoundingMode.HALF_UP);
 
-        System.out.println(sellable.intValue());
-        System.out.println(sellRequestDto.getSellAmount());
         if(sellable.intValue() >= sellRequestDto.getSellAmount()){
             Long leftover = amount.subtract(amount.multiply(sellRate)).longValue();
             if (leftover == 0L){

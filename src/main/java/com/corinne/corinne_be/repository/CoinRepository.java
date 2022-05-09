@@ -13,6 +13,7 @@ public interface CoinRepository extends JpaRepository<Coin, Long> {
     Optional<Coin> findByTikerAndUser_UserId(String tiker, Long userId);
     void deleteByTikerAndUser_UserId(String tiker, Long userId);
     Optional<Coin> findByTiker(String tiker);
+    void deleteByCoinId(Long coinId);
 
     void deleteAllByUser_UserId(Long userId);
 }
