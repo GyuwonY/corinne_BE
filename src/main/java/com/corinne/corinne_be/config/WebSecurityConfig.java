@@ -142,6 +142,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/stomp/**");
         skipPathList.add("GET,/stomp/**/**");
 
+        skipPathList.add("GET,/profile");
+
 //        skipPathList.add("POST,/api/board/photo");
 //        skipPathList.add("POST,/api/board/regist");
 
@@ -149,12 +151,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/user/kakao/callback");
 //        skipPathList.add("POST,/user/signup");
         skipPathList.add("POST,/user/login");
-        skipPathList.add("GET,/api/board/**/**");
-
-
-        skipPathList.add("GET,/basic.js");
-
-        skipPathList.add("GET,/favicon.ico");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
