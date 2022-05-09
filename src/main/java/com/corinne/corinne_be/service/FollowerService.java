@@ -37,7 +37,7 @@ public class FollowerService {
 
     @Transactional
     public void unfollow(Long userid, UserDetailsImpl userDetails) {
-        // 현재 로그인된 유저 정보
+        // 현재 로그인된 유저 정보 가져오기
         User user = userDetails.getUser();
         // 언팔로우 할 유저 정보
         User follower = userRepository.findById(userid).get();

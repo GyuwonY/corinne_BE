@@ -1,8 +1,10 @@
 package com.corinne.corinne_be.controller;
 
+import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,9 +42,9 @@ public class PriceController {
 
     // 일별 등락률 랭크
     @GetMapping("/api/price/rank")
-    public ResponseEntity<?> getDateRank(){
+    public ResponseEntity<?> getDateRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return priceService.getDateRank();
+        return priceService.getDateRank(userDetails.getUser());
     }
 
 
