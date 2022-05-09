@@ -7,6 +7,8 @@ import com.corinne.corinne_be.dto.transaction_dto.TransactionResponseDto;
 import com.corinne.corinne_be.model.DateCandle;
 import com.corinne.corinne_be.model.MinuteCandle;
 import com.corinne.corinne_be.model.Transaction;
+import com.corinne.corinne_be.model.User;
+import com.corinne.corinne_be.repository.BookmarkRepository;
 import com.corinne.corinne_be.repository.DateCandleRepository;
 import com.corinne.corinne_be.repository.MinuteCandleRepository;
 import com.corinne.corinne_be.repository.RedisRepository;
@@ -34,15 +36,19 @@ public class PriceService {
 
     private final MinuteCandleRepository minuteCandleRepository;
     private final DateCandleRepository dateCandleRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final RedisRepository redisRepository;
 
-
     @Autowired
-    public PriceService(MinuteCandleRepository minuteCandleRepository, DateCandleRepository dateCandleRepository, RedisRepository redisRepository) {
+    public PriceService(MinuteCandleRepository minuteCandleRepository, DateCandleRepository dateCandleRepository, BookmarkRepository bookmarkRepository, RedisRepository redisRepository) {
         this.minuteCandleRepository = minuteCandleRepository;
         this.dateCandleRepository = dateCandleRepository;
+        this.bookmarkRepository = bookmarkRepository;
         this.redisRepository = redisRepository;
     }
+
+
+
 
 
     // 분봉 조회
@@ -119,7 +125,7 @@ public class PriceService {
 
 
     // 일별 등락률 랭킹
-    public ResponseEntity<?> getDateRank() {
+    public ResponseEntity<?> getDateRank(User user) {
 
         Calendar date = new GregorianCalendar();
         date.add(Calendar.DATE, -1); // 오늘날짜로부터 -1
@@ -130,18 +136,55 @@ public class PriceService {
 
         List<DateReponseDto> dateReponseDtos = new ArrayList<>();
 
+        // 어제 일봉 비교
         for(DateCandle dateCandle : dateCandles){
 
+            // 현재가
             int currentPrice = redisRepository.getTradePrice(dateCandle.getTiker());
 
             String tiker = dateCandle.getTiker();
 
+            String tikername = "";
+            switch (tiker){
+                case "KRW-BTC":
+                    tikername = "비트코인";
+                    break;
+                case "KRW-SOL":
+                    tikername = "솔라나";
+                    break;
+                case "KRW-ETH":
+                    tikername = "이더리움";
+                    break;
+                case "KRW-XRP":
+                    tikername = "스텔라루멘";
+                    break;
+                case "KRW-ADA":
+                    tikername = "에이다";
+                    break;
+                case "KRW-DOGE":
+                    tikername = "도지코인";
+                    break;
+                case "KRW-AVAX":
+                    tikername = "아발란체";
+                    break;
+                case "KRW-DOT":
+                    tikername = "폴카닷";
+                    break;
+            }
+
+            // 어제 일봉 종료값
             int endPrice = dateCandle.getEndPrice();
 
             BigDecimal fluctuationRateCal = new BigDecimal((currentPrice - endPrice) * 100);
             double fluctuationRate = fluctuationRateCal.divide(BigDecimal.valueOf(endPrice),2,RoundingMode.HALF_EVEN).doubleValue();
 
-            DateReponseDto dateReponseDto = new DateReponseDto(tiker,currentPrice,fluctuationRate);
+            // 코인단위
+            String unit = tiker.substring(4);
+
+            // 즐겨찾기 유무
+            boolean favorite = bookmarkRepository.existsByUserIdAndTiker(user.getUserId(), tiker);
+
+            DateReponseDto dateReponseDto = new DateReponseDto(tiker,tikername, endPrice, fluctuationRate,unit,favorite);
 
             dateReponseDtos.add(dateReponseDto);
         }
