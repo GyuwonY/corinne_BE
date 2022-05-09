@@ -1,12 +1,12 @@
 spring:
-  datasource:
-    url: ENC(Uhr3Sbmbw6S4Cfne8uoonliruTpk+tTLucrJQsp8Gjf7tdheEtJJaYJ27stSsQArFt21Dno14ekP/kFCM5SLUIOeybyNBuLbZ6oCUHfzK6TkPyZcJ7RHHwObq8dWwwrdtaqgnwbS/tM=)
-    username: ENC(zfsBcyn8ZVDvxlCDTytkkA==)
-    password: ENC(Ks5Qju3bX6hdIsrhfnCC2/KRoKRhMGdT)
+#  datasource:
+#    url: ENC(Uhr3Sbmbw6S4Cfne8uoonliruTpk+tTLucrJQsp8Gjf7tdheEtJJaYJ27stSsQArFt21Dno14ekP/kFCM5SLUIOeybyNBuLbZ6oCUHfzK6TkPyZcJ7RHHwObq8dWwwrdtaqgnwbS/tM=)
+#    username: ENC(zfsBcyn8ZVDvxlCDTytkkA==)
+#    password: ENC(Ks5Qju3bX6hdIsrhfnCC2/KRoKRhMGdT)
 
-  jpa:
-    hibernate:
-      ddl-auto: update
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
 
   redis:
     host: 127.0.0.1
