@@ -162,6 +162,9 @@ public class PriceService {
                 case "KRW-DOT":
                     tikername = "폴카닷";
                     break;
+                case "KRW-MATIC":
+                    tikername = "폴리곤";
+                    break;
             }
 
             // 어제 일봉 종료값
