@@ -1,8 +1,11 @@
 package com.corinne.corinne_be.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@NoArgsConstructor
 @Getter
 @Entity
 @Table(name = "tbl_follower")

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.corinne.corinne_be.security.jwt.JwtTokenUtils.*;
+import static com.corinne.corinne_be.security.jwt.JwtTokenUtils.CLAIM_USER_ID;
 
 
 @Component
@@ -18,7 +19,7 @@ public class JwtDecoder {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public String decodeEmail(String token) {
+    public Long decodeId(String token) {
         DecodedJWT decodedJWT = isValidToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("유효한 토큰이 아닙니다."));
 
@@ -31,11 +32,11 @@ public class JwtDecoder {
             throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
         }
 
-        String userEmail = decodedJWT
-                .getClaim(CLAIM_USER_EMAIL)
-                .asString();
+        Long userId = decodedJWT
+                .getClaim(CLAIM_USER_ID)
+                .asLong();
 
-        return userEmail;
+        return userId;
     }
 
     private Optional<DecodedJWT> isValidToken(String token) {

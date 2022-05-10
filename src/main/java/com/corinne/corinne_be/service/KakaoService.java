@@ -40,6 +40,8 @@ public class KakaoService {
 
         boolean firstLogin = true;
 
+        int exp = 0;
+
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
@@ -54,13 +56,14 @@ public class KakaoService {
             String nickname = kakaoUserInfoDto.getNickname();
             String passwordCreate = UUID.randomUUID().toString();
             String password = encode.encode(passwordCreate);
-            kakaoUser = new User(nickname, password, userEmail, accountBalance, firstLogin);
+            kakaoUser = new User(nickname, password, userEmail, accountBalance, firstLogin,exp);
             userRepository.save(kakaoUser);
         }
 
         String token = forceLogin(kakaoUser);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
+        token =  "BEARER" + " " + token;
+        headers.set("Authorization",token);
 
         System.out.println(token);
         return  ResponseEntity.ok()
@@ -109,7 +112,7 @@ public class KakaoService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "aa94123a5de4c285d81266d63666699f");
-        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("code", code);
 
 // HTTP 요청 보내기

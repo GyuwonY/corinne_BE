@@ -43,12 +43,13 @@ public class User {
     @Column(nullable = false)
     private double lastFluctuation;
 
-    public User(String nickname, String password, String userEmail, Long accountBalance, boolean firstLogin) {
-       this.nickname = nickname;
-       this.password = password;
-       this.userEmail = userEmail;
-       this.accountBalance = accountBalance;
-       this.firstLogin = firstLogin;
+    public User(String nickname, String password, String userEmail, Long accountBalance, boolean firstLogin, int exp) {
+        this.nickname = nickname;
+        this.password = password;
+        this.exp = exp;
+        this.userEmail = userEmail;
+        this.accountBalance = accountBalance;
+        this.firstLogin = firstLogin;
     }
     //회원정보 수정
     public void infoUpdate(UserRequestdto userRequestdto){
