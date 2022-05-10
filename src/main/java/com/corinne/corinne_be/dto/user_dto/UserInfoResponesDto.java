@@ -1,7 +1,6 @@
 package com.corinne.corinne_be.dto.user_dto;
 
 import com.corinne.corinne_be.model.User;
-import com.corinne.corinne_be.security.UserDetailsImpl;
 import lombok.Getter;
 
 @Getter
@@ -17,24 +16,23 @@ public class UserInfoResponesDto {
 
 
 
-    public UserInfoResponesDto(UserDetailsImpl userDetails) {
+    public UserInfoResponesDto(User user) {
 
-        this.userId = userDetails.getUser().getUserId();
-        this.userEmail = userDetails.getUsername();
-        this.nickname = userDetails.getUser().getNickname();
+        this.userId = user.getUserId();
+        this.userEmail = user.getUserEmail();
+        this.nickname = user.getNickname();
         try {
-            this.imageUrl = userDetails.getUser().getImageUrl();
+            this.imageUrl = user.getImageUrl();
         }catch (NullPointerException e){
             this.imageUrl = "기본이미지";
         }
-        this.exp = userDetails.getUser().getExp();
-        this.accountBalance = userDetails.getUser().getAccountBalance();
-        this.firstLogin = userDetails.getUser().isFirstLogin();
-    }
-
-    public UserInfoResponesDto(User followUser) {
-        this.userId = followUser.getUserId();
-        this.userEmail = followUser.getUserEmail();;
-        this.nickname = followUser.getNickname();
+        this.exp = user.getExp();
+        this.accountBalance = user.getAccountBalance();
+        this.firstLogin = user.isFirstLogin();
     }
 }
+//    public UserInfoResponesDto(User followUser) {
+//        this.userId = followUser.getUserId();
+//        this.userEmail = followUser.getUserEmail();;
+//        this.nickname = followUser.getNickname();
+//    }

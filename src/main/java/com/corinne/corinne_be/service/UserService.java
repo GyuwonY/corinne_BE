@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,37 +31,32 @@ import java.io.IOException;
 @Service
 @Slf4j
 public class UserService {
-
-    private final S3Uploader s3Uploader;
-    private final UserRepository userRepository;
-    private final PasswordEncoder encoder;
     private final Validator validator;
+    private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
 
     //회원정보 조희
-    public UserInfoResponesDto UserInfo(UserDetailsImpl userDetails){
+    public ResponseEntity<?> UserInfo(User user){
 
-        return new UserInfoResponesDto(userDetails);
+        return new ResponseEntity<>(new UserInfoResponesDto(user),HttpStatus.OK);
     }
 
     /**
      * 회원정보 수정
-     * @param userDetails
-     * @param userRequestdto
-     * @return MsgReponseDto
+     *
      */
     @Transactional
-    public MsgReponseDto InfoUpdate(UserDetailsImpl userDetails, UserRequestdto userRequestdto){
-        Long userId = userDetails.getUser().getUserId();
-        User user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-        userRequestdto.setUserEmail(userDetails.getUsername());
+    public ResponseEntity<?> InfoUpdate(User user, UserRequestdto userRequestdto){
+        userRequestdto.setUserEmail(user.getUserEmail());
         try{
             validator.userValidate(userRequestdto);
         }catch (IllegalArgumentException e){
             String msg = e.getMessage();
-            return new MsgReponseDto(HttpStatus.BAD_REQUEST, msg);
+            return new ResponseEntity<>(msg,HttpStatus.BAD_REQUEST);
         }
         user.infoUpdate(userRequestdto);
-        return new MsgReponseDto(HttpStatus.OK,null);
+        userRepository.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //이미지수정

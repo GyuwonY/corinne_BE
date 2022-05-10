@@ -33,7 +33,6 @@ public class Validator {
             throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
         }
         if(!Pattern.matches("^[ㄱ-ㅎ가-힣a-z0-9-_]{4,9}$",userRequestdto.getNickname())){
-            System.out.println("tss");
             throw new IllegalArgumentException("닉네임은 특수문자를 제외한 4~9 자입니다");
         }
 //        if (userRepository.findByUserEmail(userRequestdto.getUserEmail()).isPresent()) {
