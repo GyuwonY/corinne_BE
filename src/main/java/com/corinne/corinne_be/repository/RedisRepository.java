@@ -1,5 +1,6 @@
 package com.corinne.corinne_be.repository;
 
+import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
 import com.corinne.corinne_be.dto.transaction_dto.BankruptcyDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,14 @@ public class RedisRepository {
     /**
      * 실시간 데이터 현재가 리턴
      */
-    public int getTradePrice(String tiker){
-        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), Integer.class);
+    public PricePublishingDto getTradePrice(String tiker){
+        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), PricePublishingDto.class);
     }
 
     public void saveBankruptcy(BankruptcyDto dto){
-        if(bankruptcy.size(dto.getTiker()+"bankruptcy") != null){
+        BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
+        if(checkDto != null){
+            bankruptcy.leftPush(dto.getTiker() + "bankruptcy", checkDto);
             for(Long i = 0L; i <= bankruptcy.size(dto.getTiker() + "bankruptcy"); i++){
                 BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
                 if(bankruptcyDto.getCoinId().equals(dto.getCoinId())){
@@ -57,7 +60,9 @@ public class RedisRepository {
     }
 
     public void deleteBankruptcy(Long coinId, String tiker) {
-        if(bankruptcy.size(tiker+"bankruptcy") != null){
+        BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+        if(checkDto != null){
+            bankruptcy.leftPush(tiker + "bankruptcy", checkDto);
             for(Long i = 0L; i <= bankruptcy.size(tiker + "bankruptcy"); i++){
                 BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
                 if(bankruptcyDto.getCoinId().equals(coinId)){

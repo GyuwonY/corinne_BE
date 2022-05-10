@@ -3,6 +3,7 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.candle_dto.DatePageDto;
 import com.corinne.corinne_be.dto.candle_dto.DateReponseDto;
 import com.corinne.corinne_be.dto.candle_dto.MinutePageDto;
+import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
 import com.corinne.corinne_be.dto.transaction_dto.TransactionResponseDto;
 import com.corinne.corinne_be.model.DateCandle;
 import com.corinne.corinne_be.model.MinuteCandle;
@@ -126,23 +127,14 @@ public class PriceService {
 
     // 일별 등락률 랭킹
     public ResponseEntity<?> getDateRank(User user) {
-
-        Calendar date = new GregorianCalendar();
-        date.add(Calendar.DATE, -1); // 오늘날짜로부터 -1
+        List<String> tikers = Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd"); // 날짜 포맷
-
-        String yesterDate = sdf.format(date.getTime()); // String으로 저장
-        List<DateCandle> dateCandles = dateCandleRepository.findAllByTradeDate(Integer.parseInt(yesterDate));
-
         List<DateReponseDto> dateReponseDtos = new ArrayList<>();
-
-        // 어제 일봉 비교
-        for(DateCandle dateCandle : dateCandles){
+        for(String tiker : tikers){
+            PricePublishingDto pricePublishingDto = redisRepository.getTradePrice(tiker);
 
             // 현재가
-            int currentPrice = redisRepository.getTradePrice(dateCandle.getTiker());
-
-            String tiker = dateCandle.getTiker();
+            int currentPrice = pricePublishingDto.getTradePrice();
 
             String tikername = "";
             switch (tiker){
@@ -170,13 +162,14 @@ public class PriceService {
                 case "KRW-DOT":
                     tikername = "폴카닷";
                     break;
+                case "KRW-MATIC":
+                    tikername = "폴리곤";
+                    break;
             }
 
             // 어제 일봉 종료값
-            int endPrice = dateCandle.getEndPrice();
-
-            BigDecimal fluctuationRateCal = new BigDecimal((currentPrice - endPrice) * 100);
-            double fluctuationRate = fluctuationRateCal.divide(BigDecimal.valueOf(endPrice),2,RoundingMode.HALF_EVEN).doubleValue();
+            int endPrice = pricePublishingDto.getPrevClosingPrice();
+            float fluctuationRate = pricePublishingDto.getSignedChangeRate();
 
             // 코인단위
             String unit = tiker.substring(4);
