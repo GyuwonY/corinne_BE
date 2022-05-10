@@ -133,9 +133,6 @@ public class PriceService {
         for(String tiker : tikers){
             PricePublishingDto pricePublishingDto = redisRepository.getTradePrice(tiker);
 
-            // 현재가
-            int currentPrice = pricePublishingDto.getTradePrice();
-
             String tikername = "";
             switch (tiker){
                 case "KRW-BTC":
