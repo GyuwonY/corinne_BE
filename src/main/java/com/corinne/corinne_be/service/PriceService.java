@@ -145,7 +145,7 @@ public class PriceService {
                     tikername = "이더리움";
                     break;
                 case "KRW-XRP":
-                    tikername = "스텔라루멘";
+                    tikername = "리플";
                     break;
                 case "KRW-ADA":
                     tikername = "에이다";

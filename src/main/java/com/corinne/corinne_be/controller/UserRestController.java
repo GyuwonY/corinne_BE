@@ -33,14 +33,15 @@ public class UserRestController {
     //카카오로그인
     @PostMapping("/user/kakao/callback")
     public ResponseEntity<?> kakao(@RequestBody KakaoDto kakaoDto) throws JsonProcessingException {
-        System.out.println("카카오 로그인 시도 : " + kakaoDto.getAuthCode());
         return kakaoService.kakao(kakaoDto.getAuthCode());
     }
+
     //회원정보 수정
     @PatchMapping("/user/signup")
     public ResponseEntity<?> InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
         return userService.InfoUpdate(userDetails.getUser(),userRequestdto);
     }
+
     //회원정보조희
     @GetMapping("/api/user/info")
     public ResponseEntity<?> Userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {

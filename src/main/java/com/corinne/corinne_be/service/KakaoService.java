@@ -49,7 +49,6 @@ public class KakaoService {
         KakaoUserInfoDto kakaoUserInfoDto = getKakaoUserInfo(accessToken);
 
         String userEmail = kakaoUserInfoDto.getEmail();
-        System.out.println(userEmail);
         User kakaoUser = userRepository.findByUserEmail(userEmail)
                 .orElse(null);
         if (kakaoUser == null) {
@@ -65,7 +64,6 @@ public class KakaoService {
         token =  "BEARER" + " " + token;
         headers.set("Authorization",token);
 
-        System.out.println(token);
         return  ResponseEntity.ok()
                 .headers(headers)
                 .body("success");
@@ -99,7 +97,6 @@ public class KakaoService {
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
         return (new KakaoUserInfoDto(id,nickname,email));
     }
 

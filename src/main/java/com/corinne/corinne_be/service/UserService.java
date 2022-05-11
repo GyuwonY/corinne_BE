@@ -37,12 +37,11 @@ public class UserService {
      */
     @Transactional
     public ResponseEntity<?> InfoUpdate(User user, UserRequestdto userRequestdto){
-        userRequestdto.setUserEmail(user.getUserEmail());
         try{
             validator.userValidate(userRequestdto);
         }catch (IllegalArgumentException e){
             String msg = e.getMessage();
-            return new ResponseEntity<>(msg,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(msg,HttpStatus.OK);
         }
         user.infoUpdate(userRequestdto);
         userRepository.save(user);

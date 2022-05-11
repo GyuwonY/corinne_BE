@@ -57,6 +57,7 @@ public class User {
     //회원정보 수정
     public void infoUpdate(UserRequestdto userRequestdto){
         this.nickname = userRequestdto.getNickname();
+        this.firstLogin = false;
     }
 
 
