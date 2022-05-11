@@ -43,6 +43,9 @@ public class User {
     @Column(nullable = false)
     private double lastFluctuation;
 
+    @Version
+    private Integer version;
+
     public User(String nickname, String password, String userEmail, Long accountBalance, boolean firstLogin, int exp) {
         this.nickname = nickname;
         this.password = password;

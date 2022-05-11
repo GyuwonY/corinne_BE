@@ -29,6 +29,9 @@ public class Coin {
     @Column(nullable = false)
     private int leverage;
 
+    @Version
+    private Integer version;
+
     public Coin() {
     }
 

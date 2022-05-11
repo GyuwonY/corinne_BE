@@ -138,7 +138,7 @@ public class FollowerService {
             BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
             // 현재가
 //                BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()));
-            BigDecimal currentPrice = BigDecimal.valueOf(100);
+            BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()).getTradePrice());
             // 래버리지
             BigDecimal leverage = BigDecimal.valueOf(coin.getLeverage());
             // 구매 총금액
