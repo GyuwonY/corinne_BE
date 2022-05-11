@@ -138,12 +138,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         skipPathList.add("GET,/profile");
 
-//        skipPathList.add("POST,/api/board/photo");
-//        skipPathList.add("POST,/api/board/regist");
-
-        // 회원 관리 API 허용
-        skipPathList.add("POST,/user/kakao/callback");
-//        skipPathList.add("POST,/user/signup");
+        skipPathList.add("POST,/user/kakao/**");
         skipPathList.add("POST,/user/login");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
