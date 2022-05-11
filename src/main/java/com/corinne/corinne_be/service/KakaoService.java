@@ -55,10 +55,9 @@ public class KakaoService {
             String nickname = kakaoUserInfoDto.getNickname();
             String passwordCreate = UUID.randomUUID().toString();
             String password = encode.encode(passwordCreate);
-            kakaoUser = new User(nickname, password, userEmail, accountBalance, firstLogin,exp);
-            userRepository.save(kakaoUser);
+            kakaoUser = userRepository.save(new User(nickname, password, userEmail, accountBalance, firstLogin,exp));
         }
-
+        
         String token = forceLogin(kakaoUser);
         HttpHeaders headers = new HttpHeaders();
         token =  "BEARER" + " " + token;
@@ -66,7 +65,7 @@ public class KakaoService {
 
         return  ResponseEntity.ok()
                 .headers(headers)
-                .body("success");
+                .body(kakaoUser.isFirstLogin());
     }
 
 
