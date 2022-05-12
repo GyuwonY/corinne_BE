@@ -3,12 +3,11 @@ package com.corinne.corinne_be.model;
 import lombok.Getter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "tbl_daycandle")
-public class DateCandle {
+public class DayCandle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column

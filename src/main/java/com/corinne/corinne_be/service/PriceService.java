@@ -4,13 +4,11 @@ import com.corinne.corinne_be.dto.candle_dto.DatePageDto;
 import com.corinne.corinne_be.dto.candle_dto.DateReponseDto;
 import com.corinne.corinne_be.dto.candle_dto.MinutePageDto;
 import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
-import com.corinne.corinne_be.dto.transaction_dto.TransactionResponseDto;
-import com.corinne.corinne_be.model.DateCandle;
+import com.corinne.corinne_be.model.DayCandle;
 import com.corinne.corinne_be.model.MinuteCandle;
-import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.BookmarkRepository;
-import com.corinne.corinne_be.repository.DateCandleRepository;
+import com.corinne.corinne_be.repository.DayCandleRepository;
 import com.corinne.corinne_be.repository.MinuteCandleRepository;
 import com.corinne.corinne_be.repository.RedisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,12 +30,12 @@ import java.util.stream.Collectors;
 public class PriceService {
 
     private final MinuteCandleRepository minuteCandleRepository;
-    private final DateCandleRepository dateCandleRepository;
+    private final DayCandleRepository dateCandleRepository;
     private final BookmarkRepository bookmarkRepository;
     private final RedisRepository redisRepository;
 
     @Autowired
-    public PriceService(MinuteCandleRepository minuteCandleRepository, DateCandleRepository dateCandleRepository, BookmarkRepository bookmarkRepository, RedisRepository redisRepository) {
+    public PriceService(MinuteCandleRepository minuteCandleRepository, DayCandleRepository dateCandleRepository, BookmarkRepository bookmarkRepository, RedisRepository redisRepository) {
         this.minuteCandleRepository = minuteCandleRepository;
         this.dateCandleRepository = dateCandleRepository;
         this.bookmarkRepository = bookmarkRepository;
@@ -66,9 +60,10 @@ public class PriceService {
             int endPrice = minuteCandle.getEndPrice();
             int highPrice = minuteCandle.getHighPrice();
             int lowPrice = minuteCandle.getLowPrice();
+            String date = Integer.toString(minuteCandle.getTradeDate());
 
-            String date =String.valueOf(minuteCandle.getTradeDate());
-            System.out.println(date);
+            System.out.println(tiker + " "+ startPrice + " "+ endPrice + " "+ highPrice + " "+ lowPrice + " "+ date);
+
             SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
             SimpleDateFormat newDtFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date formatDate = null;
@@ -98,10 +93,10 @@ public class PriceService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<DateCandle> entites = dateCandleRepository.findAllByTiker(tikerName, pageable);
-        Page<DatePageDto> dateCandles = entites.map(new Function<DateCandle, DatePageDto>() {
+        Page<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName, pageable);
+        Page<DatePageDto> dateCandles = entites.map(new Function<DayCandle, DatePageDto>() {
             @Override
-            public DatePageDto apply(DateCandle dateCandle) {
+            public DatePageDto apply(DayCandle dateCandle) {
                 String tiker = dateCandle.getTiker();
                 int startPrice = dateCandle.getStartPrice();
                 int endPrice = dateCandle.getEndPrice();
