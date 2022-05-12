@@ -68,6 +68,7 @@ public class PriceService {
             int lowPrice = minuteCandle.getLowPrice();
 
             String date =String.valueOf(minuteCandle.getTradeDate());
+            System.out.println(date);
             SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
             SimpleDateFormat newDtFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date formatDate = null;
