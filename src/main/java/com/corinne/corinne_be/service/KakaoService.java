@@ -36,12 +36,6 @@ public class KakaoService {
 
     public ResponseEntity<?> kakao(String code) throws JsonProcessingException {
 
-        Long accountBalance = 1000000L;
-
-        boolean firstLogin = true;
-
-        int exp = 0;
-
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
@@ -55,7 +49,7 @@ public class KakaoService {
             String nickname = kakaoUserInfoDto.getNickname();
             String passwordCreate = UUID.randomUUID().toString();
             String password = encode.encode(passwordCreate);
-            kakaoUser = userRepository.save(new User(nickname, password, userEmail, accountBalance, firstLogin,exp));
+            kakaoUser = userRepository.save(new User(nickname, password, userEmail));
         }
         
         String token = forceLogin(kakaoUser);

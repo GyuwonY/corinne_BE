@@ -5,6 +5,7 @@ import com.corinne.corinne_be.security.UserDetailsImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -32,13 +33,13 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private Long accountBalance;
+    private Long accountBalance = 1000000L;
 
     @Column(nullable = false)
-    private int exp;
+    private int exp = 0;
 
     @Column(nullable = false)
-    private boolean firstLogin;
+    private boolean firstLogin = true;
 
     @Column(nullable = false)
     private double lastFluctuation;
@@ -46,13 +47,10 @@ public class User {
     @Version
     private Integer version;
 
-    public User(String nickname, String password, String userEmail, Long accountBalance, boolean firstLogin, int exp) {
+    public User(String nickname, String password, String userEmail) {
         this.nickname = nickname;
         this.password = password;
-        this.exp = exp;
         this.userEmail = userEmail;
-        this.accountBalance = accountBalance;
-        this.firstLogin = firstLogin;
     }
     //회원정보 수정
     public void infoUpdate(UserRequestdto userRequestdto){
