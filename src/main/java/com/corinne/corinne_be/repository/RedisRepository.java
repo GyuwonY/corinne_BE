@@ -56,6 +56,8 @@ public class RedisRepository {
                     bankruptcy.rightPush(dto.getTiker() + "bankruptcy", bankruptcyDto);
                 }
             }
+        }else {
+            bankruptcy.rightPush(dto.getTiker() + "bankruptcy", dto);
         }
     }
 
