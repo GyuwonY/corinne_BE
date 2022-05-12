@@ -45,7 +45,6 @@ public class PriceService {
 
 
 
-
     // 분봉 조회
     public ResponseEntity<?> getMinute(String tikerName,int page, int size, String sortBy) {
 
@@ -61,8 +60,6 @@ public class PriceService {
             int highPrice = minuteCandle.getHighPrice();
             int lowPrice = minuteCandle.getLowPrice();
             String date = Integer.toString(minuteCandle.getTradeDate());
-
-            System.out.println(tiker + " "+ startPrice + " "+ endPrice + " "+ highPrice + " "+ lowPrice + " "+ date);
 
             SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
             SimpleDateFormat newDtFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -94,16 +91,15 @@ public class PriceService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName, pageable);
-        Page<DatePageDto> dateCandles = entites.map(new Function<DayCandle, DatePageDto>() {
-            @Override
-            public DatePageDto apply(DayCandle dateCandle) {
-                String tiker = dateCandle.getTiker();
-                int startPrice = dateCandle.getStartPrice();
-                int endPrice = dateCandle.getEndPrice();
-                int highPrice = dateCandle.getHighPrice();
-                int lowPrice = dateCandle.getLowPrice();
+        Page<DatePageDto> dateCandles = entites.map(dayCandle -> {
 
-                String date = String.valueOf(dateCandle.getTradeDate());
+                String tiker = dayCandle.getTiker();
+                int startPrice = dayCandle.getStartPrice();
+                int endPrice = dayCandle.getEndPrice();
+                int highPrice = dayCandle.getHighPrice();
+                int lowPrice = dayCandle.getLowPrice();
+                String date = String.valueOf(dayCandle.getTradeDate());
+
                 SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
                 SimpleDateFormat newDtFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date formatDate = null;
@@ -115,8 +111,7 @@ public class PriceService {
                 String tradeDate = newDtFormat.format(formatDate);
 
                 return new DatePageDto(tiker, startPrice, endPrice, highPrice, lowPrice, tradeDate);
-            }
-        });
+            });
        return new ResponseEntity<>(dateCandles, HttpStatus.OK);
     }
 

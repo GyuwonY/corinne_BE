@@ -23,7 +23,7 @@ public class PriceController {
     @GetMapping("/api/price/minute/{tiker}/{page}")
     public ResponseEntity<?> getMinute(@PathVariable String tiker, @PathVariable int page){
         int pageNum = page - 1;
-        int size = 3;
+        int size = 100;
         String sortBy = "tradeTime";
         return priceService.getMinute(tiker,pageNum,size,sortBy);
     }
@@ -33,7 +33,7 @@ public class PriceController {
     @GetMapping("/api/price/date/{tiker}/{page}")
     public ResponseEntity<?> getDate(@PathVariable String tiker, @PathVariable int page){
         int pageNum = page - 1;
-        int size = 3;
+        int size = 100;
         String sortBy = "tradeDate";
         return priceService.getdate(tiker,pageNum,size,sortBy);
     }
