@@ -24,7 +24,7 @@ public class TransactionController {
     public ResponseEntity<?>  getTransactional(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         int pageNum = page - 1;
-        int size = 3;
+        int size = 5;
         String sortBy = "tradeAt";
         return transactionService.getTransactional(pageNum,size,sortBy,userDetails.getUser());
     }
@@ -34,7 +34,7 @@ public class TransactionController {
     public ResponseEntity<?>  getSpecifiedTranstnal(@PathVariable String coinName,@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         int pageNum = page - 1;
-        int size = 3;
+        int size = 5;
         String sortBy = "tradeAt";
         return transactionService.getSpecifiedTranstnal(pageNum,size,sortBy,coinName,userDetails.getUser());
     }

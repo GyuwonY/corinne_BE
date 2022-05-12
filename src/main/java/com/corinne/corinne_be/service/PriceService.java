@@ -52,7 +52,7 @@ public class PriceService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<MinuteCandle> entites = minuteCandleRepository.findAllByTiker(tikerName,pageable);
+        Page<MinuteCandle> entites = minuteCandleRepository.findAllByTikerOrderByMinuteCandleIdDesc(tikerName,pageable);
         Page<MinutePageDto> minutePageDtos = entites.map(minuteCandle -> {
             String tiker = minuteCandle.getTiker();
             int startPrice = minuteCandle.getStartPrice();
@@ -90,7 +90,7 @@ public class PriceService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName, pageable);
+        Page<DayCandle> entites = dateCandleRepository.findAllByTikerOrderByTradeDateDesc(tikerName, pageable);
         Page<DatePageDto> dateCandles = entites.map(dayCandle -> {
 
                 String tiker = dayCandle.getTiker();
