@@ -102,7 +102,7 @@ public class KakaoService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "aa94123a5de4c285d81266d63666699f");
-        body.add("redirect_uri", "https://corinne-fe.vercel.app/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000");
         body.add("code", code);
 
 // HTTP 요청 보내기
