@@ -15,13 +15,15 @@ public class SellResponseDto {
     private String type;
     private String tradeAt;
     private int leverage;
+    private Long leftover;
 
-    public SellResponseDto(Long accountBalance, int sellPrice, Long amount, String type, String tradeAt, int leverage) {
+    public SellResponseDto(Long accountBalance, int sellPrice, Long amount, String type, String tradeAt, int leverage, Long leftover) {
         this.accountBalance = accountBalance;
         this.sellPrice = sellPrice;
         this.amount = amount;
         this.type = type;
         this.tradeAt = tradeAt;
         this.leverage = leverage;
+        this.leftover = leftover;
     }
 }

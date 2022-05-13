@@ -89,14 +89,15 @@ public class PriceService {
         List<DatePageDto> dateCandles = new ArrayList<>();
         for(DayCandle dayCandle : entites){
 
-                String tiker = dayCandle.getTiker();
-                int startPrice = dayCandle.getStartPrice();
-                int endPrice = dayCandle.getEndPrice();
-                int highPrice = dayCandle.getHighPrice();
-                int lowPrice = dayCandle.getLowPrice();
-                String date = dayCandle.getTradeDate().toString().substring(0, 10);
+            String tiker = dayCandle.getTiker();
+            int startPrice = dayCandle.getStartPrice();
+            int endPrice = dayCandle.getEndPrice();
+            int highPrice = dayCandle.getHighPrice();
+            int lowPrice = dayCandle.getLowPrice();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+            String date = simpleDateFormat.format(dayCandle.getTradeDate());
 
-                dateCandles.add(new DatePageDto(tiker, startPrice, endPrice, highPrice, lowPrice, date));
+            dateCandles.add(new DatePageDto(tiker, startPrice, endPrice, highPrice, lowPrice, date));
         }
        return new ResponseEntity<>(dateCandles, HttpStatus.OK);
     }

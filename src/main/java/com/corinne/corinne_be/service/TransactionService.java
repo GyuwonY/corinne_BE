@@ -190,8 +190,9 @@ public class TransactionService {
         //판매 비율
         BigDecimal sellRate = sellAmount.divide(sellable, 2, RoundingMode.HALF_UP);
 
+        Long leftover;
         if(sellable.intValue() >= sellRequestDto.getSellAmount()){
-            Long leftover = amount.subtract(amount.multiply(sellRate)).longValue();
+            leftover = amount.subtract(amount.multiply(sellRate)).longValue();
             if (leftover == 0L){
                 coinRepository.delete(coin);
             } else {
@@ -214,7 +215,7 @@ public class TransactionService {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
 
         SellResponseDto sellResponseDto = new SellResponseDto(user.getAccountBalance(),sellRequestDto.getTradePrice(),
-                sellRequestDto.getSellAmount(),"sell",tradeAt, sellRequestDto.getLeverage());
+                sellRequestDto.getSellAmount(),"sell",tradeAt, sellRequestDto.getLeverage(), leftover);
 
         return new ResponseEntity<>(sellResponseDto,HttpStatus.OK);
     }
