@@ -12,7 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 public class AccountSimpleDto {
     private Long accountBalance;
-    private double buyPrice;
-    private Long amount;
-    private int leverage;
+    private List<Coin> coins;
 }

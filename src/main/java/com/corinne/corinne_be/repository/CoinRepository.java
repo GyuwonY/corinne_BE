@@ -10,7 +10,7 @@ public interface CoinRepository extends JpaRepository<Coin, Long> {
 
     List<Coin> findAllByUser_UserId(Long userId);
     Optional<Coin> findByTikerAndUser_UserIdAndLeverage(String tiker, Long userId, int leverage);
-    Optional<Coin> findByTikerAndUser_UserId(String tiker, Long userId);
+    List<Coin> findByTikerAndUser_UserId(String tiker, Long userId);
     void deleteByTikerAndUser_UserId(String tiker, Long userId);
     Optional<Coin> findByTiker(String tiker);
     void deleteByCoinId(Long coinId);

@@ -104,12 +104,10 @@ public class AccountService {
     // 모의투자페이지 자산
     public ResponseEntity<?> getSimpleBalance(String tiker, User user) {
 
-        Coin coin = coinRepository.findByTikerAndUser_UserId(tiker,user.getUserId()).orElse(null);
-        if(coin == null){
-            return  new ResponseEntity<>("보유한 코인이 아닙니다" ,HttpStatus.BAD_REQUEST);
-        }
+        List<Coin> coin = coinRepository.findByTikerAndUser_UserId(tiker,user.getUserId());
+
         Long accountBalance = user.getAccountBalance();
-        return  new ResponseEntity<>(new AccountSimpleDto(accountBalance, coin.getBuyPrice() , coin.getAmount(), coin.getLeverage()) ,HttpStatus.OK);
+        return  new ResponseEntity<>(new AccountSimpleDto(accountBalance, coin) ,HttpStatus.OK);
     }
 
     // 보유 자산 리셋
