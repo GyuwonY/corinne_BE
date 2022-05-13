@@ -46,14 +46,12 @@ public class PriceService {
 
 
     // 분봉 조회
-    public ResponseEntity<?> getMinute(String tikerName,int page, int size, String sortBy) {
+    public ResponseEntity<?> getMinute(String tikerName) {
 
-        Sort.Direction direction = Sort.Direction.ASC;
-        Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
+        List<MinuteCandle> entites = minuteCandleRepository.findAllByTiker(tikerName);
+        List<MinutePageDto> minutePageDtos = new ArrayList<>();
 
-        Page<MinuteCandle> entites = minuteCandleRepository.findAllByTikerOrderByMinuteCandleIdDesc(tikerName,pageable);
-        Page<MinutePageDto> minutePageDtos = entites.map(minuteCandle -> {
+        for(MinuteCandle minuteCandle : entites){
             String tiker = minuteCandle.getTiker();
             int startPrice = minuteCandle.getStartPrice();
             int endPrice = minuteCandle.getEndPrice();
@@ -71,27 +69,38 @@ public class PriceService {
             }
             String tradeDate  = newDtFormat.format(formatDate);
 
-            int time = minuteCandle.getTradeTime();
+            int time = minuteCandle.getTradeTime()+900;
+            if(time/100 >= 24){
+                time-=2400;
+            }
+
             String tradeTime = "";
             if(time/100 >= 10){
-                tradeTime += time/100 + ":" + time%100;
+                if(time%100 < 10) {
+                    tradeTime += time / 100 + ":0" + time % 100;
+                }else{
+                    tradeTime += time / 100 + ":" + time % 100;
+                }
             } else {
-                tradeTime += "0" + time/100 + ":" + time%100;
+                if(time%100 < 10) {
+                    tradeTime += "0" +time / 100 + ":0" + time % 100;
+                }else{
+                    tradeTime += "0" +time / 100 + ":" + time % 100;
+                }
             }
-            return new MinutePageDto(tiker,startPrice,endPrice,highPrice,lowPrice,tradeDate,tradeTime);
-        });
+
+            minutePageDtos.add(new MinutePageDto(tiker,startPrice,endPrice,highPrice,lowPrice,tradeDate,tradeTime));
+        }
         return new ResponseEntity<>(minutePageDtos, HttpStatus.OK);
     }
 
 
     // 일봉 조회
-   public ResponseEntity<?> getdate(String tikerName, int page, int size, String sortBy) {
-        Sort.Direction direction = Sort.Direction.ASC;
-        Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
+   public ResponseEntity<?> getdate(String tikerName) {
 
-        Page<DayCandle> entites = dateCandleRepository.findAllByTikerOrderByTradeDateDesc(tikerName, pageable);
-        Page<DatePageDto> dateCandles = entites.map(dayCandle -> {
+        List<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName);
+        List<DatePageDto> dateCandles = new ArrayList<>();
+        for(DayCandle dayCandle : entites){
 
                 String tiker = dayCandle.getTiker();
                 int startPrice = dayCandle.getStartPrice();
@@ -110,8 +119,8 @@ public class PriceService {
                 }
                 String tradeDate = newDtFormat.format(formatDate);
 
-                return new DatePageDto(tiker, startPrice, endPrice, highPrice, lowPrice, tradeDate);
-            });
+                dateCandles.add(new DatePageDto(tiker, startPrice, endPrice, highPrice, lowPrice, tradeDate));
+        }
        return new ResponseEntity<>(dateCandles, HttpStatus.OK);
     }
 

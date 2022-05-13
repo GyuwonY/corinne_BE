@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DayCandleRepository extends JpaRepository<DayCandle, Long> {
-    Page<DayCandle> findAllByTikerOrderByTradeDateDesc(String tiker, Pageable pageable);
+    List<DayCandle> findAllByTiker(String tiker);
 
     List<DayCandle> findAllByTradeDate(int date);
 
