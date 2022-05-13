@@ -157,7 +157,8 @@ public class TransactionService {
         String tradeAt = saveTran.getTradeAt().format(
                 DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
 
-        BuyResponseDto buyResponseDto = new BuyResponseDto(user.getAccountBalance(),buyPrice,amount,"buy",tradeAt);
+        BuyResponseDto buyResponseDto = new BuyResponseDto(user.getAccountBalance(),buyPrice,amount,"buy",tradeAt,
+                buyRequestDto.getLeverage());
         
         return new ResponseEntity<>(buyResponseDto, HttpStatus.OK);
     }
@@ -184,7 +185,6 @@ public class TransactionService {
         BigDecimal sellAmount = BigDecimal.valueOf(sellRequestDto.getSellAmount());
         //등략률
         BigDecimal fluctuation = (sellPrice.subtract(buyPrice)).multiply(leverage).divide(buyPrice,8, RoundingMode.HALF_EVEN);
-        System.out.println(fluctuation);
         //판매 가능 금액
         BigDecimal sellable = amount.multiply(fluctuation).add(amount);
         //판매 비율
@@ -224,8 +224,6 @@ public class TransactionService {
     public ResponseEntity<?> getUserTranstnal(Long userId) {
 
         List<Transaction> transactionList = transactionRepository.findTop5ByUser_UserIdOrderByTradeAtDesc(userId);
-
-
         List<TransactionResponseDto> tranDtos = new ArrayList<>();
 
         for(Transaction transaction : transactionList){
