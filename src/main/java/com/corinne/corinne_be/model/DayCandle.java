@@ -3,6 +3,7 @@ package com.corinne.corinne_be.model;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Entity
@@ -29,7 +30,7 @@ public class DayCandle {
     private int endPrice;
 
     @Column(nullable = false)
-    private int tradeDate;
+    private Date tradeDate;
 
     @Column(nullable = false)
     private Long tradeVolume;

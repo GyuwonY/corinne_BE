@@ -74,20 +74,7 @@ public class PriceService {
                 time-=2400;
             }
 
-            String tradeTime = "";
-            if(time/100 >= 10){
-                if(time%100 < 10) {
-                    tradeTime += time / 100 + ":0" + time % 100;
-                }else{
-                    tradeTime += time / 100 + ":" + time % 100;
-                }
-            } else {
-                if(time%100 < 10) {
-                    tradeTime += "0" +time / 100 + ":0" + time % 100;
-                }else{
-                    tradeTime += "0" +time / 100 + ":" + time % 100;
-                }
-            }
+            String tradeTime = String.format("%02d:%02d", time/100, time%100);
 
             minutePageDtos.add(new MinutePageDto(tiker,startPrice,endPrice,highPrice,lowPrice,tradeDate,tradeTime));
         }
@@ -107,19 +94,9 @@ public class PriceService {
                 int endPrice = dayCandle.getEndPrice();
                 int highPrice = dayCandle.getHighPrice();
                 int lowPrice = dayCandle.getLowPrice();
-                String date = String.valueOf(dayCandle.getTradeDate());
+                String date = dayCandle.getTradeDate().toString().substring(0, 10);
 
-                SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
-                SimpleDateFormat newDtFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date formatDate = null;
-                try {
-                    formatDate = dtFormat.parse(date);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                String tradeDate = newDtFormat.format(formatDate);
-
-                dateCandles.add(new DatePageDto(tiker, startPrice, endPrice, highPrice, lowPrice, tradeDate));
+                dateCandles.add(new DatePageDto(tiker, startPrice, endPrice, highPrice, lowPrice, date));
         }
        return new ResponseEntity<>(dateCandles, HttpStatus.OK);
     }
