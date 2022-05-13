@@ -39,7 +39,7 @@ public class RankService {
     public ResponseEntity<?> getRank(int page, User loginUser) {
 
         // 페이징 사이즈
-        int size = 3;
+        int size = 20;
 
         List<User> Users = userRepository.findAll();
 
