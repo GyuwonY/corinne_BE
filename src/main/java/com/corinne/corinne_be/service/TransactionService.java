@@ -90,6 +90,10 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<?> buy(BuyRequestDto buyRequestDto, User user) {
 
+        if(user.getAccountBalance() < buyRequestDto.getBuyAmount() || buyRequestDto.getBuyAmount() < 50000){
+            return new ResponseEntity<>("구매량을 확인해주세요", HttpStatus.BAD_REQUEST);
+        }
+
         Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(buyRequestDto.getTiker(),
                 user.getUserId(), buyRequestDto.getLeverage()).orElse(null);
         Long accountBalance = user.getAccountBalance();
