@@ -213,7 +213,8 @@ public class TransactionService {
         String tradeAt = saveTran.getTradeAt().format(
                 DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
 
-        SellResponseDto sellResponseDto = new SellResponseDto(user.getAccountBalance(),sellRequestDto.getTradePrice(),sellRequestDto.getSellAmount(),"sell",tradeAt);
+        SellResponseDto sellResponseDto = new SellResponseDto(user.getAccountBalance(),sellRequestDto.getTradePrice(),
+                sellRequestDto.getSellAmount(),"sell",tradeAt, sellRequestDto.getLeverage());
 
         return new ResponseEntity<>(sellResponseDto,HttpStatus.OK);
     }
