@@ -9,12 +9,14 @@ public class MyRankDto {
 
     private int myRank;
     private double fluctuationRate;
+    private Long totalBalance;
 
     public MyRankDto() {
     }
 
-    public MyRankDto(int myRank, double fluctuationRate) {
+    public MyRankDto(int myRank, double fluctuationRate, Long totalBalance) {
         this.myRank = myRank;
         this.fluctuationRate = fluctuationRate;
+        this.totalBalance = totalBalance;
     }
 }

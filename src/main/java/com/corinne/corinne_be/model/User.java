@@ -1,11 +1,8 @@
 package com.corinne.corinne_be.model;
 
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
-import com.corinne.corinne_be.security.UserDetailsImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -21,7 +18,7 @@ public class User {
     private Long userId;
 
     @Column
-    private String imageUrl;
+    private String imageUrl = "null";
 
     @Column(nullable = false, unique = true)
     private String userEmail;
@@ -44,6 +41,18 @@ public class User {
     @Column(nullable = false)
     private double lastFluctuation;
 
+    @Column(nullable = false)
+    private int lastRank;
+
+    @Column(nullable = false)
+    private int highRank;
+
+    @Column(nullable = false)
+    private boolean alarm = false;
+
+    @Column(nullable = false)
+    private Long rival = 0L;
+
     @Version
     private Integer version;
 
@@ -52,6 +61,7 @@ public class User {
         this.password = password;
         this.userEmail = userEmail;
     }
+
     //회원정보 수정
     public void infoUpdate(UserRequestdto userRequestdto){
         this.nickname = userRequestdto.getNickname();
@@ -64,8 +74,24 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
-    public void update(Long accountBalance) {
+    public void balanceUpdate(Long accountBalance) {
         this.accountBalance = accountBalance;
+    }
+
+    public void lastFluctuationUpdate(double lastFluctuation){
+        this.lastFluctuation = lastFluctuation;
+    }
+
+    public void rivalUpdate(Long rivalId){
+        this.rival = rivalId;
+    }
+
+    public void expUpdate(int exp){
+        this.exp += exp;
+    }
+
+    public void addBalance(Long reword){
+        this.accountBalance += reword;
     }
 }
 

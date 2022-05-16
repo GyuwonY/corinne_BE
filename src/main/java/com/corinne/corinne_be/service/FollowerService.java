@@ -11,6 +11,7 @@ import com.corinne.corinne_be.repository.FollowerRepository;
 import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import com.corinne.corinne_be.security.UserDetailsImpl;
+import com.corinne.corinne_be.utils.RankUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @RequiredArgsConstructor
 @Service
 public class FollowerService {
@@ -32,8 +32,7 @@ public class FollowerService {
     private final UserRepository userRepository;
     private final FollowerRepository followerRepository;
     private final CoinRepository coinRepository;
-    private final RedisRepository redisRepository;
-
+    private final RankUtil rankUtil;
 
     @Transactional
     public ResponseEntity<?> save(Long userId, User user) {
@@ -79,7 +78,7 @@ public class FollowerService {
             List<Coin> coins = coinRepository.findAllByUser_UserId(user.getUserId());
 
             // 보유 코인별 계산
-            Long totalBalance = getTotalCoinBalance(coins) + user.getAccountBalance();
+            Long totalBalance = rankUtil.getTotalCoinBalance(coins) + user.getAccountBalance();
 
             BigDecimal temp = new BigDecimal(totalBalance - 1000000);
             BigDecimal rateCal = new BigDecimal(10000);
@@ -127,29 +126,5 @@ public class FollowerService {
 
 
         return new ResponseEntity<>(followingDtoList, HttpStatus.OK);
-    }
-    public Long getTotalCoinBalance(List<Coin> coins){
-
-        Long totalcoinBalance = 0L;
-
-        for(Coin coin : coins){
-
-            // 살 당시 코인 현재가
-            BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
-            // 현재가
-//                BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()));
-            BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()).getTradePrice());
-            // 래버리지
-            BigDecimal leverage = BigDecimal.valueOf(coin.getLeverage());
-            // 구매 총금액
-            BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
-            // 래버리지 적용한 수익률
-            BigDecimal fluctuationRate = currentPrice.subtract(buyPrice).multiply(leverage).divide(buyPrice,2,RoundingMode.HALF_UP);
-            // 현재 해당 코인의 가치
-            Long coinBalance = fluctuationRate.add(BigDecimal.valueOf(1)).multiply(amount).setScale(0,RoundingMode.CEILING).longValue();
-
-            totalcoinBalance += coinBalance;
-        }
-        return totalcoinBalance;
     }
 }

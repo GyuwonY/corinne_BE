@@ -4,6 +4,7 @@ import com.corinne.corinne_be.dto.rank_dto.*;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
+import com.corinne.corinne_be.utils.RankUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +24,15 @@ public class RankService {
     private final UserRepository userRepository;
     private final FollowerRepository followerRepository;
     private final TransactionRepository transactionRepository;
-    private final RedisRepository redisRepository;
+    private final RankUtil rankUtil;
 
     @Autowired
-    public RankService(CoinRepository coinRepository, UserRepository userRepository, FollowerRepository followerRepository, TransactionRepository transactionRepository, RedisRepository redisRepository) {
+    public RankService(CoinRepository coinRepository, UserRepository userRepository, FollowerRepository followerRepository, TransactionRepository transactionRepository, RankUtil rankUtil) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.followerRepository = followerRepository;
         this.transactionRepository = transactionRepository;
-        this.redisRepository = redisRepository;
+        this.rankUtil = rankUtil;
     }
 
 
@@ -54,7 +55,7 @@ public class RankService {
             List<Coin> coins = coinRepository.findAllByUser_UserId(user.getUserId());
 
             // 보유 코인별 계산
-            totalBalance = getTotalCoinBalance(coins) +  accountBalance;
+            totalBalance = rankUtil.getTotalCoinBalance(coins) +  accountBalance;
 
             BigDecimal temp = new BigDecimal(totalBalance - 1000000);
             BigDecimal rateCal = new BigDecimal(10000);
@@ -103,105 +104,17 @@ public class RankService {
     // 상위 랭킹 리스트
     public ResponseEntity<?> getRankTop3() {
 
-        List<User> Users = userRepository.findAll();
+        List<RankInfoDto> rankDtos = rankUtil.getRankList().subList(0,3);
 
-        List<RankInfoDto> rankDtos = new ArrayList<>();
-
-        for(User user : Users){
-
-            Long totalBalance = 0L;
-            Long accountBalance = user.getAccountBalance();
-
-            List<Coin> coins = coinRepository.findAllByUser_UserId(user.getUserId());
-
-            // 보유 코인별 계산
-            totalBalance += getTotalCoinBalance(coins) + accountBalance;
-
-            BigDecimal temp = new BigDecimal(totalBalance - 1000000);
-            BigDecimal rateCal = new BigDecimal(10000);
-            double fluctuationRate = temp.divide(rateCal,2,RoundingMode.HALF_EVEN).doubleValue();
-
-
-            RankInfoDto rankDto = new RankInfoDto(user.getUserId(), user.getNickname(),user.getImageUrl(), totalBalance,fluctuationRate);
-            rankDtos.add(rankDto);
-        }
-
-        rankDtos = rankDtos.stream().sorted(Comparator.comparing(RankInfoDto::getTotalBalance).reversed()).collect(Collectors.toList());
-
-        List<RankInfoDto> rankDtoList = new ArrayList<>();
-
-        int size = Math.min(rankDtos.size(), 3);
-
-        for(int i = 0; i < size; i++){
-            rankDtoList.add(rankDtos.get(i));
-        }
-
-        return new ResponseEntity<>(new RankTopDto(rankDtoList), HttpStatus.OK);
+        return new ResponseEntity<>(new RankTopDto(rankDtos), HttpStatus.OK);
     }
 
     // 내 랭킹
-    public ResponseEntity<?> getMyRank(User loginUser) {
+    public ResponseEntity<MyRankDto> getMyRank(User loginUser) {
 
-        List<User> Users = userRepository.findAll();
-
-        List<RankInfoDto> rankDtos = new ArrayList<>();
-
-        for(User user : Users){
-
-            Long totalBalance = 0L;
-            Long accountBalance = user.getAccountBalance();
-
-            List<Coin> coins = coinRepository.findAllByUser_UserId(user.getUserId());
-
-            // 보유 코인별 계산
-            totalBalance += getTotalCoinBalance(coins) + accountBalance;
-
-            BigDecimal temp = new BigDecimal(totalBalance - 1000000);
-            BigDecimal rateCal = new BigDecimal(10000);
-            double fluctuationRate = temp.divide(rateCal,2,RoundingMode.HALF_EVEN).doubleValue();
-
-
-            RankInfoDto rankDto = new RankInfoDto(user.getUserId(), user.getNickname(),user.getImageUrl(),totalBalance,fluctuationRate);
-            rankDtos.add(rankDto);
-        }
-
-        rankDtos = rankDtos.stream().sorted(Comparator.comparing(RankInfoDto::getTotalBalance).reversed()).collect(Collectors.toList());
-
-        List<Long> userIds = new ArrayList<>();
-        for(RankInfoDto rankDto : rankDtos){
-            userIds.add(rankDto.getUserId());
-        }
-
-        int myRankIndex = userIds.indexOf(loginUser.getUserId());
-
-        MyRankDto myRankDto = new MyRankDto(myRankIndex + 1,rankDtos.get(myRankIndex).getFluctuationRate());
-
-        return  new ResponseEntity<>(myRankDto, HttpStatus.OK);
+        return  new ResponseEntity<>(rankUtil.getMyRank(loginUser.getUserId()), HttpStatus.OK);
     }
 
-    // 보유 코인 값 구하기
-    public Long getTotalCoinBalance(List<Coin> coins){
-        Long totalcoinBalance = 0L;
-
-        for(Coin coin : coins){
-            
-            // 살 당시 코인 현재가
-            BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
-            // 현재가
-            BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()).getTradePrice());
-            // 래버리지
-            BigDecimal leverage = BigDecimal.valueOf(coin.getLeverage());
-            // 구매 총금액
-            BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
-            // 래버리지 적용한 수익률
-            BigDecimal fluctuationRate = currentPrice.subtract(buyPrice).multiply(leverage).divide(buyPrice,8,RoundingMode.HALF_EVEN);
-            // 현재 해당 코인의 가치
-            Long coinBalance = fluctuationRate.add(BigDecimal.valueOf(1)).multiply(amount).setScale(0,RoundingMode.CEILING).longValue();
-
-            totalcoinBalance += coinBalance;
-        }
-        return totalcoinBalance;
-    }
 }
 
 

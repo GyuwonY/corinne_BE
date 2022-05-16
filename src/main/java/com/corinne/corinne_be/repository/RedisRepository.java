@@ -12,7 +12,9 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -72,6 +74,15 @@ public class RedisRepository {
                 }else{
                     bankruptcy.rightPush(tiker + "bankruptcy", bankruptcyDto);
                 }
+            }
+        }
+    }
+
+    public void deleteAllBankruptcy(){
+        List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
+        for(String tiker : tikers){
+            for(int i = 0; i<bankruptcy.size(tiker+"bankruptcy"); i++){
+                bankruptcy.leftPop(tiker+"bankruptcy");
             }
         }
     }

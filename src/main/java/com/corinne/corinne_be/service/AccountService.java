@@ -41,7 +41,7 @@ public class AccountService {
 
 
     // 보유 자산
-   public ResponseEntity<?> getBalance(User user) {
+   public ResponseEntity< AccountResponseDto> getBalance(User user) {
 
         // 사용 가능한 포인트
         Long accountBalance = user.getAccountBalance();
@@ -102,7 +102,7 @@ public class AccountService {
 
 
     // 모의투자페이지 자산
-    public ResponseEntity<?> getSimpleBalance(String tiker, User user) {
+    public ResponseEntity<AccountSimpleDto> getSimpleBalance(String tiker, User user) {
 
         List<Coin> coin = coinRepository.findByTikerAndUser_UserId(tiker,user.getUserId());
 
@@ -112,9 +112,9 @@ public class AccountService {
 
     // 보유 자산 리셋
     @Transactional
-    public ResponseEntity<?> resetAccount(User user) {
+    public ResponseEntity<HttpStatus> resetAccount(User user) {
 
-        user.update(1000000L);
+        user.balanceUpdate(1000000L);
         userRepository.save(user);
 
         // 보유 코인 지우기

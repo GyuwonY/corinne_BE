@@ -45,7 +45,12 @@ public class UserRestController {
     //회원정보조희
     @GetMapping("/api/user/info")
     public ResponseEntity<?> Userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.UserInfo(userDetails.getUser());
+        return userService.UserInfo(userDetails.getUser().getUserId());
+    }
+
+    @GetMapping("/api/user/info/{userId}")
+    public ResponseEntity<?> Userinfo(@PathVariable Long userId) {
+        return userService.UserInfo(userId);
     }
 
     //프로필이미지 수정

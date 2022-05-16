@@ -144,7 +144,7 @@ public class TransactionService {
         }
 
         // 구매할때 사용한 포인트 차감 저장
-        user.update(accountBalance - buyRequestDto.getBuyAmount());
+        user.balanceUpdate(accountBalance - buyRequestDto.getBuyAmount());
         userRepository.save(user);
 
         TransactionDto transactionDto = new TransactionDto(user, "buy", buyRequestDto.getTradePrice(),
@@ -202,7 +202,7 @@ public class TransactionService {
             return new ResponseEntity<>("보유한 금액보다 큰 금액을 팔 수 없습니다",HttpStatus.BAD_REQUEST);
         }
 
-        user.update(accountBalance + sellRequestDto.getSellAmount());
+        user.balanceUpdate(accountBalance + sellRequestDto.getSellAmount());
         userRepository.save(user);
 
         // 매도 거래내역 추가
@@ -246,10 +246,13 @@ public class TransactionService {
 
         // 초기화 시점인 월요일 9시 기준
         Calendar cal = Calendar.getInstance();
+        if(cal.get(Calendar.DAY_OF_WEEK)==1){
+            cal.add(Calendar.DATE, -1);
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         String mondayDate = dateFormat.format(cal.getTime());
-        mondayDate += " 09:00:00.000";
+        mondayDate += " 00:00:00.000";
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);

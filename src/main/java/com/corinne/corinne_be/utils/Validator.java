@@ -3,11 +3,7 @@ package com.corinne.corinne_be.utils;
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
 import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 import java.util.regex.Pattern;
 
 @Component

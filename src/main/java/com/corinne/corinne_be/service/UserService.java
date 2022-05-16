@@ -2,9 +2,12 @@ package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.user_dto.*;
 import com.corinne.corinne_be.model.User;
+import com.corinne.corinne_be.repository.FollowerRepository;
+import com.corinne.corinne_be.repository.TransactionRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import com.corinne.corinne_be.s3.S3Uploader;
 import com.corinne.corinne_be.security.UserDetailsImpl;
+import com.corinne.corinne_be.utils.RankUtil;
 import com.corinne.corinne_be.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +27,18 @@ public class UserService {
     private final Validator validator;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+    private final RankUtil rankUtil;
+    private final TransactionRepository transactionRepository;
+    private final FollowerRepository followerRepository;
 
     //회원정보 조희
-    public ResponseEntity<?> UserInfo(User user){
+    @Transactional
+    public ResponseEntity<?> UserInfo(Long userId){
+        User user = userRepository.findByUserId(userId).orElseThrow(IllegalArgumentException::new);
 
-        return new ResponseEntity<>(new UserInfoResponesDto(user),HttpStatus.OK);
+        return new ResponseEntity<>(new UserInfoResponesDto(user, rankUtil.getMyRank(userId),
+                transactionRepository.countByUser_UserIdAndType(userId, "reset"), followerRepository.countAllByUser(user),
+                followerRepository.countAllByFollower(user)),HttpStatus.OK);
     }
 
     /**
