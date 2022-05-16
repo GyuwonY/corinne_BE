@@ -16,5 +16,5 @@ public interface TransactionRepository  extends JpaRepository<Transaction, Long>
     List<Transaction> findTop5ByUser_UserIdOrderByTradeAtDesc(Long userId);
     Long countByTikerAndTypeAndTradeAtBetween(String tiker, String type, LocalDateTime startDate, LocalDateTime endDate);
     Long countByUser_UserIdAndType(Long userId, String type);
-    Long countByUserIdAndTradeAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+    Long countByUser_UserIdAndTradeAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 }

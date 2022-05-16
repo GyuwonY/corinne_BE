@@ -58,6 +58,7 @@ public class UserRestController {
     public ProfileResponseDto registImage(@RequestParam("image") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return userService.registImage(file, userDetails);
     }
+
 }
 
 

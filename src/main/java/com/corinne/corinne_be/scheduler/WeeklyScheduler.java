@@ -86,7 +86,7 @@ public class WeeklyScheduler {
         redisRepository.deleteAllBankruptcy();
 
         for(User user : users){
-            if(transactionRepository.countByUserIdAndTradeAtBetween(user.getUserId(), startDate, endDate) != 0) {
+            if(transactionRepository.countByUser_UserIdAndTradeAtBetween(user.getUserId(), startDate, endDate) != 0) {
                 if (user.getRival() == 0) {
                     user.balanceUpdate(1000000L);
                     user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
