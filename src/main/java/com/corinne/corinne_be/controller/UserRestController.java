@@ -59,6 +59,8 @@ public class UserRestController {
         return userService.registImage(file, userDetails);
     }
 
+    
+
 }
 
 

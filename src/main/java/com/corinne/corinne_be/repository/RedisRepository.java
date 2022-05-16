@@ -78,6 +78,22 @@ public class RedisRepository {
         }
     }
 
+    public void resetBankruptcy(Long userId) {
+        List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
+        for (String tiker : tikers) {
+            BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+            if (checkDto != null) {
+                bankruptcy.leftPush(tiker + "bankruptcy", checkDto);
+                for (Long i = 0L; i <= bankruptcy.size(tiker + "bankruptcy"); i++) {
+                    BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+                    if (!bankruptcyDto.getUserId().equals(userId)) {
+                        bankruptcy.rightPush(tiker + "bankruptcy", bankruptcyDto);
+                    }
+                }
+            }
+        }
+    }
+
     public void deleteAllBankruptcy(){
         List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         for(String tiker : tikers){

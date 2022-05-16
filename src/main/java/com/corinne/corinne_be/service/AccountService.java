@@ -124,6 +124,7 @@ public class AccountService {
         TransactionDto transactionDto = new TransactionDto(user, "reset", 0, 1000000L, "reset", 1);
         Transaction transaction = new Transaction(transactionDto);
         transactionRepository.save(transaction);
+        redisRepository.resetBankruptcy(user.getUserId());
 
         return  new ResponseEntity<>(HttpStatus.OK);
     }

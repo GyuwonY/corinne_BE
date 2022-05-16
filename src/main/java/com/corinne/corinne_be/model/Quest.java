@@ -18,11 +18,8 @@ public class Quest {
     private Long questId;
 
     @Column (nullable = false)
-    private String title;
+    private int questNo;
 
     @Column (nullable = false)
     private boolean clear;
-
-    @Column (nullable = false)
-    private int reword;
 }

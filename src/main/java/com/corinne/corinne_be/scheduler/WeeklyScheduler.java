@@ -112,7 +112,7 @@ public class WeeklyScheduler {
             if (user.getLastRank() == 1) {
                 user.balanceUpdate(1000000L);
             } else if (user.getLastRank() == 2) {
-                user.balanceUpdate(700000L);
+                user.balanceUpdate(500000L);
             } else if (user.getLastRank() == 3) {
                 user.balanceUpdate(200000L);
             }
