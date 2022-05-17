@@ -40,4 +40,10 @@ public class RankController {
         return rankService.getMyRank(userDetails.getUser());
     }
 
+    // 지난주 랭킹 리스트
+    @GetMapping("/api/rank/lastweek/{page}")
+    public ResponseEntity<?> getLastweekRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return rankService.getLastweekRank(page, userDetails.getUser());
+    }
+
 }

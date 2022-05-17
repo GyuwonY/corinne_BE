@@ -59,6 +59,24 @@ public class UserRestController {
         return userService.registImage(file, userDetails);
     }
 
+    // 유저 알림 리스트 조회
+    @GetMapping("/api/user/alarm")
+    public ResponseEntity<?>  getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.getAlarmList(userDetails.getUser());
+    }
+
+    // 1:1 매칭 상대, 수익률
+    @GetMapping("/api/user/rival")
+    public ResponseEntity<?> getRival(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.getRival(userDetails.getUser());
+    }
+
+    // 퀘스트 리스트
+    @GetMapping("/api/user/quest")
+    public ResponseEntity<?> getQuest(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.getQuest(userDetails.getUser());
+    }
+
     
 
 }

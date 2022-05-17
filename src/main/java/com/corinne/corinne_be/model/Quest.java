@@ -17,9 +17,22 @@ public class Quest {
     @Column
     private Long questId;
 
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
+
     @Column (nullable = false)
     private int questNo;
 
     @Column (nullable = false)
     private boolean clear;
+
+    public Quest() {
+    }
+
+    public Quest(User user, int questNo, boolean clear) {
+        this.user = user;
+        this.questNo = questNo;
+        this.clear = clear;
+    }
 }

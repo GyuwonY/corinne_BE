@@ -93,6 +93,8 @@ public class User {
     public void addBalance(Long reword){
         this.accountBalance += reword;
     }
+
+    public void alarmUpdate(boolean alarm) {this.alarm = alarm; }
 }
 
 
