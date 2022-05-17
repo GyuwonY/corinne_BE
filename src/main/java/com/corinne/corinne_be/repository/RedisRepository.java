@@ -65,6 +65,8 @@ public class RedisRepository {
         if(checkDto != null){
             System.out.println("null 체크여부");
             bankruptcy.leftPush(dto.getTiker() + "bankruptcy", checkDto);
+
+            //추가가 안됨
             for(Long i = 0L; i <= bankruptcy.size(dto.getTiker() + "bankruptcy"); i++){
                 BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
                 if(bankruptcyDto.getCoinId().equals(dto.getCoinId())){
@@ -75,7 +77,8 @@ public class RedisRepository {
                 }
             }
         }else {
-            bankruptcy.rightPush(dto.getTiker() + "bankruptcy", dto);
+            bankruptcy.rightPush(dto.getTiker()+"bankruptcy", dto);
+            System.out.println(objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class));
             System.out.println(dto + "저장완료");
         }
     }
