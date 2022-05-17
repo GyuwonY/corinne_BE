@@ -1,5 +1,6 @@
 package com.corinne.corinne_be.scheduler;
 
+import com.corinne.corinne_be.model.ChatMessage;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.CoinRepository;
@@ -7,6 +8,7 @@ import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.repository.TransactionRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import com.corinne.corinne_be.utils.RankUtil;
+import com.corinne.corinne_be.websocket.RedisPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,16 +34,18 @@ public class WeeklyScheduler {
     private final CoinRepository coinRepository;
     private final TransactionRepository transactionRepository;
     private final RankUtil rankUtil;
+    private final RedisPublisher redisPublisher;
     private final List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public WeeklyScheduler(RedisRepository redisRepository, UserRepository userRepository, TransactionRepository transactionRepository,
-                           CoinRepository coinRepository, RankUtil rankUtil) {
+                           CoinRepository coinRepository, RankUtil rankUtil, RedisPublisher redisPublisher) {
         this.redisRepository = redisRepository;
         this.userRepository = userRepository;
         this.coinRepository = coinRepository;
         this.rankUtil = rankUtil;
         this.transactionRepository = transactionRepository;
+        this.redisPublisher = redisPublisher;
     }
 
     @Scheduled(cron = "0 0 0 ? * MON")
@@ -99,6 +103,11 @@ public class WeeklyScheduler {
                     }
                 }
             }
+            redisRepository.enterTopic(Long.toString(user.getUserId()));
+            redisPublisher.publish(redisRepository.getTopic(Long.toString(user.getUserId())), new ChatMessage(
+                    ChatMessage.MessageType.ALARM, LocalDateTime.now().plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    Long.toString(user.getUserId()))
+            );
         }
     }
 
@@ -116,6 +125,11 @@ public class WeeklyScheduler {
             } else if (user.getLastRank() == 3) {
                 user.balanceUpdate(200000L);
             }
+            redisRepository.enterTopic(Long.toString(user.getUserId()));
+            redisPublisher.publish(redisRepository.getTopic(Long.toString(user.getUserId())), new ChatMessage(
+                    ChatMessage.MessageType.ALARM, LocalDateTime.now().plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    Long.toString(user.getUserId()))
+            );
         }
     }
 

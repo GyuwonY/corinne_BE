@@ -2,6 +2,8 @@ package com.corinne.corinne_be.repository;
 
 import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
 import com.corinne.corinne_be.dto.transaction_dto.BankruptcyDto;
+import com.corinne.corinne_be.websocket.RedisPublisher;
+import com.corinne.corinne_be.websocket.RedisSubscriber;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
@@ -23,19 +25,31 @@ public class RedisRepository {
     private final RedisTemplate<String, Object> redisTemplate;
     private ValueOperations<String, Object> tradePrice;
     private ListOperations<String,Object> bankruptcy;
+    // 채팅방(topic)에 발행되는 메시지를 처리할 Listner
+    private final RedisMessageListenerContainer redisMessageListener;
+    // 구독 처리 서비스
+    private final RedisSubscriber redisSubscriber;
+    private final RedisPublisher redisPublisher;
+    private Map<String, ChannelTopic> topics;
+
 
     @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
-    public RedisRepository(RedisTemplate<String, Object> redisTemplate) {
+    public RedisRepository(RedisTemplate<String, Object> redisTemplate, RedisMessageListenerContainer redisMessageListener,
+                           RedisSubscriber redisSubscriber, RedisPublisher redisPublisher) {
         this.redisTemplate = redisTemplate;
+        this.redisMessageListener = redisMessageListener;
+        this.redisSubscriber = redisSubscriber;
+        this.redisPublisher = redisPublisher;
     }
 
     @PostConstruct
     private void init() {
         tradePrice = redisTemplate.opsForValue();
         bankruptcy = redisTemplate.opsForList();
+        topics = new HashMap<>();
     }
 
     /**
@@ -101,5 +115,21 @@ public class RedisRepository {
                 bankruptcy.leftPop(tiker+"bankruptcy");
             }
         }
+    }
+
+    public void enterTopic(String topicName) {
+        ChannelTopic topic = topics.get(topicName);
+
+        if (topic == null) {
+            topic = new ChannelTopic(topicName);
+        }
+
+        redisMessageListener.addMessageListener(redisSubscriber, topic);
+        topics.put(topicName, topic);
+    }
+
+    public ChannelTopic getTopic(String topicName) {
+
+        return topics.get(topicName);
     }
 }
