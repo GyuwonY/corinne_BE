@@ -75,7 +75,6 @@ public class RedisRepository {
                 }
             }
         }else {
-
             bankruptcy.rightPush(dto.getTiker() + "bankruptcy", dto);
             System.out.println(dto + "저장완료");
         }
