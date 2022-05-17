@@ -1,12 +1,11 @@
 package com.corinne.corinne_be.scheduler;
 
+import com.corinne.corinne_be.model.Alarm;
 import com.corinne.corinne_be.model.ChatMessage;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.User;
-import com.corinne.corinne_be.repository.CoinRepository;
-import com.corinne.corinne_be.repository.RedisRepository;
-import com.corinne.corinne_be.repository.TransactionRepository;
-import com.corinne.corinne_be.repository.UserRepository;
+import com.corinne.corinne_be.repository.*;
+import com.corinne.corinne_be.utils.LevelUtil;
 import com.corinne.corinne_be.utils.RankUtil;
 import com.corinne.corinne_be.websocket.RedisPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +32,21 @@ public class WeeklyScheduler {
     private final UserRepository userRepository;
     private final CoinRepository coinRepository;
     private final TransactionRepository transactionRepository;
+    private final AlarmRepository alarmRepository;
     private final RankUtil rankUtil;
+    private final LevelUtil levelUtil;
     private final RedisPublisher redisPublisher;
     private final List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public WeeklyScheduler(RedisRepository redisRepository, UserRepository userRepository, TransactionRepository transactionRepository,
-                           CoinRepository coinRepository, RankUtil rankUtil, RedisPublisher redisPublisher) {
+                           CoinRepository coinRepository, AlarmRepository alarmRepository, RankUtil rankUtil, LevelUtil levelUtil, RedisPublisher redisPublisher) {
         this.redisRepository = redisRepository;
         this.userRepository = userRepository;
         this.coinRepository = coinRepository;
+        this.alarmRepository = alarmRepository;
         this.rankUtil = rankUtil;
+        this.levelUtil = levelUtil;
         this.transactionRepository = transactionRepository;
         this.redisPublisher = redisPublisher;
     }
@@ -100,8 +103,25 @@ public class WeeklyScheduler {
                         user.balanceUpdate(1500000L);
                         user.expUpdate(10000);
                         user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
+
+                        // 배틀 결과 알림
+                        Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "승리");
+                        alarmRepository.save(alarm);
+                        // 레벨업 알림 체크
+                        levelUtil.levelUpCheck(user, 10000);
+                    } else if(user.getLastFluctuation() < rivalFluctuation){
+                        // 배틀 결과 알림
+                        Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "패배");
+                        alarmRepository.save(alarm);
                     }
                 }
+                // 주간 모의 투자 참여자 보상
+                user.expUpdate(5000);
+                Alarm alarm = new Alarm(user, Alarm.AlarmType.RANK, "주간 랭킹 참여자 보상");
+                alarmRepository.save(alarm);
+                // 레벨업 알림 체크
+                levelUtil.levelUpCheck(user, 5000);
+                user.alarmUpdate(true);
             }
             redisRepository.enterTopic(Long.toString(user.getUserId()));
             redisPublisher.publish(redisRepository.getTopic(Long.toString(user.getUserId())), new ChatMessage(
@@ -119,17 +139,51 @@ public class WeeklyScheduler {
         List<User> userList = userRepository.findTop3ByOrderByLastFluctuationDesc();
         for (User user : userList) {
             if (user.getLastRank() == 1) {
-                user.balanceUpdate(1000000L);
+                user.addBalance(1000000L);
+                user.expUpdate(30000);
+                // 랭킹 보상 알림
+                Alarm alarm = new Alarm(user, Alarm.AlarmType.RANK, "랭킹 1위");
+                alarmRepository.save(alarm);
+                // 레벨업 알림 체크
+                levelUtil.levelUpCheck(user, 30000);
             } else if (user.getLastRank() == 2) {
-                user.balanceUpdate(500000L);
+                user.addBalance(500000L);
+                user.expUpdate(20000);
+                // 랭킹 보상 알림
+                Alarm alarm = new Alarm(user, Alarm.AlarmType.RANK, "랭킹 2위");
+                alarmRepository.save(alarm);
+                // 레벨업 알림 체크
+                levelUtil.levelUpCheck(user, 20000);
             } else if (user.getLastRank() == 3) {
-                user.balanceUpdate(200000L);
+                user.addBalance(200000L);
+                user.expUpdate(10000);
+                // 랭킹 보상 알림
+                Alarm alarm = new Alarm(user, Alarm.AlarmType.RANK, "랭킹 3위");
+                alarmRepository.save(alarm);
+                // 레벨업 알림 체크
+                levelUtil.levelUpCheck(user, 10000);
             }
+            user.alarmUpdate(true);
+
             redisRepository.enterTopic(Long.toString(user.getUserId()));
             redisPublisher.publish(redisRepository.getTopic(Long.toString(user.getUserId())), new ChatMessage(
                     ChatMessage.MessageType.ALARM, LocalDateTime.now().plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                     Long.toString(user.getUserId()))
             );
+        }
+    }
+
+    // 주간 랭킹 결과 알림
+    @Scheduled(cron = "0 7 0 ? * MON")
+    @Transactional
+    public void resultAlarm() {
+
+        List<User> users = userRepository.findAll();
+
+        for(User user : users){
+            Alarm alarm = new Alarm(user, Alarm.AlarmType.RESULT, user.getLastRank()+"위");
+            alarmRepository.save(alarm);
+            user.alarmUpdate(true);
         }
     }
 

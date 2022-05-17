@@ -12,7 +12,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +67,20 @@ public class RankService {
 
             boolean follow = followerRepository.existsByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId());
 
-            int restCount = transactionRepository.countByUser_UserIdAndType(user.getUserId(),"reset").intValue();
+            Calendar cal = Calendar.getInstance();
+            if(cal.get(Calendar.DAY_OF_WEEK)==1){
+                cal.add(Calendar.DATE, -1);
+            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+            String mondayDate = dateFormat.format(cal.getTime());
+            mondayDate += " 00:00:00.000";
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+            LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
+            LocalDateTime endDate = LocalDateTime.now();
+
+            int restCount = transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(user.getUserId(),"reset",startDate, endDate).intValue();
 
             int exp = user.getExp();
 
@@ -87,8 +104,8 @@ public class RankService {
         }
         int fromIndex = (page - 1) * size;
 
-        int totalPage = rankDtos.size()/3 + 1;
-        if(rankDtos.size()%3 == 0){
+        int totalPage = rankDtos.size()/size + 1;
+        if(rankDtos.size()%size == 0){
             totalPage -= 1;
         }
         if(rankDtos.size() <= fromIndex){
@@ -114,6 +131,68 @@ public class RankService {
 
         return  new ResponseEntity<>(rankUtil.getMyRank(loginUser.getUserId()), HttpStatus.OK);
     }
+
+    // 지난주 랭킹 리스트
+    public ResponseEntity<?> getLastweekRank(int page, User loginUser) {
+
+        // 페이징 사이즈
+        int size = 20;
+
+        List<User> Users = userRepository.findAllByOrderByLastFluctuationDesc();
+        List<RankDto> rankDtos = new ArrayList<>();
+        for(User user : Users){
+
+            BigDecimal lastFluctuation = BigDecimal.valueOf(user.getLastFluctuation());
+
+            Long totalBalance = lastFluctuation.add(BigDecimal.valueOf(100)).multiply(BigDecimal.valueOf(10000)).longValue();
+
+            double fluctuationRate = user.getLastFluctuation();
+
+            boolean follow = followerRepository.existsByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId());
+
+
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, -7);
+            if(cal.get(Calendar.DAY_OF_WEEK)==1){
+                cal.add(Calendar.DATE, -1);
+            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+            String mondayDate = dateFormat.format(cal.getTime());
+            mondayDate += " 00:00:00.000";
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+            LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
+            LocalDateTime endDate = LocalDateTime.now();
+
+            int restCount = transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(user.getUserId(),"reset", startDate,endDate ).intValue();
+
+            int exp = user.getExp();
+
+            RankDto rankListDto = new RankDto(user.getUserId(), user.getNickname(),user.getImageUrl(),totalBalance,fluctuationRate, follow,restCount,exp);
+
+            rankDtos.add(rankListDto);
+        }
+
+        // 페이징
+        if(page <= 0) {
+            return new ResponseEntity<>("올바르지 않는 페이지 요청입니다", HttpStatus.BAD_REQUEST);
+        }
+        int fromIndex = (page - 1) * size;
+
+        int totalPage = rankDtos.size()/size + 1;
+        if(rankDtos.size()%size == 0){
+            totalPage -= 1;
+        }
+        if(rankDtos.size() <= fromIndex){
+            return new ResponseEntity<>("올바르지 않는 페이지 요청입니다", HttpStatus.BAD_REQUEST);
+        }
+
+        LaskweekRankDto laskweekRankDto = new LaskweekRankDto(rankDtos.subList(fromIndex,Math.min(fromIndex + size, rankDtos.size())), totalPage);
+
+        return  new ResponseEntity<>(laskweekRankDto, HttpStatus.OK);
+    }
+
 
 }
 

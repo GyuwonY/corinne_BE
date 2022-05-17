@@ -2,14 +2,12 @@ package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.follow_dto.FollowDto;
 import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
+import com.corinne.corinne_be.model.Alarm;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.dto.user_dto.UserInfoResponesDto;
 import com.corinne.corinne_be.model.Follower;
 import com.corinne.corinne_be.model.User;
-import com.corinne.corinne_be.repository.CoinRepository;
-import com.corinne.corinne_be.repository.FollowerRepository;
-import com.corinne.corinne_be.repository.RedisRepository;
-import com.corinne.corinne_be.repository.UserRepository;
+import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.utils.RankUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +30,10 @@ public class FollowerService {
     private final UserRepository userRepository;
     private final FollowerRepository followerRepository;
     private final CoinRepository coinRepository;
+    private final AlarmRepository alarmRepository;
     private final RankUtil rankUtil;
 
+    // 팔로우
     @Transactional
     public ResponseEntity<?> save(Long userId, User user) {
         //로그인된 유저
@@ -49,8 +49,15 @@ public class FollowerService {
         if (!follower1) {
             followerRepository.save(new Follower(user, follower));
         }
+
+        // 팔로우 알림 등록
+        Alarm alarm = new Alarm(user, Alarm.AlarmType.FOLLWER, follower.getNickname());
+        alarmRepository.save(alarm);
+        user.alarmUpdate(true);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     @Transactional
     public ResponseEntity<?> unfollow (Long userid, UserDetailsImpl userDetails){

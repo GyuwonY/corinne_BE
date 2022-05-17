@@ -1,7 +1,9 @@
 package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.user_dto.KakaoUserInfoDto;
+import com.corinne.corinne_be.model.Quest;
 import com.corinne.corinne_be.model.User;
+import com.corinne.corinne_be.repository.QuestRepository;
 import com.corinne.corinne_be.repository.UserRepository;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.security.jwt.JwtTokenUtils;
@@ -24,6 +26,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -31,8 +35,11 @@ import java.util.UUID;
 @Slf4j
 public class KakaoService {
 
+    private final int QUEST_SIZE = 9;
+
     private final PasswordEncoder encode;
     private final UserRepository userRepository;
+    private final QuestRepository questRepository;
 
     public ResponseEntity<?> kakao(String code) throws JsonProcessingException {
 
@@ -50,8 +57,15 @@ public class KakaoService {
             String passwordCreate = UUID.randomUUID().toString();
             String password = encode.encode(passwordCreate);
             kakaoUser = userRepository.save(new User(nickname, password, userEmail));
+
+            List<Quest> quests= new ArrayList<>();
+            for(int i = 1; i <= QUEST_SIZE; i++){
+                Quest quest = new Quest(kakaoUser,i, false);
+                quests.add(quest);
+            }
+            questRepository.saveAll(quests);
         }
-        
+
         String token = forceLogin(kakaoUser);
         HttpHeaders headers = new HttpHeaders();
         token =  "BEARER" + " " + token;
