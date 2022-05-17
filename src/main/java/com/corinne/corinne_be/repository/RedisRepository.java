@@ -24,7 +24,7 @@ public class RedisRepository {
     // Redis
     private final RedisTemplate<String, Object> redisTemplate;
     private ValueOperations<String, Object> tradePrice;
-    private ListOperations<String,Object> bankruptcy;
+    private ListOperations<String,Object> prices;
     // 채팅방(topic)에 발행되는 메시지를 처리할 Listner
     private final RedisMessageListenerContainer redisMessageListener;
     // 구독 처리 서비스
@@ -48,7 +48,7 @@ public class RedisRepository {
     @PostConstruct
     private void init() {
         tradePrice = redisTemplate.opsForValue();
-        bankruptcy = redisTemplate.opsForList();
+        prices = redisTemplate.opsForList();
         topics = new HashMap<>();
     }
 
@@ -60,39 +60,39 @@ public class RedisRepository {
     }
 
     public void saveBankruptcy(BankruptcyDto dto){
-        System.out.println(dto + "세이브");
-        BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
+        BankruptcyDto checkDto = objectMapper.convertValue(prices.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
         if(checkDto != null){
-            System.out.println("null 체크여부");
-            bankruptcy.leftPush(dto.getTiker() + "bankruptcy", checkDto);
+            prices.leftPush(dto.getTiker() + "bankruptcy", checkDto);
 
             //추가가 안됨
-            for(Long i = 0L; i <= bankruptcy.size(dto.getTiker() + "bankruptcy"); i++){
-                BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
+            boolean check = false;
+            for(int i = 0; i <= prices.size(dto.getTiker() + "bankruptcy").intValue(); i++){
+                BankruptcyDto bankruptcyDto = objectMapper.convertValue(prices.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
                 if(bankruptcyDto.getCoinId().equals(dto.getCoinId())){
-                    bankruptcy.rightPush(dto.getTiker() + "bankruptcy", dto);
+                    prices.rightPush(dto.getTiker() + "bankruptcy", dto);
                     break;
                 }else{
-                    bankruptcy.rightPush(dto.getTiker() + "bankruptcy", bankruptcyDto);
+                    prices.rightPush(dto.getTiker() + "bankruptcy", bankruptcyDto);
+                    if(i==prices.size(dto.getTiker() + "bankruptcy").intValue()){
+                        prices.rightPush(dto.getTiker() + "bankruptcy", dto);
+                    }
                 }
             }
         }else {
-            bankruptcy.rightPush(dto.getTiker()+"bankruptcy", dto);
-            System.out.println(objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class));
-            System.out.println(dto + "저장완료");
+            prices.rightPush(dto.getTiker()+"bankruptcy", dto);
         }
     }
 
     public void deleteBankruptcy(Long coinId, String tiker) {
-        BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+        BankruptcyDto checkDto = objectMapper.convertValue(prices.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
         if(checkDto != null){
-            bankruptcy.leftPush(tiker + "bankruptcy", checkDto);
-            for(Long i = 0L; i <= bankruptcy.size(tiker + "bankruptcy"); i++){
-                BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+            prices.leftPush(tiker + "bankruptcy", checkDto);
+            for(Long i = 0L; i <= prices.size(tiker + "bankruptcy"); i++){
+                BankruptcyDto bankruptcyDto = objectMapper.convertValue(prices.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
                 if(bankruptcyDto.getCoinId().equals(coinId)){
                     break;
                 }else{
-                    bankruptcy.rightPush(tiker + "bankruptcy", bankruptcyDto);
+                    prices.rightPush(tiker + "bankruptcy", bankruptcyDto);
                 }
             }
         }
@@ -101,13 +101,13 @@ public class RedisRepository {
     public void resetBankruptcy(Long userId) {
         List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         for (String tiker : tikers) {
-            BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+            BankruptcyDto checkDto = objectMapper.convertValue(prices.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
             if (checkDto != null) {
-                bankruptcy.leftPush(tiker + "bankruptcy", checkDto);
-                for (Long i = 0L; i <= bankruptcy.size(tiker + "bankruptcy"); i++) {
-                    BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+                prices.leftPush(tiker + "bankruptcy", checkDto);
+                for (Long i = 0L; i <= prices.size(tiker + "bankruptcy"); i++) {
+                    BankruptcyDto bankruptcyDto = objectMapper.convertValue(prices.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
                     if (!bankruptcyDto.getUserId().equals(userId)) {
-                        bankruptcy.rightPush(tiker + "bankruptcy", bankruptcyDto);
+                        prices.rightPush(tiker + "bankruptcy", bankruptcyDto);
                     }
                 }
             }
@@ -117,8 +117,8 @@ public class RedisRepository {
     public void deleteAllBankruptcy(){
         List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         for(String tiker : tikers){
-            for(int i = 0; i<bankruptcy.size(tiker+"bankruptcy"); i++){
-                bankruptcy.leftPop(tiker+"bankruptcy");
+            for(int i = 0; i<prices.size(tiker+"bankruptcy"); i++){
+                prices.leftPop(tiker+"bankruptcy");
             }
         }
     }
