@@ -13,6 +13,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -64,8 +66,6 @@ public class RedisRepository {
         if(checkDto != null){
             prices.leftPush(dto.getTiker() + "bankruptcy", checkDto);
 
-            //추가가 안됨
-            boolean check = false;
             for(int i = 0; i <= prices.size(dto.getTiker() + "bankruptcy").intValue(); i++){
                 BankruptcyDto bankruptcyDto = objectMapper.convertValue(prices.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
                 if(bankruptcyDto.getCoinId().equals(dto.getCoinId())){
