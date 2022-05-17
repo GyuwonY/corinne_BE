@@ -133,6 +133,7 @@ public class TransactionService {
             redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(), coin.getCoinId(),
                     BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.98)).setScale(0,RoundingMode.FLOOR).intValue()));
         }else if(buyRequestDto.getLeverage() == 100){
+            System.out.println("100배 매수 확인");
             redisRepository.saveBankruptcy(new BankruptcyDto(buyRequestDto.getTiker(), user.getUserId(), coin.getCoinId(),
                     BigDecimal.valueOf(buyPrice).multiply(BigDecimal.valueOf(0.99)).setScale(0,RoundingMode.FLOOR).intValue()));
         }else if(buyRequestDto.getLeverage() == 25){

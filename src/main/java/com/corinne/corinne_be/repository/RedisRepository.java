@@ -60,8 +60,10 @@ public class RedisRepository {
     }
 
     public void saveBankruptcy(BankruptcyDto dto){
+        System.out.println(dto + "세이브");
         BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
         if(checkDto != null){
+            System.out.println("null 체크여부");
             bankruptcy.leftPush(dto.getTiker() + "bankruptcy", checkDto);
             for(Long i = 0L; i <= bankruptcy.size(dto.getTiker() + "bankruptcy"); i++){
                 BankruptcyDto bankruptcyDto = objectMapper.convertValue(bankruptcy.leftPop(dto.getTiker() + "bankruptcy"), BankruptcyDto.class);
@@ -73,7 +75,9 @@ public class RedisRepository {
                 }
             }
         }else {
+
             bankruptcy.rightPush(dto.getTiker() + "bankruptcy", dto);
+            System.out.println(dto + "저장완료");
         }
     }
 
