@@ -56,7 +56,6 @@ public class UserRestController {
     //프로필이미지 수정
     @PatchMapping("/api/user/image")
     public ProfileResponseDto registImage(@RequestParam("image") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        System.out.println(file);
         return userService.registImage(file, userDetails);
     }
 
