@@ -26,7 +26,7 @@ public class S3Uploader {
     public String backet;
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-
+        System.out.println(multipartFile.getOriginalFilename());
         File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
                 .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
         return upload(uploadFile, dirName);
@@ -34,7 +34,9 @@ public class S3Uploader {
     // S3로 파일 업로드하기
     private String  upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
+        System.out.println("업로드 시작");
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
+        System.out.println("업로드 끝");
         removeNewFile(uploadFile);
         return uploadImageUrl;
     }
@@ -56,6 +58,7 @@ public class S3Uploader {
 
     private Optional<File> convert(MultipartFile multipartFile) throws IOException{
         File convertFile = new File(System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename());
+        System.out.println("생성됨");
         // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
         if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) { // FileOutputStream 데이터를 파일에 바이트 스트림으로 저장하기 위함
