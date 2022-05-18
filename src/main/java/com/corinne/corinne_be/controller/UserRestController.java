@@ -33,6 +33,9 @@ public class UserRestController {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
     @Value("${spring.datasource.url}")
     private String url;
 
@@ -76,6 +79,7 @@ public class UserRestController {
     public ProfileResponseDto registImage(@RequestParam("image") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         System.out.println(accessKey);
         System.out.println(secretKey);
+        System.out.println(bucket);
         System.out.println(region);
         System.out.println(url);
         System.out.println(name);
