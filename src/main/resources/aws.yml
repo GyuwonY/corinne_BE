@@ -1,10 +1,10 @@
 cloud:
   aws:
     credentials:
-      accessKey: ENC(NAzQb7O7rzL4EiKCc+tYO+N8VyNtxN6jn8mCh/ZWN4Y=)
-      secretKey: ENC(NZ3zM3hn+L5q0YD98q0URAlqfWQQpo+YZsMlaTwVfWaPtw1AN+R3iYnvKr/MQmd73FqrDrmJ94Q=)
+      accessKey: ENC(ACQ6gTE8CGsdJH70r8bJQyNGhhu1nZsR)
+      secretKey: ENC(ntI5p9Mg9e6dnQtlS1ZRrgnDbl8YbT/L07vAJJtAfiA=)
     s3:
-      bucket: ENC(ICOWPBqRFtfKwyJ+Ei/tetCe8PyC4kE6w4nwL2v+WMQ=)
+      bucket: ENC(CNwwl76jAlIT7P2OiDPFN5HNSVOvJ8w+yQ+nBzwXrnA4R0Hmx2Agb2V11ZVXic3xuA7K75HFbsI=)
     region:
       static: ap-northeast-2
     stack:

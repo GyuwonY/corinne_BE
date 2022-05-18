@@ -76,7 +76,7 @@ public class AccountService {
             totalCoinBalance += coinBalance;
             coinBalances.add(coinBalance);
 
-            CoinsDto coinsDto = new CoinsDto(tiker,buyPrice.doubleValue(),currentPrice.intValue(),leverage.intValue(),fluctuationRate.doubleValue() * 100 );
+            CoinsDto coinsDto = new CoinsDto(tiker,buyPrice.doubleValue(),currentPrice.intValue(),leverage.intValue(),fluctuationRate.doubleValue() * 100, coinBalance, coinBalance-coin.getAmount());
             coins.add(coinsDto);
         }
 
