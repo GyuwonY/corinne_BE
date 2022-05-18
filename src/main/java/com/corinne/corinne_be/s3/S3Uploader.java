@@ -23,7 +23,7 @@ public class S3Uploader {
     private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
-    public String backet;
+    public String bucket;
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
@@ -40,8 +40,8 @@ public class S3Uploader {
 
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(backet, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
-        return amazonS3Client.getUrl(backet, fileName).toString();
+        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
     // 로컬에 저장된 이미지 지우기
