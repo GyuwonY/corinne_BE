@@ -72,7 +72,7 @@ public class FollowerService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getfollowing (User loginUser){
+    public ResponseEntity<List<FollowDto>> getfollowing (User loginUser){
 
         // 총 유저 리스트
         List<User> Users = userRepository.findAll();

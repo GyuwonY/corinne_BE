@@ -5,15 +5,13 @@ public class RivalDto {
     private String nickname;
     private String imageUrl;
     private double rivalFluctuationRate;
-    private double myFluctuationRate;
 
     public RivalDto() {
     }
 
-    public RivalDto(String nickname, String imageUrl, double rivalFluctuationRate, double myFluctuationRate) {
+    public RivalDto(String nickname, String imageUrl, double rivalFluctuationRate) {
         this.nickname = nickname;
         this.imageUrl = imageUrl;
         this.rivalFluctuationRate = rivalFluctuationRate;
-        this.myFluctuationRate = myFluctuationRate;
     }
 }

@@ -46,7 +46,7 @@ public class PriceService {
 
 
     // 분봉 조회
-    public ResponseEntity<?> getMinute(String tikerName) {
+    public ResponseEntity<List<MinutePageDto>> getMinute(String tikerName) {
 
         List<MinuteCandle> entites = minuteCandleRepository.findAllByTiker(tikerName);
         List<MinutePageDto> minutePageDtos = new ArrayList<>();
@@ -83,7 +83,7 @@ public class PriceService {
 
 
     // 일봉 조회
-   public ResponseEntity<?> getdate(String tikerName) {
+   public ResponseEntity<List<DatePageDto>> getdate(String tikerName) {
 
         List<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName);
         List<DatePageDto> dateCandles = new ArrayList<>();
@@ -104,9 +104,8 @@ public class PriceService {
 
 
     // 일별 등락률 랭킹
-    public ResponseEntity<?> getDateRank(User user) {
+    public ResponseEntity<List<DateReponseDto>> getDateRank(User user) {
         List<String> tikers = Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd"); // 날짜 포맷
         List<DateReponseDto> dateReponseDtos = new ArrayList<>();
         for(String tiker : tikers){
             PricePublishingDto pricePublishingDto = redisRepository.getTradePrice(tiker);

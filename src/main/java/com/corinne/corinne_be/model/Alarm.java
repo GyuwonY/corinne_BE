@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class Alarm {
 
     public enum AlarmType {
-         RESULT,RIVAL,RANK,FOLLWER,BANKRUPTCY,LEVEL,QUEST
+         RESULT,RIVAL,RANK,FOLLWER,BANKRUPTCY,LEVEL
     }
 
     @GeneratedValue(strategy= GenerationType.IDENTITY)

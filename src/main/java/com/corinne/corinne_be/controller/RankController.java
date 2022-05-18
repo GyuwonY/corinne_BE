@@ -1,5 +1,7 @@
 package com.corinne.corinne_be.controller;
 
+import com.corinne.corinne_be.dto.rank_dto.MyRankResponseDto;
+import com.corinne.corinne_be.dto.rank_dto.RankTopDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.RankService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ public class RankController {
 
     // 상위 랭킹 리스트
     @GetMapping("/api/rank/top3")
-    public ResponseEntity<?> getRankTop3(){
+    public ResponseEntity<RankTopDto> getRankTop3(){
 
         return rankService.getRankTop3();
     }

@@ -45,7 +45,7 @@ public class TransactionService {
 
 
     //코인 거래 내역
-    public ResponseEntity<?> getTransactional(int page, int size, String sortBy, User user) {
+    public ResponseEntity<Page<TransactionResponseDto>> getTransactional(int page, int size, String sortBy, User user) {
 
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
@@ -58,7 +58,7 @@ public class TransactionService {
     }
 
     // 해당 코인 거래내역
-    public ResponseEntity<?> getSpecifiedTranstnal(int page, int size, String sortBy, String coinName, User user) {
+    public ResponseEntity<Page<TransactionResponseDto>> getSpecifiedTranstnal(int page, int size, String sortBy, String coinName, User user) {
 
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
@@ -81,7 +81,7 @@ public class TransactionService {
             String tradeAt = transaction.getTradeAt().format(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss"));
             int leverage = transaction.getLeverage();
-            return  new TransactionResponseDto(tiker,type,buyPrice,amount,tradeAt,leverage);
+            return new TransactionResponseDto(tiker,type,buyPrice,amount,tradeAt,leverage);
         });
     }
 
@@ -222,7 +222,7 @@ public class TransactionService {
 
 
     // 상대방 최근 거래내역 보기
-    public ResponseEntity<?> getUserTranstnal(Long userId) {
+    public ResponseEntity<UserTranResponseDto> getUserTranstnal(Long userId) {
 
         List<Transaction> transactionList = transactionRepository.findTop5ByUser_UserIdOrderByTradeAtDesc(userId);
         List<TransactionResponseDto> tranDtos = new ArrayList<>();
@@ -242,7 +242,7 @@ public class TransactionService {
     }
 
     // 코린이 회원 중 특정 코인 매수 카운트
-    public ResponseEntity<?> getBuyCount(String tiker) {
+    public ResponseEntity<BuyCountDto> getBuyCount(String tiker) {
 
         // 초기화 시점인 월요일 9시 기준
         Calendar cal = Calendar.getInstance();

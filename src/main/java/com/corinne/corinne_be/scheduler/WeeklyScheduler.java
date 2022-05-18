@@ -164,19 +164,7 @@ public class WeeklyScheduler {
                 levelUtil.levelUpCheck(user, 10000);
             }
             user.alarmUpdate(true);
-
-            redisRepository.enterTopic(Long.toString(user.getUserId()));
-            redisPublisher.publish(redisRepository.getTopic(Long.toString(user.getUserId())), new ChatMessage(
-                    ChatMessage.MessageType.ALARM, LocalDateTime.now().plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                    Long.toString(user.getUserId()))
-            );
         }
-    }
-
-    // 주간 랭킹 결과 알림
-    @Scheduled(cron = "0 7 0 ? * MON")
-    @Transactional
-    public void resultAlarm() {
 
         List<User> users = userRepository.findAll();
 
@@ -186,5 +174,6 @@ public class WeeklyScheduler {
             user.alarmUpdate(true);
         }
     }
+
 
 }

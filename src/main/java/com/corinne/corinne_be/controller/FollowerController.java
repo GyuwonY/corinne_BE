@@ -1,14 +1,16 @@
 package com.corinne.corinne_be.controller;
 
 
+import com.corinne.corinne_be.dto.follow_dto.FollowDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.FollowerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class FollowerController {
 
     // 팔로잉 조회
     @GetMapping
-    public ResponseEntity<?> getFollowing(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<FollowDto>> getFollowing(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return followerService.getfollowing(userDetails.getUser());
     }
 }

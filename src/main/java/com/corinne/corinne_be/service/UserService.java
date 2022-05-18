@@ -142,13 +142,8 @@ public class UserService {
         BigDecimal rateCal = new BigDecimal(10000);
         double rivalFluctuationRate = temp.divide(rateCal,2, RoundingMode.HALF_EVEN).doubleValue();
 
-        // 내 수익률
-        List<Coin> myCoins = coinRepository.findAllByUser_UserId(user.getUserId());
-        Long myTotalBalance = rankUtil.getTotalCoinBalance(rivalCoins) + rival.getAccountBalance();
-        BigDecimal caltemp = new BigDecimal(myTotalBalance - 1000000);
-        double myFluctuationRate = temp.divide(rateCal,2, RoundingMode.HALF_EVEN).doubleValue();
 
-        RivalDto rivalDto = new RivalDto(rival.getNickname(), rival.getImageUrl(),rivalFluctuationRate,myFluctuationRate);
+        RivalDto rivalDto = new RivalDto(rival.getNickname(), rival.getImageUrl(),rivalFluctuationRate);
 
         return new ResponseEntity<>(rivalDto,HttpStatus.OK);
     }

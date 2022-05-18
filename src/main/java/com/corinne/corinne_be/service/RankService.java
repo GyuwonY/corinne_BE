@@ -119,7 +119,7 @@ public class RankService {
 
 
     // 상위 랭킹 리스트
-    public ResponseEntity<?> getRankTop3() {
+    public ResponseEntity<RankTopDto> getRankTop3() {
 
         List<RankInfoDto> rankDtos = rankUtil.getRankList().subList(0,3);
 
@@ -127,9 +127,9 @@ public class RankService {
     }
 
     // 내 랭킹
-    public ResponseEntity<MyRankDto> getMyRank(User loginUser) {
+    public ResponseEntity<?> getMyRank(User loginUser) {
 
-        return  new ResponseEntity<>(rankUtil.getMyRank(loginUser.getUserId()), HttpStatus.OK);
+        return new ResponseEntity<>(rankUtil.getMyRank(loginUser.getUserId()), HttpStatus.OK);
     }
 
     // 지난주 랭킹 리스트
