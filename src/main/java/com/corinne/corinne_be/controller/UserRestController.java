@@ -3,6 +3,7 @@ package com.corinne.corinne_be.controller;
 
 
 import com.corinne.corinne_be.dto.user_dto.*;
+import com.corinne.corinne_be.s3.StorageService;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.KakaoService;
 import com.corinne.corinne_be.service.UserService;
@@ -24,11 +25,13 @@ import java.io.IOException;
 public class UserRestController {
     private final UserService userService;
     private final KakaoService kakaoService;
+    private final StorageService storageService;
 
     @Autowired
-    public UserRestController(UserService userService, KakaoService kakaoService) {
+    public UserRestController(UserService userService, KakaoService kakaoService, StorageService storageService) {
         this.kakaoService = kakaoService;
         this.userService = userService;
+        this.storageService = storageService;
     }
 
     //카카오로그인
@@ -58,6 +61,11 @@ public class UserRestController {
     @PatchMapping("/api/user/image")
     public ProfileResponseDto registImage(@RequestParam("image") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return userService.registImage(file, userDetails);
+    }
+
+    @PatchMapping("/api/user/image2")
+    public ProfileResponseDto registImage2(@RequestParam("image") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return storageService.registImage(file, userDetails);
     }
 
     // 유저 알림 리스트 조회
