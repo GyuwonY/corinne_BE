@@ -15,6 +15,18 @@ spring:
     host: 127.0.0.1
     port: 6379
 
+cloud:
+  aws:
+    s3:
+      bucket: ENC(ACQ6gTE8CGsdJH70r8bJQyNGhhu1nZsR)
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      access-key: ENC(ntI5p9Mg9e6dnQtlS1ZRrgnDbl8YbT/L07vAJJtAfiA=)
+      secret-key: ENC(CNwwl76jAlIT7P2OiDPFN5HNSVOvJ8w+yQ+nBzwXrnA4R0Hmx2Agb2V11ZVXic3xuA7K75HFbsI=)
+
 jasypt:
   encryptor:
     bean : jasyptStringEncryptor
