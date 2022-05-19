@@ -51,7 +51,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 7 15 ? * THU")
+    @Scheduled(cron = "0 37 15 ? * THU")
     @Transactional
     public void rankUpdate() {
         Random random = new Random();
@@ -131,11 +131,14 @@ public class WeeklyScheduler {
                 if(levelUtil.levelUpCheck(user, 5000)){
                     user.alarmUpdate(true);
                 }
+            }else {
+                user.balanceUpdate(1000000L);
+                user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
             }
         }
     }
 
-    @Scheduled(cron = "0 10 15 ? * THU")
+    @Scheduled(cron = "0 40 15 ? * THU")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
