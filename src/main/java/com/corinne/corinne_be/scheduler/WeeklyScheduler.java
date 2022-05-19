@@ -51,7 +51,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 25 14 ? * THU")
+    @Scheduled(cron = "0 7 15 ? * THU")
     @Transactional
     public void rankUpdate() {
         Random random = new Random();
@@ -93,28 +93,28 @@ public class WeeklyScheduler {
         redisRepository.deleteAllBankruptcy();
 
         for(User user : users){
-            if(transactionRepository.countByUser_UserIdAndTradeAtBetween(user.getUserId(), startDate, endDate) != 0) {
-                if (user.getRival() == 0) {
-                    user.balanceUpdate(1000000L);
+            if (user.getRival() == 0) {
+                user.balanceUpdate(1000000L);
+                user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
+            }else {
+                double rivalFluctuation = userRepository.findByUserId(user.getRival()).orElseThrow(IllegalArgumentException::new).getLastFluctuation();
+                if (user.getLastFluctuation() > rivalFluctuation) {
+                    user.balanceUpdate(1500000L);
+                    user.expUpdate(10000);
                     user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
-                } else {
-                    double rivalFluctuation = userRepository.findByUserId(user.getRival()).orElseThrow(IllegalArgumentException::new).getLastFluctuation();
-                    if (user.getLastFluctuation() > rivalFluctuation) {
-                        user.balanceUpdate(1500000L);
-                        user.expUpdate(10000);
-                        user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
 
-                        // 배틀 결과 알림
-                        Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "승리");
-                        alarmRepository.save(alarm);
-                        // 레벨업 알림 체크
-                        levelUtil.levelUpCheck(user, 10000);
-                    } else if(user.getLastFluctuation() < rivalFluctuation){
-                        // 배틀 결과 알림
-                        Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "패배");
-                        alarmRepository.save(alarm);
-                    }
+                    // 배틀 결과 알림
+                    Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "승리");
+                    alarmRepository.save(alarm);
+                    // 레벨업 알림 체크
+                    levelUtil.levelUpCheck(user, 10000);
+                } else if(user.getLastFluctuation() < rivalFluctuation){
+                    // 배틀 결과 알림
+                    Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "패배");
+                    alarmRepository.save(alarm);
                 }
+            }
+            if(transactionRepository.countByUser_UserIdAndTradeAtBetween(user.getUserId(), startDate, endDate) != 0) {
                 // 주간 모의 투자 참여자 보상
                 user.expUpdate(5000);
                 Alarm alarm = new Alarm(user, Alarm.AlarmType.RANK, "주간 랭킹 참여자 보상");
@@ -132,15 +132,10 @@ public class WeeklyScheduler {
                     user.alarmUpdate(true);
                 }
             }
-            redisRepository.enterTopic(Long.toString(user.getUserId()));
-            redisPublisher.publish(redisRepository.getTopic(Long.toString(user.getUserId())), new ChatMessage(
-                    ChatMessage.MessageType.ALARM, LocalDateTime.now().plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                    Long.toString(user.getUserId()))
-            );
         }
     }
 
-    @Scheduled(cron = "0 30 14 ? * THU")
+    @Scheduled(cron = "0 10 15 ? * THU")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
