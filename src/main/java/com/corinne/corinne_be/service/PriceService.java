@@ -12,18 +12,13 @@ import com.corinne.corinne_be.repository.DayCandleRepository;
 import com.corinne.corinne_be.repository.MinuteCandleRepository;
 import com.corinne.corinne_be.repository.RedisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +41,7 @@ public class PriceService {
 
 
     // 분봉 조회
+    @Transactional
     public ResponseEntity<List<MinutePageDto>> getMinute(String tikerName) {
 
         List<MinuteCandle> entites = minuteCandleRepository.findAllByTiker(tikerName);
@@ -83,6 +79,7 @@ public class PriceService {
 
 
     // 일봉 조회
+    @Transactional
    public ResponseEntity<List<DatePageDto>> getdate(String tikerName) {
 
         List<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName);
@@ -104,6 +101,7 @@ public class PriceService {
 
 
     // 일별 등락률 랭킹
+    @Transactional
     public ResponseEntity<List<DateReponseDto>> getDateRank(User user) {
         List<String> tikers = Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         List<DateReponseDto> dateReponseDtos = new ArrayList<>();

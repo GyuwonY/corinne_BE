@@ -14,8 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -46,6 +46,7 @@ public class TransactionService {
 
 
     //코인 거래 내역
+    @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getTransactional(int page, int size, String sortBy, User user) {
 
         Sort.Direction direction = Sort.Direction.DESC;
@@ -59,6 +60,7 @@ public class TransactionService {
     }
 
     // 해당 코인 거래내역
+    @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getSpecifiedTranstnal(int page, int size, String sortBy, String coinName, User user) {
 
         Sort.Direction direction = Sort.Direction.DESC;
@@ -72,6 +74,7 @@ public class TransactionService {
     }
 
     // 페이징시 리턴값 교체 리팩토링 메소드
+    @Transactional
     public Page<TransactionResponseDto> pageReturnSwitch(Page<Transaction> entities){
 
         return entities.map(transaction -> {
@@ -251,6 +254,7 @@ public class TransactionService {
 
 
     // 상대방 최근 거래내역 보기
+    @Transactional
     public ResponseEntity<UserTranResponseDto> getUserTranstnal(Long userId) {
 
         List<Transaction> transactionList = transactionRepository.findTop5ByUser_UserIdOrderByTradeAtDesc(userId);
@@ -271,6 +275,7 @@ public class TransactionService {
     }
 
     // 코린이 회원 중 특정 코인 매수 카운트
+    @Transactional
     public ResponseEntity<BuyCountDto> getBuyCount(String tiker) {
 
         // 초기화 시점인 월요일 9시 기준

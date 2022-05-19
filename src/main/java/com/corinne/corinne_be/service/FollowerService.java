@@ -3,7 +3,6 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.follow_dto.FollowDto;
 import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
 import com.corinne.corinne_be.model.*;
-import com.corinne.corinne_be.dto.user_dto.UserInfoResponesDto;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.utils.RankUtil;

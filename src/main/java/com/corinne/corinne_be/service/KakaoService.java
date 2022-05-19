@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -41,6 +42,7 @@ public class KakaoService {
     private final UserRepository userRepository;
     private final QuestRepository questRepository;
 
+    @Transactional
     public ResponseEntity<?> kakao(String code) throws JsonProcessingException {
 
         // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -75,7 +77,6 @@ public class KakaoService {
                 .headers(headers)
                 .body(kakaoUser.isFirstLogin());
     }
-
 
 
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -41,6 +42,7 @@ public class RankService {
 
 
     // 랭킹 리스트
+    @Transactional
     public ResponseEntity<?> getRank(int page, User loginUser) {
 
         // 페이징 사이즈
@@ -119,6 +121,7 @@ public class RankService {
 
 
     // 상위 랭킹 리스트
+    @Transactional
     public ResponseEntity<RankTopDto> getRankTop3() {
 
         List<RankInfoDto> rankDtos = rankUtil.getRankList().subList(0,3);
@@ -127,12 +130,14 @@ public class RankService {
     }
 
     // 내 랭킹
+    @Transactional
     public ResponseEntity<?> getMyRank(User loginUser) {
 
         return new ResponseEntity<>(rankUtil.getMyRank(loginUser.getUserId()), HttpStatus.OK);
     }
 
     // 지난주 랭킹 리스트
+    @Transactional
     public ResponseEntity<?> getLastweekRank(int page, User loginUser) {
 
         // 페이징 사이즈
