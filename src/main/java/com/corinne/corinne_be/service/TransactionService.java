@@ -94,7 +94,7 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<?> buy(BuyRequestDto buyRequestDto, User user) {
 
-        if(user.getAccountBalance() < buyRequestDto.getBuyAmount() || buyRequestDto.getBuyAmount() < 50000){
+        if(user.getAccountBalance() < buyRequestDto.getBuyAmount() || buyRequestDto.getBuyAmount() < 50000 || buyRequestDto.getTradePrice() < 20){
             return new ResponseEntity<>("구매량을 확인해주세요", HttpStatus.BAD_REQUEST);
         }
 
