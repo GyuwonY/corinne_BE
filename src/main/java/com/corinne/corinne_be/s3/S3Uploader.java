@@ -32,6 +32,7 @@ public class S3Uploader {
     // S3로 파일 업로드하기
     private String  upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
+        System.out.println(fileName);
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
         removeNewFile(uploadFile);
         return uploadImageUrl;
@@ -39,7 +40,13 @@ public class S3Uploader {
 
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
+        System.out.println("test");
+        System.out.println(amazonS3Client.getRegion());
+        System.out.println(amazonS3Client.getRegionName());
+        System.out.println(amazonS3Client.getS3AccountOwner().getDisplayName());
+        System.out.println(amazonS3Client.getS3AccountOwner().getDisplayName());
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        System.out.println("test");
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
@@ -55,8 +62,6 @@ public class S3Uploader {
     private Optional<File> convert(MultipartFile multipartFile) throws IOException{
         File convertFile = new File("/home/ubuntu/sparta/deploy" + "/" + multipartFile.getOriginalFilename());
         // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
-        System.out.println(convertFile.getName());
-        System.out.println(convertFile.getPath());
         if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) { // FileOutputStream 데이터를 파일에 바이트 스트림으로 저장하기 위함
                 fos.write(multipartFile.getBytes());
