@@ -23,13 +23,11 @@ import java.io.IOException;
 public class UserRestController {
     private final UserService userService;
     private final KakaoService kakaoService;
-    private final StorageService storageService;
 
     @Autowired
-    public UserRestController(UserService userService, KakaoService kakaoService, StorageService storageService) {
+    public UserRestController(UserService userService, KakaoService kakaoService) {
         this.kakaoService = kakaoService;
         this.userService = userService;
-        this.storageService = storageService;
     }
 
     //카카오로그인
