@@ -32,7 +32,6 @@ public class Alarm {
     @Column (nullable = false)
     private String content;
 
-
     @CreatedDate
     private LocalDateTime createdAt;
 

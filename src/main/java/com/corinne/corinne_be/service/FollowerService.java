@@ -2,11 +2,8 @@ package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.follow_dto.FollowDto;
 import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
-import com.corinne.corinne_be.model.Alarm;
-import com.corinne.corinne_be.model.Coin;
+import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.dto.user_dto.UserInfoResponesDto;
-import com.corinne.corinne_be.model.Follower;
-import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.utils.RankUtil;
@@ -32,6 +29,7 @@ public class FollowerService {
     private final CoinRepository coinRepository;
     private final AlarmRepository alarmRepository;
     private final RankUtil rankUtil;
+    private final QuestRepository questRepository;
 
     // 팔로우
     @Transactional
@@ -45,15 +43,24 @@ public class FollowerService {
         if (follower == null) {
             return new ResponseEntity<>("존재하지 않는 유저입니다", HttpStatus.BAD_REQUEST);
         }
+
+        Quest quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 7).orElse(null);
+
+        if(quest != null){
+            if(!quest.isClear()){
+                quest.update(true);
+            }
+        }
+
         boolean follower1 = followerRepository.existsByUserAndFollower(user, follower);
         if (!follower1) {
             followerRepository.save(new Follower(user, follower));
         }
 
         // 팔로우 알림 등록
-        Alarm alarm = new Alarm(user, Alarm.AlarmType.FOLLWER, follower.getNickname());
+        Alarm alarm = new Alarm(follower, Alarm.AlarmType.FOLLWER, user.getNickname());
         alarmRepository.save(alarm);
-        user.alarmUpdate(true);
+        follower.alarmUpdate(true);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -129,7 +136,7 @@ public class FollowerService {
         }
 
         // 팔로우도 랭킹 순을 정렬
-        followingDtoList = followingDtoList.stream().sorted(Comparator.comparing(FollowDto::getFluctuationRate).reversed()).collect(Collectors.toList());
+        followingDtoList = followingDtoList.stream().sorted(Comparator.comparing(FollowDto::getRank).reversed()).collect(Collectors.toList());
 
 
         return new ResponseEntity<>(followingDtoList, HttpStatus.OK);

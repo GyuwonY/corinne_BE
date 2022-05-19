@@ -1,5 +1,8 @@
 package com.corinne.corinne_be.service;
 
+import com.corinne.corinne_be.dto.Quest_dto.QuestRequestDto;
+import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
+import com.corinne.corinne_be.dto.Quest_dto.RewordResponseDto;
 import com.corinne.corinne_be.dto.user_dto.*;
 import com.corinne.corinne_be.model.Alarm;
 import com.corinne.corinne_be.model.Coin;
@@ -8,9 +11,7 @@ import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.s3.S3Uploader;
 import com.corinne.corinne_be.security.UserDetailsImpl;
-import com.corinne.corinne_be.utils.RankUtil;
-import com.corinne.corinne_be.utils.TimeUtil;
-import com.corinne.corinne_be.utils.Validator;
+import com.corinne.corinne_be.utils.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class UserService {
     private final AlarmRepository alarmRepository;
     private final CoinRepository coinRepository;
     private final QuestRepository questRepository;
-
+    private final LevelUtil levelUtil;
     private final TimeUtil timeUtil;
 
     //회원정보 조희
@@ -160,6 +161,19 @@ public class UserService {
         }
 
         return new ResponseEntity<>(questDtos,HttpStatus.OK);
+    }
+
+    //퀘스트 보상 받기
+    @Transactional
+    public ResponseEntity<RewordResponseDto> reword(QuestRequestDto questRequestDto, User user){
+        RewordDto rewordDto = RewordUtil.switchReword(questRequestDto.getQuestNo());
+        User result = userRepository.findByUserId(user.getUserId()).orElseThrow(IllegalArgumentException::new);
+        result.rewordUpdate(rewordDto);
+        if(levelUtil.levelUpCheck(result, rewordDto.getExp())){
+            result.alarmUpdate(true);
+        }
+
+        return new ResponseEntity<>(new RewordResponseDto(result), HttpStatus.OK);
     }
 }
 

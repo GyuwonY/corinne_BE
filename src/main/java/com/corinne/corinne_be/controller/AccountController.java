@@ -35,7 +35,7 @@ public class AccountController {
     }
 
     // 보유 자산 리셋
-    @PutMapping("/api/accoint/reset")
+    @PutMapping("/api/account/reset")
     public ResponseEntity<HttpStatus> resetAccount(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return accountService.resetAccount(userDetails.getUser());
     }

@@ -3,6 +3,7 @@ package com.corinne.corinne_be.utils;
 import com.corinne.corinne_be.model.Alarm;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.AlarmRepository;
+import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,7 @@ public class LevelUtil {
         this.alarmRepository = alarmRepository;
     }
 
-    public void levelUpCheck(User user, int exp){
+    public boolean levelUpCheck(User user, int exp){
 
         int preExp = user.getExp() - exp;
 
@@ -26,11 +27,13 @@ public class LevelUtil {
         if(!preLevel.equals(level)){
             Alarm alarm = new Alarm(user, Alarm.AlarmType.LEVEL, level);
             alarmRepository.save(alarm);
+            return true;
         }
 
+        return false;
     }
 
-    public String levelCheck(int exp){
+    private String levelCheck(int exp){
 
         String level = "";
         if(exp < 5000){

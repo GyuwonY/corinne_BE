@@ -1,9 +1,6 @@
 package com.corinne.corinne_be.scheduler;
 
-import com.corinne.corinne_be.model.Alarm;
-import com.corinne.corinne_be.model.ChatMessage;
-import com.corinne.corinne_be.model.Coin;
-import com.corinne.corinne_be.model.User;
+import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.utils.LevelUtil;
 import com.corinne.corinne_be.utils.RankUtil;
@@ -36,11 +33,13 @@ public class WeeklyScheduler {
     private final RankUtil rankUtil;
     private final LevelUtil levelUtil;
     private final RedisPublisher redisPublisher;
+    private final QuestRepository questRepository;
     private final List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public WeeklyScheduler(RedisRepository redisRepository, UserRepository userRepository, TransactionRepository transactionRepository,
-                           CoinRepository coinRepository, AlarmRepository alarmRepository, RankUtil rankUtil, LevelUtil levelUtil, RedisPublisher redisPublisher) {
+                           CoinRepository coinRepository, AlarmRepository alarmRepository, RankUtil rankUtil, LevelUtil levelUtil,
+                           RedisPublisher redisPublisher, QuestRepository questRepository) {
         this.redisRepository = redisRepository;
         this.userRepository = userRepository;
         this.coinRepository = coinRepository;
@@ -49,6 +48,7 @@ public class WeeklyScheduler {
         this.levelUtil = levelUtil;
         this.transactionRepository = transactionRepository;
         this.redisPublisher = redisPublisher;
+        this.questRepository = questRepository;
     }
 
     @Scheduled(cron = "0 0 0 ? * MON")
@@ -119,9 +119,18 @@ public class WeeklyScheduler {
                 user.expUpdate(5000);
                 Alarm alarm = new Alarm(user, Alarm.AlarmType.RANK, "주간 랭킹 참여자 보상");
                 alarmRepository.save(alarm);
+
+                Quest quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 8).orElse(null);
+                if(quest != null){
+                    if(!quest.isClear()){
+                        quest.update(true);
+                    }
+                }
+
                 // 레벨업 알림 체크
-                levelUtil.levelUpCheck(user, 5000);
-                user.alarmUpdate(true);
+                if(levelUtil.levelUpCheck(user, 5000)){
+                    user.alarmUpdate(true);
+                }
             }
             redisRepository.enterTopic(Long.toString(user.getUserId()));
             redisPublisher.publish(redisRepository.getTopic(Long.toString(user.getUserId())), new ChatMessage(
@@ -137,6 +146,8 @@ public class WeeklyScheduler {
         userRepository.rankUpdate();
         userRepository.highRankUpdate();
         List<User> userList = userRepository.findTop3ByOrderByLastFluctuationDesc();
+
+        boolean levelUp = false;
         for (User user : userList) {
             if (user.getLastRank() == 1) {
                 user.addBalance(1000000L);

@@ -1,5 +1,6 @@
 package com.corinne.corinne_be.model;
 
+import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -95,6 +96,11 @@ public class User {
     }
 
     public void alarmUpdate(boolean alarm) {this.alarm = alarm; }
+
+    public void rewordUpdate(RewordDto rewordDto){
+        this.accountBalance += rewordDto.getAmount();
+        this.exp += rewordDto.getExp();
+    }
 }
 
 

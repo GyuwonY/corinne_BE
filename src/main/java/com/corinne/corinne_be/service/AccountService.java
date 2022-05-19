@@ -4,10 +4,7 @@ import com.corinne.corinne_be.dto.account_dto.AccountResponseDto;
 import com.corinne.corinne_be.dto.account_dto.AccountSimpleDto;
 import com.corinne.corinne_be.dto.account_dto.CoinsDto;
 import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
-import com.corinne.corinne_be.model.Bookmark;
-import com.corinne.corinne_be.model.Coin;
-import com.corinne.corinne_be.model.Transaction;
-import com.corinne.corinne_be.model.User;
+import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,14 +25,18 @@ public class AccountService {
     private final RedisRepository redisRepository;
     private final TransactionRepository transactionRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final QuestRepository questRepository;
 
     @Autowired
-    public AccountService(CoinRepository coinRepository, UserRepository userRepository, RedisRepository redisRepository, TransactionRepository transactionRepository, BookmarkRepository bookmarkRepository) {
+    public AccountService(CoinRepository coinRepository, UserRepository userRepository,
+                          RedisRepository redisRepository, TransactionRepository transactionRepository,
+                          BookmarkRepository bookmarkRepository, QuestRepository questRepository) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
         this.transactionRepository = transactionRepository;
         this.bookmarkRepository = bookmarkRepository;
+        this.questRepository = questRepository;
     }
 
 
@@ -126,6 +127,14 @@ public class AccountService {
         transactionRepository.save(transaction);
         redisRepository.resetBankruptcy(user.getUserId());
 
+        Quest quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 9).orElse(null);
+
+        if(quest != null){
+            if(!quest.isClear()){
+                quest.update(true);
+            }
+        }
+
         return  new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -134,6 +143,14 @@ public class AccountService {
 
         if(bookmarkRepository.existsByUserIdAndTiker(user.getUserId(), tiker)){
             return  new ResponseEntity<>("이미 즐겨찾기 되어있는 코인입니다",HttpStatus.BAD_REQUEST);
+        }
+
+        Quest quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 1).orElse(null);
+
+        if(quest != null){
+            if(!quest.isClear()){
+                quest.update(true);
+            }
         }
 
         // 즐겨찾기 등록

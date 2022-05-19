@@ -35,4 +35,8 @@ public class Quest {
         this.questNo = questNo;
         this.clear = clear;
     }
+
+    public void update(boolean clear){
+        this.clear = clear;
+    }
 }

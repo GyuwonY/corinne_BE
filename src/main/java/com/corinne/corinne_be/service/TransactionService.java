@@ -2,12 +2,10 @@ package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.transaction_dto.*;
 import com.corinne.corinne_be.model.Coin;
+import com.corinne.corinne_be.model.Quest;
 import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
-import com.corinne.corinne_be.repository.CoinRepository;
-import com.corinne.corinne_be.repository.RedisRepository;
-import com.corinne.corinne_be.repository.TransactionRepository;
-import com.corinne.corinne_be.repository.UserRepository;
+import com.corinne.corinne_be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,13 +32,16 @@ public class TransactionService {
     private final CoinRepository coinRepository;
     private final UserRepository userRepository;
     private final RedisRepository redisRepository;
+    private final QuestRepository questRepository;
 
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,UserRepository userRepository, RedisRepository redisRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,
+                              UserRepository userRepository, RedisRepository redisRepository, QuestRepository questRepository) {
         this.transactionRepository = transactionRepository;
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
+        this.questRepository = questRepository;
     }
 
 
@@ -92,6 +93,20 @@ public class TransactionService {
 
         if(user.getAccountBalance() < buyRequestDto.getBuyAmount() || buyRequestDto.getBuyAmount() < 50000){
             return new ResponseEntity<>("구매량을 확인해주세요", HttpStatus.BAD_REQUEST);
+        }
+
+        Quest quest;
+
+        if(buyRequestDto.getLeverage()==1) {
+            quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 2).orElse(null);
+        }else {
+            quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 4).orElse(null);
+        }
+
+        if (quest != null) {
+            if (!quest.isClear()) {
+                quest.update(true);
+            }
         }
 
         Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(buyRequestDto.getTiker(),
@@ -176,6 +191,20 @@ public class TransactionService {
 
         if(coin.getLeverage() != 1L){
             redisRepository.deleteBankruptcy(coin.getCoinId(), coin.getTiker());
+        }
+
+        Quest quest;
+
+        if(sellRequestDto.getLeverage()==1) {
+            quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 3).orElse(null);
+        }else {
+            quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 5).orElse(null);
+        }
+
+        if (quest != null) {
+            if (!quest.isClear()) {
+                quest.update(true);
+            }
         }
 
         BigDecimal amount = BigDecimal.valueOf(coin.getAmount());

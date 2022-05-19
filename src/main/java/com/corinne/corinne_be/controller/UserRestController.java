@@ -1,5 +1,7 @@
 package com.corinne.corinne_be.controller;
 
+import com.corinne.corinne_be.dto.Quest_dto.QuestRequestDto;
+import com.corinne.corinne_be.dto.Quest_dto.RewordResponseDto;
 import com.corinne.corinne_be.dto.user_dto.*;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.KakaoService;
@@ -75,8 +77,10 @@ public class UserRestController {
         return userService.getQuest(userDetails.getUser());
     }
 
-    
-
+    @PatchMapping("/api/quest")
+    public ResponseEntity<RewordResponseDto> reword(@AuthenticationPrincipal UserDetailsImpl userDetails, QuestRequestDto questDto){
+        return userService.reword(questDto, userDetails.getUser());
+    }
 }
 
 
