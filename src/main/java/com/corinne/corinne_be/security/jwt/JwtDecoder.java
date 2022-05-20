@@ -3,6 +3,7 @@ package com.corinne.corinne_be.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class JwtDecoder {
 
     public Long decodeId(String token) {
         DecodedJWT decodedJWT = isValidToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("유효한 토큰이 아닙니다."));
+                .orElseThrow(() -> new TokenExpiredException("유효한 토큰이 아닙니다."));
 
         Date expiredDate = decodedJWT
                 .getClaim(CLAIM_EXPIRED_DATE)
@@ -29,7 +30,7 @@ public class JwtDecoder {
 
         Date now = new Date();
         if (expiredDate.before(now)) {
-            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+            throw new TokenExpiredException("유효한 토큰이 아닙니다.");
         }
 
         Long userId = decodedJWT

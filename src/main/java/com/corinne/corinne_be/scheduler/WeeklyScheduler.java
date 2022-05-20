@@ -52,7 +52,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 43 11 ? * FRI")
+    @Scheduled(cron = "0 0 0 ? * MON")
     @Transactional
     public void rankUpdate() {
 
@@ -136,14 +136,13 @@ public class WeeklyScheduler {
         }
     }
 
-    @Scheduled(cron = "0 45 11 ? * FRI")
+    @Scheduled(cron = "0 5 0 ? * MON")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
         userRepository.highRankUpdate();
         List<User> userList = userRepository.findTop3ByOrderByLastFluctuationDesc();
 
-        boolean levelUp = false;
         for (User user : userList) {
             if (user.getLastRank() == 1) {
                 user.addBalance(1000000L);
