@@ -52,7 +52,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 36 6 ? * FRI")
+    @Scheduled(cron = "0 0 8 ? * FRI")
     @Transactional
     public void rankUpdate() {
 
