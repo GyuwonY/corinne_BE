@@ -75,16 +75,19 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
-    public void balanceUpdate(Long accountBalance) {
-        this.accountBalance = accountBalance;
-    }
-
     public void lastFluctuationUpdate(double lastFluctuation){
         this.lastFluctuation = lastFluctuation;
     }
 
-    public void rivalUpdate(Long rivalId){
+    public void rivalUpdate(Long rivalId, Long accountBalance){
         this.rival = rivalId;
+        this.accountBalance = accountBalance;
+    }
+
+    public void rivalUpdate(Long rivalId, Long accountBalance, int exp){
+        this.rival = rivalId;
+        this.accountBalance = accountBalance;
+        this.exp += exp;
     }
 
     public void expUpdate(int exp){

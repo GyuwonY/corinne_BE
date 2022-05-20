@@ -51,10 +51,9 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 48 4 ? * FRI")
+    @Scheduled(cron = "0 26 5 ? * FRI")
     @Transactional
     public void rankUpdate() {
-        Random random = new Random();
 
         List<User> users = userRepository.findAll();
         int userSize = users.size();
@@ -94,23 +93,18 @@ public class WeeklyScheduler {
 
         for(User user : users){
             if (user.getRival() == 0) {
-                user.balanceUpdate(1000000L);
-                user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
+                user.rivalUpdate(users.get(rival(userSize, user)).getUserId(), 1000000L);
             }else {
                 double rivalFluctuation = userRepository.findByUserId(user.getRival()).orElseThrow(IllegalArgumentException::new).getLastFluctuation();
                 if (user.getLastFluctuation() > rivalFluctuation) {
-                    user.balanceUpdate(1500000L);
-                    user.expUpdate(10000);
-                    user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
-
+                    user.rivalUpdate(users.get(rival(userSize, user)).getUserId(), 1500000L, 10000);
                     // 배틀 결과 알림
                     Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "승리");
                     alarmRepository.save(alarm);
                     // 레벨업 알림 체크
                     levelUtil.levelUpCheck(user, 10000);
                 } else if(user.getLastFluctuation() < rivalFluctuation){
-                    user.balanceUpdate(1000000L);
-                    user.rivalUpdate(users.get(random.nextInt(userSize)).getUserId());
+                    user.rivalUpdate(users.get(rival(userSize, user)).getUserId(), 1000000L);
                     // 배틀 결과 알림
                     Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "패배");
                     alarmRepository.save(alarm);
@@ -138,7 +132,7 @@ public class WeeklyScheduler {
         }
     }
 
-    @Scheduled(cron = "0 52 4 ? * FRI")
+    @Scheduled(cron = "0 28 5 ? * FRI")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
@@ -184,5 +178,12 @@ public class WeeklyScheduler {
         }
     }
 
-
+    private int rival(int userSize, User user){
+        Random random = new Random();
+        int rival = random.nextInt(userSize);
+        if(rival==user.getUserId()){
+            return rival(userSize, user);
+        };
+        return rival;
+    }
 }
