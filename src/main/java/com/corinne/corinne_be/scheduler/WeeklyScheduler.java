@@ -52,7 +52,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 35 9 ? * FRI")
+    @Scheduled(cron = "0 5 10 ? * FRI")
     @Transactional
     public void rankUpdate() {
 
@@ -91,21 +91,20 @@ public class WeeklyScheduler {
 
         coinRepository.deleteAll();
         redisRepository.deleteAllBankruptcy();
-
         for(User user : users){
             if (user.getRival() == 0) {
-                user.rivalUpdate(users.get(rival(userSize, user)).getUserId(), 1000000L);
+                user.rivalUpdate(rival(users, user), 1000000L);
             }else {
                 double rivalFluctuation = userRepository.findByUserId(user.getRival()).orElseThrow(IllegalArgumentException::new).getLastFluctuation();
                 if (user.getLastFluctuation() > rivalFluctuation) {
-                    user.rivalUpdate(users.get(rival(userSize, user)).getUserId(), 1500000L, 10000);
+                    user.rivalUpdate(rival(users, user), 1500000L, 10000);
                     // 배틀 결과 알림
                     Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "승리");
                     alarmRepository.save(alarm);
                     // 레벨업 알림 체크
                     levelUtil.levelUpCheck(user, 10000);
                 } else if(user.getLastFluctuation() < rivalFluctuation){
-                    user.rivalUpdate(users.get(rival(userSize, user)).getUserId(), 1000000L);
+                    user.rivalUpdate(rival(users, user), 1000000L);
                     // 배틀 결과 알림
                     Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "패배");
                     alarmRepository.save(alarm);
@@ -133,7 +132,7 @@ public class WeeklyScheduler {
         }
     }
 
-    @Scheduled(cron = "0 40 6 ? * FRI")
+    @Scheduled(cron = "0 10 10 ? * FRI")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
@@ -179,12 +178,12 @@ public class WeeklyScheduler {
         }
     }
 
-    private int rival(int userSize, User user){
+    private Long rival(List<User> users, User user){
         Random random = new Random();
-        int rival = random.nextInt(userSize);
-        if(rival==user.getUserId()){
-            return rival(userSize, user);
-        };
+        Long rival = users.get(random.nextInt(users.size())).getUserId();
+        if(rival == user.getUserId()){
+            return rival(users, user);
+        }
         return rival;
     }
 }
