@@ -124,7 +124,7 @@ public class RankService {
     @Transactional
     public ResponseEntity<RankTopDto> getRankTop3() {
 
-        List<RankInfoDto> rankDtos = rankUtil.getRankList().subList(0,3);
+        List<User> rankDtos = userRepository.findTop3ByOrderByLastRankDesc();
 
         return new ResponseEntity<>(new RankTopDto(rankDtos), HttpStatus.OK);
     }
