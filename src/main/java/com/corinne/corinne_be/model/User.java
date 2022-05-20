@@ -70,6 +70,10 @@ public class User {
     }
 
 
+    public void balanceUpdate(Long balance){
+        this.accountBalance = balance;
+    }
+
     //프로필 이미지 수정
     public void profileImgUpdate(String imageUrl){
         this.imageUrl = imageUrl;
