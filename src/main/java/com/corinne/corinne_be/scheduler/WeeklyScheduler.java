@@ -51,7 +51,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 54 15 ? * THU")
+    @Scheduled(cron = "0 48 4 ? * FRI")
     @Transactional
     public void rankUpdate() {
         Random random = new Random();
@@ -138,7 +138,7 @@ public class WeeklyScheduler {
         }
     }
 
-    @Scheduled(cron = "0 58 15 ? * THU")
+    @Scheduled(cron = "0 52 4 ? * FRI")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
