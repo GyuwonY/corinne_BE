@@ -7,12 +7,12 @@ import java.util.List;
 
 @Getter
 public class RankTopDto {
-    private List<User> rank;
+    private List<RankInfoDto> rank;
 
     public RankTopDto() {
     }
 
-    public RankTopDto(List<User> rank) {
+    public RankTopDto(List<RankInfoDto> rank) {
         this.rank = rank;
     }
 

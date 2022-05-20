@@ -18,8 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findTop3ByOrderByLastFluctuationDesc();
 
-    List<User> findTop3ByOrderByLastRankDesc();
-
     @Transactional
     @Modifying
     @Query(value = "update tbl_user, (select user_id, rank() over (order by last_fluctuation desc) as last_rank from tbl_user) as a set tbl_user.last_rank = a.last_rank where tbl_user.user_id=a.user_id", nativeQuery = true)
