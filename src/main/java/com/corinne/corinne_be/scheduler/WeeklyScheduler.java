@@ -52,7 +52,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 5 10 ? * FRI")
+    @Scheduled(cron = "0 38 10 ? * FRI")
     @Transactional
     public void rankUpdate() {
 
@@ -108,6 +108,10 @@ public class WeeklyScheduler {
                     // 배틀 결과 알림
                     Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "패배");
                     alarmRepository.save(alarm);
+                } else {
+                    user.rivalUpdate(rival(users, user), 1000000L);
+                    Alarm alarm = new Alarm(user, Alarm.AlarmType.RIVAL, "무승부");
+                    alarmRepository.save(alarm);
                 }
             }
 
@@ -132,7 +136,7 @@ public class WeeklyScheduler {
         }
     }
 
-    @Scheduled(cron = "0 10 10 ? * FRI")
+    @Scheduled(cron = "0 43 10 ? * FRI")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
