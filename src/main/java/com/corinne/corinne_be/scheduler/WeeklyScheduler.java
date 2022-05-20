@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -22,7 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
-@Component
+@Service
 @EnableAsync
 public class WeeklyScheduler {
     private final RedisRepository redisRepository;
@@ -51,7 +52,7 @@ public class WeeklyScheduler {
         this.questRepository = questRepository;
     }
 
-    @Scheduled(cron = "0 22 6 ? * FRI")
+    @Scheduled(cron = "0 36 6 ? * FRI")
     @Transactional
     public void rankUpdate() {
 
@@ -132,7 +133,7 @@ public class WeeklyScheduler {
         }
     }
 
-    @Scheduled(cron = "0 25 6 ? * FRI")
+    @Scheduled(cron = "0 40 6 ? * FRI")
     @Transactional
     public void rewordUpdate() {
         userRepository.rankUpdate();
