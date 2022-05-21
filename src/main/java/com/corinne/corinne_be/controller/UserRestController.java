@@ -78,7 +78,7 @@ public class UserRestController {
     }
 
     @PatchMapping("/api/quest")
-    public ResponseEntity<RewordResponseDto> reword(@AuthenticationPrincipal UserDetailsImpl userDetails, QuestRequestDto questDto){
+    public ResponseEntity<RewordResponseDto> reword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody QuestRequestDto questDto){
         return userService.reword(questDto, userDetails.getUser());
     }
 }
