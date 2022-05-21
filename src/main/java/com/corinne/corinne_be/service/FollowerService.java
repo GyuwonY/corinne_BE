@@ -129,14 +129,12 @@ public class FollowerService {
             double fluctuationRate = rankDtos.get(rankIndex).getFluctuationRate();
             Long totalBalance = rankDtos.get(rankIndex).getTotalBalance();
 
-
             FollowDto followDto = new FollowDto(followUser.getUserId(),nickname,exp,rankIndex+1,fluctuationRate,imageUrl,totalBalance);
             followingDtoList.add(followDto);
         }
 
         // 팔로우도 랭킹 순을 정렬
-        followingDtoList = followingDtoList.stream().sorted(Comparator.comparing(FollowDto::getRank).reversed()).collect(Collectors.toList());
-
+        followingDtoList = followingDtoList.stream().sorted(Comparator.comparing(FollowDto::getRank)).collect(Collectors.toList());
 
         return new ResponseEntity<>(followingDtoList, HttpStatus.OK);
     }

@@ -165,7 +165,7 @@ public class TransactionService {
         user.balanceUpdate(accountBalance - buyRequestDto.getBuyAmount());
         userRepository.save(user);
 
-        Long commission = (long)(buyRequestDto.getBuyAmount()*buyRequestDto.getLeverage()*0.05);
+        Long commission = (long)(buyRequestDto.getBuyAmount()*buyRequestDto.getLeverage()*0.0005);
 
         TransactionDto transactionDto = new TransactionDto(user, "buy", buyRequestDto.getTradePrice(),
                 buyRequestDto.getBuyAmount(), buyRequestDto.getTiker(), buyRequestDto.getLeverage(), commission);
@@ -239,7 +239,7 @@ public class TransactionService {
         user.balanceUpdate(accountBalance + sellRequestDto.getSellAmount());
         userRepository.save(user);
 
-        Long commission = (long)(sellRequestDto.getSellAmount()*0.05);
+        Long commission = (long)(sellRequestDto.getSellAmount()*0.0005);
 
         // 매도 거래내역 추가
         TransactionDto transactionDto = new TransactionDto(user, "sell", sellRequestDto.getTradePrice(),

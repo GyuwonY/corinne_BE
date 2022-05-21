@@ -25,6 +25,7 @@ public class FollowerController {
     public ResponseEntity<?> followerUser(@PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return followerService.save(userId, userDetails.getUser());
     }
+
     //언팔
     @DeleteMapping("/{userid}")
     public ResponseEntity<?> unfollowUser(@PathVariable Long userid, @AuthenticationPrincipal UserDetailsImpl userDetails) {
