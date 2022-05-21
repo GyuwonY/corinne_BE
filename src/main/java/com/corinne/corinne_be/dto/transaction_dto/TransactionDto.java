@@ -13,16 +13,18 @@ public class TransactionDto {
     private Long amount;
     private String tiker;
     private int leverage;
+    private Long commission;
 
     public TransactionDto() {
     }
 
-    public TransactionDto(User user, String type, int price, Long amount, String tiker, int leverage) {
+    public TransactionDto(User user, String type, int price, Long amount, String tiker, int leverage, Long commission) {
         this.user = user;
         this.type = type;
         this.price = price;
         this.amount = amount;
         this.tiker = tiker;
         this.leverage = leverage;
+        this.commission = commission;
     }
 }

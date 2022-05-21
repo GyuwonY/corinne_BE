@@ -122,7 +122,7 @@ public class AccountService {
         coinRepository.deleteAllByUser_UserId(user.getUserId());
 
         // 리셋 내역 추가
-        TransactionDto transactionDto = new TransactionDto(user, "reset", 0, 1000000L, "reset", 1);
+        TransactionDto transactionDto = new TransactionDto(user, "reset", 0, 1000000L, "reset", 1, 0L);
         Transaction transaction = new Transaction(transactionDto);
         transactionRepository.save(transaction);
         redisRepository.resetBankruptcy(user.getUserId());
