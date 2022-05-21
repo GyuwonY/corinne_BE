@@ -168,6 +168,8 @@ public class UserService {
     @Transactional
     public ResponseEntity<RewordResponseDto> reword(QuestRequestDto questRequestDto, User user){
         RewordDto rewordDto = RewordUtil.switchReword(questRequestDto.getQuestNo());
+        System.out.println(questRequestDto);
+        System.out.println(rewordDto);
         User result = userRepository.findByUserId(user.getUserId()).orElseThrow(IllegalArgumentException::new);
         result.rewordUpdate(rewordDto);
         if(levelUtil.levelUpCheck(result, rewordDto.getExp())){
