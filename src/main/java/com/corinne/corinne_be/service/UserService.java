@@ -3,6 +3,7 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.Quest_dto.QuestRequestDto;
 import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
 import com.corinne.corinne_be.dto.Quest_dto.RewordResponseDto;
+import com.corinne.corinne_be.dto.alarm_dto.AlarmQueryDto;
 import com.corinne.corinne_be.dto.user_dto.*;
 import com.corinne.corinne_be.model.Alarm;
 import com.corinne.corinne_be.model.Coin;
@@ -51,10 +52,10 @@ public class UserService {
     public ResponseEntity<UserInfoResponesDto> userInfo(Long userId, User user){
         UserInfoResponesDto userInfoResponesDto = getUserInfo(userId);
         userInfoResponesDto.setFollow(followerRepository.existsByUser_UserIdAndFollower_UserId(user.getUserId(), userId));
-        userInfoResponesDto.setParticipation(alarmRepository.countAllByUser_UserIdAndContent(userId, "주간 랭킹 참여자 보상"));
-        userInfoResponesDto.setWin(alarmRepository.countAllByUser_UserIdAndContent(userId, "승리"));
-        userInfoResponesDto.setDraw(alarmRepository.countAllByUser_UserIdAndContent(userId, "무승부"));
-        userInfoResponesDto.setLose(alarmRepository.countAllByUser_UserIdAndContent(userId, "패배"));
+        AlarmQueryDto alarmQueryDto = alarmRepository.battleResult(userId);
+        userInfoResponesDto.setWin(alarmQueryDto.getWin());
+        userInfoResponesDto.setDraw(alarmQueryDto.getDraw());
+        userInfoResponesDto.setLose(alarmQueryDto.getLose());
         return new ResponseEntity<>(userInfoResponesDto,HttpStatus.OK);
     }
 
@@ -63,8 +64,6 @@ public class UserService {
 
         return new ResponseEntity<>(getUserInfo(userId),HttpStatus.OK);
     }
-
-
 
     //회원정보 조희
     private UserInfoResponesDto getUserInfo(Long userId){
@@ -194,29 +193,3 @@ public class UserService {
         return new ResponseEntity<>(new RewordResponseDto(result), HttpStatus.OK);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

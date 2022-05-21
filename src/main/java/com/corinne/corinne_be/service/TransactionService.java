@@ -6,6 +6,7 @@ import com.corinne.corinne_be.model.Quest;
 import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ import java.util.Calendar;
 import java.util.List;
 
 @Service
+@Slf4j
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
@@ -43,7 +45,6 @@ public class TransactionService {
         this.redisRepository = redisRepository;
         this.questRepository = questRepository;
     }
-
 
     //코인 거래 내역
     @Transactional
@@ -186,11 +187,13 @@ public class TransactionService {
     // 매도
     @Transactional
     public ResponseEntity<?> sell(SellRequestDto sellRequestDto, User user) {
+        log.info("매도 시작"+sellRequestDto.getSellAmount()+ "   " + sellRequestDto.getTradePrice());
         Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(sellRequestDto.getTiker(), user.getUserId(), sellRequestDto.getLeverage()).orElse(null);
 
         Long accountBalance = user.getAccountBalance();
 
         if(coin == null){
+            log.info("코인 보유 X");
             return  new ResponseEntity<>("보유한 코인이 아닙니다",HttpStatus.BAD_REQUEST);
         }
 
@@ -233,6 +236,7 @@ public class TransactionService {
                 coin.update(leftover);
             }
         } else {
+            log.info("보유 금액보다 많이 팜");
             return new ResponseEntity<>("보유한 금액보다 큰 금액을 팔 수 없습니다",HttpStatus.BAD_REQUEST);
         }
 

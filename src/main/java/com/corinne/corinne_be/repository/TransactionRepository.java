@@ -17,4 +17,5 @@ public interface TransactionRepository  extends JpaRepository<Transaction, Long>
     Long countByTikerAndTypeAndTradeAtBetween(String tiker, String type, LocalDateTime startDate, LocalDateTime endDate);
     Long countByUser_UserIdAndTypeAndTradeAtBetween(Long userId, String type, LocalDateTime startDate, LocalDateTime endDate);
     Long countByUser_UserIdAndTradeAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+
 }
