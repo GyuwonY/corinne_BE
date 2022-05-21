@@ -38,19 +38,20 @@ public class UserRestController {
 
     //회원정보 수정
     @PatchMapping("/user/signup")
-    public ResponseEntity<?> InfoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
-        return userService.InfoUpdate(userDetails.getUser(),userRequestdto);
+    public ResponseEntity<?> infoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
+        return userService.infoUpdate(userDetails.getUser(),userRequestdto);
     }
 
     //회원정보조희
     @GetMapping("/api/user/info")
-    public ResponseEntity<?> Userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.UserInfo(userDetails.getUser().getUserId());
+    public ResponseEntity<?> userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.userInfo(userDetails.getUser().getUserId());
     }
 
+    //다른 회원 프로필
     @GetMapping("/api/user/info/{userId}")
-    public ResponseEntity<?> Userinfo(@PathVariable Long userId) {
-        return userService.UserInfo(userId);
+    public ResponseEntity<?> userinfo(@PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.userInfo(userId, userDetails.getUser());
     }
 
     //프로필이미지 수정
@@ -61,7 +62,7 @@ public class UserRestController {
 
     // 유저 알림 리스트 조회
     @GetMapping("/api/user/alarm")
-    public ResponseEntity<?>  getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<?> getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.getAlarmList(userDetails.getUser());
     }
 

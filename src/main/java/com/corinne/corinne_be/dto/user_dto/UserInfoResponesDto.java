@@ -3,8 +3,10 @@ package com.corinne.corinne_be.dto.user_dto;
 import com.corinne.corinne_be.dto.rank_dto.MyRankDto;
 import com.corinne.corinne_be.model.User;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class UserInfoResponesDto {
     private Long userId;
     private String userEmail;
@@ -20,8 +22,11 @@ public class UserInfoResponesDto {
     private double fluctuationRate;
     private Long totalBalance;
     private Long resetCount;
-
-
+    private boolean follow;
+    private Long participation;
+    private Long win;
+    private Long draw;
+    private Long lose;
 
     public UserInfoResponesDto(User user, MyRankDto myRankDto, Long resetCount, Long follower, Long following) {
 
@@ -40,9 +45,5 @@ public class UserInfoResponesDto {
         this.follower = follower;
         this.following = following;
     }
+
 }
-//    public UserInfoResponesDto(User followUser) {
-//        this.userId = followUser.getUserId();
-//        this.userEmail = followUser.getUserEmail();;
-//        this.nickname = followUser.getNickname();
-//    }
