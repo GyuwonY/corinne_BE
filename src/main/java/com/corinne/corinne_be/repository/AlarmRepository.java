@@ -13,8 +13,8 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     Long countAllByUser_UserIdAndContent(Long userId, String content);
 
     @Query(nativeQuery = true,value = "select * from \n" +
-            "(select user_id,count(*) as win from alarm where user_id = :userId  and content = '승리') a,\n" +
-            "(select count(*) as lose from alarm where user_id = :userId  and content = '패배') b,\n" +
-            "(select count(*) as draw from alarm where user_id = :userId  and content = '무승부') c;")
+            "(select user_id,count(*) as win from tbl_alarm where user_id = :userId  and content = '승리') a,\n" +
+            "(select count(*) as lose from tbl_alarm where user_id = :userId  and content = '패배') b,\n" +
+            "(select count(*) as draw from tbl_alarm where user_id = :userId  and content = '무승부') c;")
     AlarmQueryDto battleResult(@Param("userId") Long userId);
 }
