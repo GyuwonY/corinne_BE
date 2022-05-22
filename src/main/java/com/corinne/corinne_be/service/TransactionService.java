@@ -208,6 +208,10 @@ public class TransactionService {
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
         }
 
+        if(sellRequestDto.getSellAmount()<=0){
+            throw new CustomException(ErrorCode.WRONG_AMOUNT);
+        }
+
         Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(sellRequestDto.getTiker(), user.getUserId(), sellRequestDto.getLeverage()).orElse(null);
 
         Long accountBalance = user.getAccountBalance();
