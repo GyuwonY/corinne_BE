@@ -47,11 +47,28 @@ public class UserService {
     private final LevelUtil levelUtil;
     private final TimeUtil timeUtil;
 
-    //회원정보 조희
     @Transactional
-    public ResponseEntity<?> UserInfo(Long userId){
-        User user = userRepository.findByUserId(userId).orElseThrow(IllegalArgumentException::new);
+    public ResponseEntity<UserInfoResponesDto> userInfo(Long userId, User user){
+        UserInfoResponesDto userInfoResponesDto = getUserInfo(userId);
+        userInfoResponesDto.setFollow(followerRepository.existsByUser_UserIdAndFollower_UserId(user.getUserId(), userId));
+        userInfoResponesDto.setParticipation(alarmRepository.countAllByUser_UserIdAndContent(userId, "주간 랭킹 참여자 보상"));
+        userInfoResponesDto.setWin(alarmRepository.countAllByUser_UserIdAndContent(userId, "승리"));
+        userInfoResponesDto.setDraw(alarmRepository.countAllByUser_UserIdAndContent(userId, "무승부"));
+        userInfoResponesDto.setLose(alarmRepository.countAllByUser_UserIdAndContent(userId, "패배"));
+        return new ResponseEntity<>(userInfoResponesDto,HttpStatus.OK);
+    }
 
+    @Transactional
+    public ResponseEntity<UserInfoResponesDto> userInfo(Long userId){
+
+        return new ResponseEntity<>(getUserInfo(userId),HttpStatus.OK);
+    }
+
+
+
+    //회원정보 조희
+    private UserInfoResponesDto getUserInfo(Long userId){
+        User user = userRepository.findByUserId(userId).orElseThrow(IllegalArgumentException::new);
 
         Calendar cal = Calendar.getInstance();
         if(cal.get(Calendar.DAY_OF_WEEK)==1){
@@ -66,10 +83,9 @@ public class UserService {
         LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
         LocalDateTime endDate = LocalDateTime.now();
 
-
-        return new ResponseEntity<>(new UserInfoResponesDto(user, rankUtil.getMyRank(userId),
+        return new UserInfoResponesDto(user, rankUtil.getMyRank(userId),
                 transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(userId, "reset",startDate,endDate), followerRepository.countAllByUser(user),
-                followerRepository.countAllByFollower(user)),HttpStatus.OK);
+                followerRepository.countAllByFollower(user));
     }
 
     /**
@@ -77,7 +93,7 @@ public class UserService {
      *
      */
     @Transactional
-    public ResponseEntity<?> InfoUpdate(User user, UserRequestdto userRequestdto){
+    public ResponseEntity<?> infoUpdate(User user, UserRequestdto userRequestdto){
         try{
             validator.userValidate(userRequestdto);
         }catch (IllegalArgumentException e){
@@ -168,10 +184,9 @@ public class UserService {
     @Transactional
     public ResponseEntity<RewordResponseDto> reword(QuestRequestDto questRequestDto, User user){
         RewordDto rewordDto = RewordUtil.switchReword(questRequestDto.getQuestNo());
-        System.out.println(questRequestDto);
-        System.out.println(rewordDto);
         User result = userRepository.findByUserId(user.getUserId()).orElseThrow(IllegalArgumentException::new);
         result.rewordUpdate(rewordDto);
+        questRepository.deleteByUser_UserIdAndQuestNo(user.getUserId(), questRequestDto.getQuestNo());
         if(levelUtil.levelUpCheck(result, rewordDto.getExp())){
             result.alarmUpdate(true);
         }
