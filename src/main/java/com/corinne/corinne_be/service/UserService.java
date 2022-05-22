@@ -181,6 +181,7 @@ public class UserService {
     //퀘스트 보상 받기
     @Transactional
     public ResponseEntity<RewordResponseDto> reword(QuestRequestDto questRequestDto, User user){
+        questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), questRequestDto.getQuestNo()).orElseThrow(() -> new CustomException(ErrorCode.NON_EXIST_USER));
         RewordDto rewordDto = RewordUtil.switchReword(questRequestDto.getQuestNo());
         User result = userRepository.findByUserId(user.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.NON_EXIST_USER));
         result.rewordUpdate(rewordDto);
