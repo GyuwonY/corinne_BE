@@ -110,14 +110,15 @@ public class KakaoService {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-// HTTP Body 생성
+        // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "5c1212aa842ed21acf635fca0c1ce494");
+//        body.add("redirect_uri", "https://corinne.kr/user/kakao/callback");
         body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("code", code);
 
-// HTTP 요청 보내기
+        // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
@@ -128,7 +129,7 @@ public class KakaoService {
                 String.class
         );
 
-// HTTP 응답 (JSON) -> 액세스 토큰 파싱
+        // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);

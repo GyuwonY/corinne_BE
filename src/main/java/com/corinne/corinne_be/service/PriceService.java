@@ -4,6 +4,8 @@ import com.corinne.corinne_be.dto.candle_dto.DatePageDto;
 import com.corinne.corinne_be.dto.candle_dto.DateReponseDto;
 import com.corinne.corinne_be.dto.candle_dto.MinutePageDto;
 import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
+import com.corinne.corinne_be.exception.CustomException;
+import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.DayCandle;
 import com.corinne.corinne_be.model.MinuteCandle;
 import com.corinne.corinne_be.model.User;
@@ -29,6 +31,7 @@ public class PriceService {
     private final DayCandleRepository dateCandleRepository;
     private final BookmarkRepository bookmarkRepository;
     private final RedisRepository redisRepository;
+    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public PriceService(MinuteCandleRepository minuteCandleRepository, DayCandleRepository dateCandleRepository, BookmarkRepository bookmarkRepository, RedisRepository redisRepository) {
@@ -41,6 +44,10 @@ public class PriceService {
     // 분봉 조회
     @Transactional
     public ResponseEntity<List<MinutePageDto>> getMinute(String tikerName) {
+
+        if(!tikers.contains(tikerName)){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
 
         List<MinuteCandle> entites = minuteCandleRepository.findAllByTiker(tikerName);
         List<MinutePageDto> minutePageDtos = new ArrayList<>();
@@ -78,6 +85,10 @@ public class PriceService {
     // 일봉 조회
     @Transactional
    public ResponseEntity<List<DatePageDto>> getdate(String tikerName) {
+
+        if(!tikers.contains(tikerName)){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
 
         List<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName);
         List<DatePageDto> dateCandles = new ArrayList<>();
@@ -127,5 +138,13 @@ public class PriceService {
 
 
         return new ResponseEntity<>(dateReponseDtos,HttpStatus.OK);
+    }
+
+    public ResponseEntity<PricePublishingDto> getTradePrice(String tiker) {
+
+        if(!tikers.contains(tiker)){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
+        return new ResponseEntity<>(redisRepository.getTradePrice(tiker), HttpStatus.OK);
     }
 }

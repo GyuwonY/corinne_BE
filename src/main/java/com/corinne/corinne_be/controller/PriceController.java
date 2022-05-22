@@ -1,7 +1,9 @@
 package com.corinne.corinne_be.controller;
 
 import com.corinne.corinne_be.dto.candle_dto.DatePageDto;
+import com.corinne.corinne_be.dto.candle_dto.DateReponseDto;
 import com.corinne.corinne_be.dto.candle_dto.MinutePageDto;
+import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +40,13 @@ public class PriceController {
 
     // 일별 등락률 랭크
     @GetMapping("/api/price/rank")
-    public ResponseEntity<?> getDateRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<List<DateReponseDto>> getDateRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
         return priceService.getDateRank(userDetails.getUser());
     }
 
-
+    @GetMapping("/api/price/tradeprice/{tiker}")
+    public ResponseEntity<PricePublishingDto> getTradePrice(@PathVariable String tiker){
+        return priceService.getTradePrice(tiker);
+    }
 }

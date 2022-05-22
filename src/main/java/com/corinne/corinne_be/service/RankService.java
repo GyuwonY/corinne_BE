@@ -99,9 +99,8 @@ public class RankService {
 
         int i = 1;
         for(RankDto rankDto : rankDtos){
-            i++;
             rankDto.setRank(i);
-
+            i++;
         }
 
         int fromIndex = (page - 1) * size;
