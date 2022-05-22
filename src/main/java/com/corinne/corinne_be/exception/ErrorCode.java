@@ -22,6 +22,7 @@ public enum ErrorCode {
     NON_AVAILABLE_TOKEN(HttpStatus.FORBIDDEN.value(), "12","유효하지 않은 토큰입니다."),
     NON_EXIST_QUEST(HttpStatus.BAD_REQUEST.value(), "13","이미 수령한 보상입니다."),
     NON_EXIST_TIKER(HttpStatus.BAD_REQUEST.value(), "14","존재하지 않는 코인입니다."),
+    WRONG_LEVERAGE(HttpStatus.BAD_REQUEST.value(), "15","잘못된 레버리지입니다.")
     ;
 
     private final int httpStatus;
