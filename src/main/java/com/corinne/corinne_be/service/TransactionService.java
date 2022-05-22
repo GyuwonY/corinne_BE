@@ -52,7 +52,7 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getTransactional(int page, int size, String sortBy, User user) {
 
-        if(page <= 0) {
+        if(page < 0) {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
 
@@ -70,7 +70,7 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getSpecifiedTranstnal(int page, int size, String sortBy, String coinName, User user) {
 
-        if(page <= 0) {
+        if(page < 0) {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
 
