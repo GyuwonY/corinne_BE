@@ -148,7 +148,7 @@ public class RankService {
         // 페이징 사이즈
         int size = 20;
 
-        List<User> Users = userRepository.findAllByOrderByLastFluctuationDesc();
+        List<User> Users = userRepository.findAllByLastFluctuationGreaterThanOrderByLastFluctuationDesc(0.0);
         List<RankDto> rankDtos = new ArrayList<>();
         for(User user : Users){
 

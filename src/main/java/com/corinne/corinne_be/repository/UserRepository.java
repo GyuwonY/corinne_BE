@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByNickname(String nickname);
     Optional<User> findByUserId(Long userId);
 
-    List<User> findAllByOrderByLastFluctuationDesc();
+    List<User> findAllByLastFluctuationGreaterThanOrderByLastFluctuationDesc(double fluctuation);
 
     List<User> findTop3ByOrderByLastFluctuationDesc();
 
