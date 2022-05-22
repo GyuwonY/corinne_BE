@@ -123,7 +123,7 @@ public class RankService {
     @Transactional
     public ResponseEntity<RankTopDto> getRankTop3() {
 
-        List<User> users = userRepository.findTop3ByOrderByLastFluctuationDesc();
+        List<User> users = userRepository.findTop3ByLastFluctuationNotOrderByLastFluctuationDesc(0.0);
         List<RankInfoDto> rankDtos = new ArrayList<>();
         for(User user : users){
             rankDtos.add(new RankInfoDto(user));

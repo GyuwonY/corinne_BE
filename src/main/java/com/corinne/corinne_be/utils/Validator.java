@@ -22,7 +22,7 @@ public class Validator {
         if (userRepository.findByNickname(userRequestdto.getNickname()).isPresent()) {
             throw new CustomException(ErrorCode.EXIST_NICKNAME);
         }
-        if (!Pattern.matches("^[ㄱ-ㅎ가-힣a-z0-9-_]{4,9}$", userRequestdto.getNickname())) {
+        if (!Pattern.matches("^[ㄱ-ㅎ가-힣a-zA-Z0-9-_]{4,9}$", userRequestdto.getNickname())) {
             throw new CustomException(ErrorCode.WRONG_VALUE_NICKNAME);
         }
     }

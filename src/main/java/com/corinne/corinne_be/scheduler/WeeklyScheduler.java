@@ -141,7 +141,7 @@ public class WeeklyScheduler {
     public void rewordUpdate() {
         userRepository.rankUpdate();
         userRepository.highRankUpdate();
-        List<User> userList = userRepository.findTop3ByOrderByLastFluctuationDesc();
+        List<User> userList = userRepository.findTop3ByLastFluctuationNotOrderByLastFluctuationDesc(0.0);
 
         for (User user : userList) {
             if (user.getLastRank() == 1) {
