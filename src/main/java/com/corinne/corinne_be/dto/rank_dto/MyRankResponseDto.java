@@ -15,8 +15,7 @@ public class MyRankResponseDto {
     public MyRankResponseDto() {
     }
 
-    public MyRankResponseDto(int myRank, List<RankDto> rank, int totalPage) {
-        this.myRank = myRank;
+    public MyRankResponseDto(List<RankDto> rank, int totalPage) {
         this.rank = rank;
         this.totalPage = totalPage;
     }

@@ -49,7 +49,6 @@ public class RankService {
         if(page <= 0) {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
-
         // 페이징 사이즈
         int size = 20;
 
@@ -98,12 +97,12 @@ public class RankService {
 
         rankDtos = rankDtos.stream().sorted(Comparator.comparing(RankDto::getTotalBalance).reversed()).collect(Collectors.toList());
 
-        List<Long> userIds = new ArrayList<>();
+        int i = 1;
         for(RankDto rankDto : rankDtos){
-            userIds.add(rankDto.getUserId());
-        }
+            i++;
+            rankDto.setRank(i);
 
-        int myRank = userIds.indexOf(loginUser.getUserId()) + 1;
+        }
 
         int fromIndex = (page - 1) * size;
 
@@ -115,7 +114,7 @@ public class RankService {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
 
-        MyRankResponseDto myRankResponseDto = new MyRankResponseDto(myRank,rankDtos.subList(fromIndex,Math.min(fromIndex + size, rankDtos.size())), totalPage);
+        MyRankResponseDto myRankResponseDto = new MyRankResponseDto(rankDtos.subList(fromIndex,Math.min(fromIndex + size, rankDtos.size())), totalPage);
 
         return new ResponseEntity<>(myRankResponseDto, HttpStatus.OK);
     }

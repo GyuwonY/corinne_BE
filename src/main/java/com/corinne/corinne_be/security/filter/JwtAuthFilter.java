@@ -82,10 +82,9 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8"); // HelloData 객체
         Exception exception = new Exception();
-        exception.setHttpStatus(HttpStatus.BAD_REQUEST);
         exception.setErrorMessage(errorMessage);
         String result = mapper.writeValueAsString(exception);
-        response.setStatus(400);
+        response.setStatus(403);
         response.getWriter().print(result);
     }
 
