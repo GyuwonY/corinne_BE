@@ -143,6 +143,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/user/kakao/**");
         skipPathList.add("POST,/user/login");
 
+        skipPathList.add("OPTIONS,/**");
+
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
                 "/**"
