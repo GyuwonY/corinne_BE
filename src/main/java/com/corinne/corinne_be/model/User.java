@@ -69,7 +69,6 @@ public class User {
         this.firstLogin = false;
     }
 
-
     public void balanceUpdate(Long balance){
         this.accountBalance = balance;
     }
