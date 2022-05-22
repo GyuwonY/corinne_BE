@@ -128,4 +128,8 @@ public class PriceService {
 
         return new ResponseEntity<>(dateReponseDtos,HttpStatus.OK);
     }
+
+    public ResponseEntity<PricePublishingDto> getTradePrice(String tiker) {
+        return new ResponseEntity<>(redisRepository.getTradePrice(tiker), HttpStatus.OK);
+    }
 }

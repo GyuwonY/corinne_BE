@@ -58,6 +58,8 @@ public class UserService {
         userInfoResponesDto.setWin(alarmQueryDto.getWin());
         userInfoResponesDto.setDraw(alarmQueryDto.getDraw());
         userInfoResponesDto.setLose(alarmQueryDto.getLose());
+        Long participationCount = alarmRepository.countAllByUser_UserIdAndContent(user.getUserId(),"주간 랭킹 참여자 보상");
+        userInfoResponesDto.setParticipation(participationCount);
         return new ResponseEntity<>(userInfoResponesDto,HttpStatus.OK);
     }
 
