@@ -41,14 +41,14 @@ public class TransactionController {
 
     // 매수
     @PostMapping("/api/transaction/buy")
-    public ResponseEntity<?>  buy(@RequestBody BuyRequestDto buyRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<BuyResponseDto>  buy(@RequestBody BuyRequestDto buyRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return transactionService.buy(buyRequestDto,userDetails.getUser());
     }
 
 
     // 매도
     @PostMapping("/api/transaction/sell")
-    public ResponseEntity<?>  sell(@RequestBody SellRequestDto sellRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<SellResponseDto>  sell(@RequestBody SellRequestDto sellRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return transactionService.sell(sellRequestDto,userDetails.getUser());
     }
 

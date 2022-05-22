@@ -2,6 +2,8 @@ package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.follow_dto.FollowDto;
 import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
+import com.corinne.corinne_be.exception.CustomException;
+import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.security.UserDetailsImpl;
@@ -32,15 +34,15 @@ public class FollowerService {
 
     // 팔로우
     @Transactional
-    public ResponseEntity<?> save(Long userId, User user) {
+    public ResponseEntity<HttpStatus> save(Long userId, User user) {
         //로그인된 유저
         if (userId.equals(user.getUserId())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.WRONG_TARGET_FOLLOW);
         }
         //팔로우할 유저
         User follower = userRepository.findById(userId).orElse(null);
         if (follower == null) {
-            return new ResponseEntity<>("존재하지 않는 유저입니다", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.NON_EXIST_USER);
         }
 
         Quest quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 7).orElse(null);
@@ -66,13 +68,13 @@ public class FollowerService {
 
 
     @Transactional
-    public ResponseEntity<?> unfollow (Long userid, UserDetailsImpl userDetails){
+    public ResponseEntity<HttpStatus> unfollow (Long userid, UserDetailsImpl userDetails){
         // 로그인된 유저
         User user = userDetails.getUser();
         // 언팔로우 할 유저
         User follower = userRepository.findById(userid).orElse(null);
         if (follower == null) {
-            return new ResponseEntity<>("존재하지 않는 유저입니다", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.NON_EXIST_USER);
         }
         followerRepository.deleteByUserAndFollower(user, follower);
         return new ResponseEntity<>(HttpStatus.OK);

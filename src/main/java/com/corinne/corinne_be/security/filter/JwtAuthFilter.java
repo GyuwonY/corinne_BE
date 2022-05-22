@@ -1,7 +1,15 @@
 package com.corinne.corinne_be.security.filter;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.corinne.corinne_be.exception.CustomException;
+import com.corinne.corinne_be.exception.ErrorCode;
+import com.corinne.corinne_be.exception.Exception;
 import com.corinne.corinne_be.security.jwt.HeaderTokenExtractor;
+import com.corinne.corinne_be.security.jwt.JwtDecoder;
 import com.corinne.corinne_be.security.jwt.JwtPreProcessingToken;
+import com.corinne.corinne_be.security.jwt.JwtTokenUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -13,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Token 을 내려주는 Filter 가 아닌  client 에서 받아지는 Token 을 서버 사이드에서 검증하는 클레스 SecurityContextHolder 보관소에 해당
@@ -21,13 +30,15 @@ import java.io.IOException;
 public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
     private final HeaderTokenExtractor extractor;
+    private final JwtDecoder jwtDecoder;
 
     public JwtAuthFilter(
             RequestMatcher requiresAuthenticationRequestMatcher,
-            HeaderTokenExtractor extractor
+            HeaderTokenExtractor extractor,
+            JwtDecoder jwtDecoder
     ) {
         super(requiresAuthenticationRequestMatcher);
-
+        this.jwtDecoder = jwtDecoder;
         this.extractor = extractor;
     }
 
@@ -44,12 +55,37 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             return null;
         }
 
+        String nowToken = extractor.extract(tokenPayload, request);
         JwtPreProcessingToken jwtToken = new JwtPreProcessingToken(
                 extractor.extract(tokenPayload, request));
+
+        DecodedJWT decodedJWT = jwtDecoder.isValidToken(nowToken)
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_AVAILABLE_TOKEN));
+
+        Date expiredDate = decodedJWT
+                .getClaim(JwtTokenUtils.CLAIM_EXPIRED_DATE)
+                .asDate();
+
+        if(expiredDate.before(new Date())){
+            putErrorMessage(response, "만료된 토큰입니다.");
+            return null;
+
+        }
 
         return super
                 .getAuthenticationManager()
                 .authenticate(jwtToken);
+    }
+
+    private void putErrorMessage(HttpServletResponse response, String errorMessage) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8"); // HelloData 객체
+        Exception exception = new Exception();
+        exception.setErrorMessage(errorMessage);
+        String result = mapper.writeValueAsString(exception);
+        response.setStatus(403);
+        response.getWriter().print(result);
     }
 
     @Override

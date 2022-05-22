@@ -11,12 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -32,25 +34,25 @@ public class UserRestController {
 
     //카카오로그인
     @PostMapping("/user/kakao/callback")
-    public ResponseEntity<?> kakao(@RequestBody KakaoDto kakaoDto) throws JsonProcessingException {
+    public ResponseEntity<Boolean> kakao(@RequestBody KakaoDto kakaoDto) throws JsonProcessingException {
         return kakaoService.kakao(kakaoDto.getAuthCode());
     }
 
     //회원정보 수정
     @PatchMapping("/user/signup")
-    public ResponseEntity<?> infoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
+    public ResponseEntity<HttpStatus> infoUpdate(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserRequestdto userRequestdto){
         return userService.infoUpdate(userDetails.getUser(),userRequestdto);
     }
 
     //회원정보조희
     @GetMapping("/api/user/info")
-    public ResponseEntity<?> userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<UserInfoResponesDto> userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails.getUser().getUserId());
     }
 
     //다른 회원 프로필
     @GetMapping("/api/user/info/{userId}")
-    public ResponseEntity<?> userinfo(@PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<UserInfoResponesDto> userinfo(@PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userId, userDetails.getUser());
     }
 
@@ -62,19 +64,19 @@ public class UserRestController {
 
     // 유저 알림 리스트 조회
     @GetMapping("/api/user/alarm")
-    public ResponseEntity<?> getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<List<AlarmDto>> getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.getAlarmList(userDetails.getUser());
     }
 
     // 1:1 매칭 상대, 수익률
     @GetMapping("/api/user/rival")
-    public ResponseEntity<?> getRival(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<RivalDto> getRival(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.getRival(userDetails.getUser());
     }
 
     // 퀘스트 리스트
     @GetMapping("/api/user/quest")
-    public ResponseEntity<?> getQuest(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<List<QuestDto>> getQuest(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.getQuest(userDetails.getUser());
     }
 

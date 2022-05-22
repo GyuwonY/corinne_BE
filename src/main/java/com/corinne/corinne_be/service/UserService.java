@@ -5,6 +5,8 @@ import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
 import com.corinne.corinne_be.dto.Quest_dto.RewordResponseDto;
 import com.corinne.corinne_be.dto.alarm_dto.AlarmQueryDto;
 import com.corinne.corinne_be.dto.user_dto.*;
+import com.corinne.corinne_be.exception.CustomException;
+import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.Alarm;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.Quest;
@@ -92,13 +94,8 @@ public class UserService {
      *
      */
     @Transactional
-    public ResponseEntity<?> infoUpdate(User user, UserRequestdto userRequestdto){
-        try{
-            validator.userValidate(userRequestdto);
-        }catch (IllegalArgumentException e){
-            String msg = e.getMessage();
-            return new ResponseEntity<>(msg,HttpStatus.OK);
-        }
+    public ResponseEntity<HttpStatus> infoUpdate(User user, UserRequestdto userRequestdto){
+        validator.userValidate(userRequestdto);
         user.infoUpdate(userRequestdto);
         userRepository.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -142,13 +139,13 @@ public class UserService {
     }
 
     // 1:1 매칭 상대, 수익률
-    public ResponseEntity<?> getRival(User user) {
+    public ResponseEntity<RivalDto> getRival(User user) {
         Long rivalId = user.getRival();
 
         User rival = userRepository.findByUserId(rivalId).orElse(null);
 
         if(rival == null){
-            return new ResponseEntity<>("지정된 라이벌이 없습니다.",HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.NON_EXIST_RIVAL);
         }
 
         // 라이벌 수익률
@@ -167,7 +164,7 @@ public class UserService {
 
     // 퀘스트 리스트
 
-    public ResponseEntity<?> getQuest(User user) {
+    public ResponseEntity<List<QuestDto>> getQuest(User user) {
         List<Quest> quests = questRepository.findAllByUser_UserId(user.getUserId());
 
         List<QuestDto> questDtos = new ArrayList<>();
@@ -183,7 +180,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<RewordResponseDto> reword(QuestRequestDto questRequestDto, User user){
         RewordDto rewordDto = RewordUtil.switchReword(questRequestDto.getQuestNo());
-        User result = userRepository.findByUserId(user.getUserId()).orElseThrow(IllegalArgumentException::new);
+        User result = userRepository.findByUserId(user.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.NON_EXIST_USER));
         result.rewordUpdate(rewordDto);
         questRepository.deleteByUser_UserIdAndQuestNo(user.getUserId(), questRequestDto.getQuestNo());
         if(levelUtil.levelUpCheck(result, rewordDto.getExp())){

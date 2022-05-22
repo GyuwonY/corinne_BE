@@ -1,5 +1,7 @@
 package com.corinne.corinne_be.controller;
 
+import com.corinne.corinne_be.dto.rank_dto.LaskweekRankDto;
+import com.corinne.corinne_be.dto.rank_dto.MyRankDto;
 import com.corinne.corinne_be.dto.rank_dto.MyRankResponseDto;
 import com.corinne.corinne_be.dto.rank_dto.RankTopDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
@@ -23,7 +25,7 @@ public class RankController {
 
     // 랭킹리스트
     @GetMapping("/api/rank/{page}")
-    public ResponseEntity<?> getRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<MyRankResponseDto> getRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         return rankService.getRank(page, userDetails.getUser());
     }
@@ -37,14 +39,14 @@ public class RankController {
 
     // 내랭킹
     @GetMapping("/api/rank/myrank")
-    public ResponseEntity<?> getMyRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<MyRankDto> getMyRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
         return rankService.getMyRank(userDetails.getUser());
     }
 
     // 지난주 랭킹 리스트
     @GetMapping("/api/rank/lastweek/{page}")
-    public ResponseEntity<?> getLastweekRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<LaskweekRankDto> getLastweekRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return rankService.getLastweekRank(page, userDetails.getUser());
     }
 

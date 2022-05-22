@@ -4,6 +4,8 @@ import com.corinne.corinne_be.dto.account_dto.AccountResponseDto;
 import com.corinne.corinne_be.dto.account_dto.AccountSimpleDto;
 import com.corinne.corinne_be.dto.account_dto.CoinsDto;
 import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
+import com.corinne.corinne_be.exception.CustomException;
+import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,10 +142,10 @@ public class AccountService {
 
     // 즐겨찾기 등록
     @Transactional
-    public ResponseEntity<?> inputBookmark(String tiker, User user) {
+    public ResponseEntity<HttpStatus> inputBookmark(String tiker, User user) {
 
         if (bookmarkRepository.existsByUserIdAndTiker(user.getUserId(), tiker)) {
-            return new ResponseEntity<>("이미 즐겨찾기 되어있는 코인입니다", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.EXIST_BOOKMARK);
         }
 
         Quest quest = questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), 1).orElse(null);
@@ -163,12 +165,12 @@ public class AccountService {
 
     // 즐겨찾기 삭제
     @Transactional
-    public ResponseEntity<?> deleteBookmark(String tiker, User user) {
+    public ResponseEntity<HttpStatus> deleteBookmark(String tiker, User user) {
 
         Bookmark bookmark = bookmarkRepository.findByUserIdAndTiker(user.getUserId(), tiker).orElse(null);
 
         if (bookmark == null) {
-            return new ResponseEntity<>("이미 삭제된 즐겨찾기 목록입니다", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.NON_EXIST_BOOKMARK);
         }
 
         bookmarkRepository.delete(bookmark);
