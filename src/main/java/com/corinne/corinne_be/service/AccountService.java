@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -28,6 +29,7 @@ public class AccountService {
     private final TransactionRepository transactionRepository;
     private final BookmarkRepository bookmarkRepository;
     private final QuestRepository questRepository;
+    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public AccountService(CoinRepository coinRepository, UserRepository userRepository,
@@ -107,6 +109,10 @@ public class AccountService {
     @Transactional
     public ResponseEntity<AccountSimpleDto> getSimpleBalance(String tiker, User user) {
 
+        if(!tikers.contains(tiker)){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
+
         List<Coin> coin = coinRepository.findByTikerAndUser_UserId(tiker, user.getUserId());
 
         Long accountBalance = user.getAccountBalance();
@@ -144,6 +150,10 @@ public class AccountService {
     @Transactional
     public ResponseEntity<HttpStatus> inputBookmark(String tiker, User user) {
 
+        if(!tikers.contains(tiker)){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
+
         if (bookmarkRepository.existsByUserIdAndTiker(user.getUserId(), tiker)) {
             throw new CustomException(ErrorCode.EXIST_BOOKMARK);
         }
@@ -166,6 +176,10 @@ public class AccountService {
     // 즐겨찾기 삭제
     @Transactional
     public ResponseEntity<HttpStatus> deleteBookmark(String tiker, User user) {
+
+        if(!tikers.contains(tiker)){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
 
         Bookmark bookmark = bookmarkRepository.findByUserIdAndTiker(user.getUserId(), tiker).orElse(null);
 

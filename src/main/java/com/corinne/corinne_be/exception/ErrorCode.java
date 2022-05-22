@@ -19,7 +19,9 @@ public enum ErrorCode {
     WRONG_VALUE_NICKNAME(HttpStatus.BAD_REQUEST.value(), "9","닉네임은 특수문자를 제외한 4~9 자입니다."),
     FAIL_CONVERT_FILE(HttpStatus.BAD_REQUEST.value(), "10","파일 변환에 실패하였습니다."),
     NON_EXIST_RIVAL(HttpStatus.BAD_REQUEST.value(), "11","라이벌이 존재하지 않습니다."),
-    NON_AVAILABLE_TOKEN(HttpStatus.FORBIDDEN.value(), "12","유효하지 않은 토큰입니다.")
+    NON_AVAILABLE_TOKEN(HttpStatus.FORBIDDEN.value(), "12","유효하지 않은 토큰입니다."),
+    NON_EXIST_QUEST(HttpStatus.BAD_REQUEST.value(), "13","이미 수령한 보상입니다."),
+    NON_EXIST_TIKER(HttpStatus.BAD_REQUEST.value(), "14","존재하지 않는 코인입니다."),
     ;
 
     private final int httpStatus;

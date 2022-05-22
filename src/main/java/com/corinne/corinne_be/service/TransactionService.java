@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class TransactionService {
     private final UserRepository userRepository;
     private final RedisRepository redisRepository;
     private final QuestRepository questRepository;
+    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,
@@ -52,7 +54,7 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getTransactional(int page, int size, String sortBy, User user) {
 
-        if(page <= 0) {
+        if(page < 0) {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
 
@@ -70,7 +72,7 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getSpecifiedTranstnal(int page, int size, String sortBy, String coinName, User user) {
 
-        if(page <= 0) {
+        if(page < 0) {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
 
@@ -104,6 +106,10 @@ public class TransactionService {
     // 매수
     @Transactional
     public ResponseEntity<BuyResponseDto> buy(BuyRequestDto buyRequestDto, User user) {
+
+        if(!tikers.contains(buyRequestDto.getTiker())){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
 
         if(user.getAccountBalance() < buyRequestDto.getBuyAmount() || buyRequestDto.getBuyAmount() < 50000 || buyRequestDto.getTradePrice() < 20){
             throw new CustomException(ErrorCode.WRONG_AMOUNT);
@@ -197,6 +203,11 @@ public class TransactionService {
     // 매도
     @Transactional
     public ResponseEntity<SellResponseDto> sell(SellRequestDto sellRequestDto, User user) {
+
+        if(!tikers.contains(sellRequestDto.getTiker())){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
+
         Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(sellRequestDto.getTiker(), user.getUserId(), sellRequestDto.getLeverage()).orElse(null);
 
         Long accountBalance = user.getAccountBalance();
@@ -292,6 +303,10 @@ public class TransactionService {
     // 코린이 회원 중 특정 코인 매수 카운트
     @Transactional
     public ResponseEntity<BuyCountDto> getBuyCount(String tiker) {
+
+        if(!tikers.contains(tiker)){
+            throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
 
         // 초기화 시점인 월요일 9시 기준
         Calendar cal = Calendar.getInstance();
