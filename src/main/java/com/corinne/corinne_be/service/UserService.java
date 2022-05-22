@@ -71,7 +71,7 @@ public class UserService {
 
     //회원정보 조희
     private UserInfoResponesDto getUserInfo(Long userId){
-        User user = userRepository.findByUserId(userId).orElseThrow(IllegalArgumentException::new);
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NON_EXIST_USER));
 
         Calendar cal = Calendar.getInstance();
         if(cal.get(Calendar.DAY_OF_WEEK)==1){
@@ -107,7 +107,7 @@ public class UserService {
     @Transactional
     public ProfileResponseDto registImage(MultipartFile file, UserDetailsImpl userDetails) throws IOException {
         Long userId = userDetails.getUser().getUserId();
-        User user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+        User user = userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.NON_EXIST_USER));
         String imgurl = s3Uploader.upload(file, "static");
         user.profileImgUpdate(imgurl);
         return new ProfileResponseDto(imgurl);
