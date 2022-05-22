@@ -7,6 +7,7 @@ import com.corinne.corinne_be.security.handler.AuthFailureHandler;
 import com.corinne.corinne_be.security.handler.CustomLogoutSuccessHandler;
 import com.corinne.corinne_be.security.handler.FormLoginSuccessHandler;
 import com.corinne.corinne_be.security.jwt.HeaderTokenExtractor;
+import com.corinne.corinne_be.security.jwt.JwtDecoder;
 import com.corinne.corinne_be.security.provider.FormLoginAuthProvider;
 import com.corinne.corinne_be.security.provider.JWTAuthProvider;
 import org.springframework.context.annotation.Bean;
@@ -32,15 +33,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final JwtDecoder jwtDecoder;
 
     public WebSecurityConfig(
             JWTAuthProvider jwtAuthProvider,
             HeaderTokenExtractor headerTokenExtractor,
-            CustomLogoutSuccessHandler customLogoutSuccessHandler
+            CustomLogoutSuccessHandler customLogoutSuccessHandler,
+            JwtDecoder jwtDecoder
     ) {
         this.jwtAuthProvider = jwtAuthProvider;
         this.headerTokenExtractor = headerTokenExtractor;
         this.customLogoutSuccessHandler = customLogoutSuccessHandler;
+        this.jwtDecoder = jwtDecoder;
     }
 
     @Bean
@@ -146,7 +150,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         JwtAuthFilter filter = new JwtAuthFilter(
                 matcher,
-                headerTokenExtractor
+                headerTokenExtractor,
+                jwtDecoder
         );
         filter.setAuthenticationManager(super.authenticationManagerBean());
 

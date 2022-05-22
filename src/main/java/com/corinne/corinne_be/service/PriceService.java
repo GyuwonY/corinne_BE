@@ -11,6 +11,7 @@ import com.corinne.corinne_be.repository.BookmarkRepository;
 import com.corinne.corinne_be.repository.DayCandleRepository;
 import com.corinne.corinne_be.repository.MinuteCandleRepository;
 import com.corinne.corinne_be.repository.RedisRepository;
+import com.corinne.corinne_be.utils.TikerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +37,6 @@ public class PriceService {
         this.bookmarkRepository = bookmarkRepository;
         this.redisRepository = redisRepository;
     }
-
-
-
 
     // 분봉 조회
     @Transactional
@@ -77,7 +75,6 @@ public class PriceService {
         return new ResponseEntity<>(minutePageDtos, HttpStatus.OK);
     }
 
-
     // 일봉 조회
     @Transactional
    public ResponseEntity<List<DatePageDto>> getdate(String tikerName) {
@@ -108,36 +105,7 @@ public class PriceService {
         for(String tiker : tikers){
             PricePublishingDto pricePublishingDto = redisRepository.getTradePrice(tiker);
 
-            String tikername = "";
-            switch (tiker){
-                case "KRW-BTC":
-                    tikername = "비트코인";
-                    break;
-                case "KRW-SOL":
-                    tikername = "솔라나";
-                    break;
-                case "KRW-ETH":
-                    tikername = "이더리움";
-                    break;
-                case "KRW-XRP":
-                    tikername = "리플";
-                    break;
-                case "KRW-ADA":
-                    tikername = "에이다";
-                    break;
-                case "KRW-DOGE":
-                    tikername = "도지코인";
-                    break;
-                case "KRW-AVAX":
-                    tikername = "아발란체";
-                    break;
-                case "KRW-DOT":
-                    tikername = "폴카닷";
-                    break;
-                case "KRW-MATIC":
-                    tikername = "폴리곤";
-                    break;
-            }
+            String tikername = TikerUtil.switchTiker(tiker);
 
             // 어제 일봉 종료값
             int endPrice = pricePublishingDto.getPrevClosingPrice();

@@ -1,6 +1,8 @@
 package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.rank_dto.*;
+import com.corinne.corinne_be.exception.CustomException;
+import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
@@ -43,7 +45,10 @@ public class RankService {
 
     // 랭킹 리스트
     @Transactional
-    public ResponseEntity<?> getRank(int page, User loginUser) {
+    public ResponseEntity<MyRankResponseDto> getRank(int page, User loginUser) {
+        if(page <= 0) {
+            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
+        }
 
         // 페이징 사이즈
         int size = 20;
@@ -100,10 +105,6 @@ public class RankService {
 
         int myRank = userIds.indexOf(loginUser.getUserId()) + 1;
 
-        // 페이징
-        if(page <= 0) {
-            return new ResponseEntity<>("올바르지 않는 페이지 요청입니다", HttpStatus.BAD_REQUEST);
-        }
         int fromIndex = (page - 1) * size;
 
         int totalPage = rankDtos.size()/size + 1;
@@ -111,12 +112,12 @@ public class RankService {
             totalPage -= 1;
         }
         if(rankDtos.size() <= fromIndex){
-            return new ResponseEntity<>("올바르지 않는 페이지 요청입니다", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
 
         MyRankResponseDto myRankResponseDto = new MyRankResponseDto(myRank,rankDtos.subList(fromIndex,Math.min(fromIndex + size, rankDtos.size())), totalPage);
 
-        return  new ResponseEntity<>(myRankResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(myRankResponseDto, HttpStatus.OK);
     }
 
 
@@ -134,14 +135,17 @@ public class RankService {
 
     // 내 랭킹
     @Transactional
-    public ResponseEntity<?> getMyRank(User loginUser) {
+    public ResponseEntity<MyRankDto> getMyRank(User loginUser) {
 
         return new ResponseEntity<>(rankUtil.getMyRank(loginUser.getUserId()), HttpStatus.OK);
     }
 
     // 지난주 랭킹 리스트
     @Transactional
-    public ResponseEntity<?> getLastweekRank(int page, User loginUser) {
+    public ResponseEntity<LaskweekRankDto> getLastweekRank(int page, User loginUser) {
+        if(page <= 0) {
+            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
+        }
 
         // 페이징 사이즈
         int size = 20;
@@ -182,10 +186,7 @@ public class RankService {
             rankDtos.add(rankListDto);
         }
 
-        // 페이징
-        if(page <= 0) {
-            return new ResponseEntity<>("올바르지 않는 페이지 요청입니다", HttpStatus.BAD_REQUEST);
-        }
+
         int fromIndex = (page - 1) * size;
 
         int totalPage = rankDtos.size()/size + 1;
@@ -193,12 +194,12 @@ public class RankService {
             totalPage -= 1;
         }
         if(rankDtos.size() <= fromIndex){
-            return new ResponseEntity<>("올바르지 않는 페이지 요청입니다", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
         }
 
         LaskweekRankDto laskweekRankDto = new LaskweekRankDto(rankDtos.subList(fromIndex,Math.min(fromIndex + size, rankDtos.size())), totalPage);
 
-        return  new ResponseEntity<>(laskweekRankDto, HttpStatus.OK);
+        return new ResponseEntity<>(laskweekRankDto, HttpStatus.OK);
     }
 
 

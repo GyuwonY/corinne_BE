@@ -1,6 +1,8 @@
 package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.transaction_dto.*;
+import com.corinne.corinne_be.exception.CustomException;
+import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.Quest;
 import com.corinne.corinne_be.model.Transaction;
@@ -50,6 +52,10 @@ public class TransactionService {
     @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getTransactional(int page, int size, String sortBy, User user) {
 
+        if(page <= 0) {
+            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
+        }
+
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
@@ -63,6 +69,10 @@ public class TransactionService {
     // 해당 코인 거래내역
     @Transactional
     public ResponseEntity<Page<TransactionResponseDto>> getSpecifiedTranstnal(int page, int size, String sortBy, String coinName, User user) {
+
+        if(page <= 0) {
+            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
+        }
 
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
@@ -93,10 +103,10 @@ public class TransactionService {
 
     // 매수
     @Transactional
-    public ResponseEntity<?> buy(BuyRequestDto buyRequestDto, User user) {
+    public ResponseEntity<BuyResponseDto> buy(BuyRequestDto buyRequestDto, User user) {
 
         if(user.getAccountBalance() < buyRequestDto.getBuyAmount() || buyRequestDto.getBuyAmount() < 50000 || buyRequestDto.getTradePrice() < 20){
-            return new ResponseEntity<>("구매량을 확인해주세요", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.WRONG_AMOUNT);
         }
 
         Quest quest;
@@ -186,15 +196,13 @@ public class TransactionService {
 
     // 매도
     @Transactional
-    public ResponseEntity<?> sell(SellRequestDto sellRequestDto, User user) {
-        log.info("매도 시작"+sellRequestDto.getSellAmount()+ "   " + sellRequestDto.getTradePrice());
+    public ResponseEntity<SellResponseDto> sell(SellRequestDto sellRequestDto, User user) {
         Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(sellRequestDto.getTiker(), user.getUserId(), sellRequestDto.getLeverage()).orElse(null);
 
         Long accountBalance = user.getAccountBalance();
 
         if(coin == null){
-            log.info("코인 보유 X");
-            return  new ResponseEntity<>("보유한 코인이 아닙니다",HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.NON_EXIST_COIN);
         }
 
         if(coin.getLeverage() != 1L){
@@ -236,8 +244,7 @@ public class TransactionService {
                 coin.update(leftover);
             }
         } else {
-            log.info("보유 금액보다 많이 팜");
-            return new ResponseEntity<>("보유한 금액보다 큰 금액을 팔 수 없습니다",HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.WRONG_AMOUNT);
         }
 
         user.balanceUpdate(accountBalance + sellRequestDto.getSellAmount());
