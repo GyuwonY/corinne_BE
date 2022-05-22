@@ -115,8 +115,8 @@ public class TransactionService {
             throw new CustomException(ErrorCode.WRONG_AMOUNT);
         }
 
-        if(buyRequestDto.getLeverage()!=1 || buyRequestDto.getLeverage()!=25 ||
-                buyRequestDto.getLeverage()!=50 || buyRequestDto.getLeverage()!=75 || buyRequestDto.getLeverage()!=100){
+        if(buyRequestDto.getLeverage()!=1 && buyRequestDto.getLeverage()!=25 &&
+                buyRequestDto.getLeverage()!=50 && buyRequestDto.getLeverage()!=75 && buyRequestDto.getLeverage()!=100){
             throw new CustomException(ErrorCode.WRONG_LEVERAGE);
         }
 
