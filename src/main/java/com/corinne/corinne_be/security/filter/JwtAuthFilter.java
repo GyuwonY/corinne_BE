@@ -85,6 +85,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         exception.setHttpStatus(HttpStatus.BAD_REQUEST);
         exception.setErrorMessage(errorMessage);
         String result = mapper.writeValueAsString(exception);
+        response.setStatus(400);
         response.getWriter().print(result);
     }
 
