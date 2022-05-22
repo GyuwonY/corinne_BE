@@ -105,7 +105,9 @@ public class User {
     public void alarmUpdate(boolean alarm) {this.alarm = alarm; }
 
     public void rewordUpdate(RewordDto rewordDto){
-        this.accountBalance += rewordDto.getAmount();
+        if(rewordDto.getAmount()!=null) {
+            this.accountBalance += rewordDto.getAmount();
+        }
         this.exp += rewordDto.getExp();
     }
 }
