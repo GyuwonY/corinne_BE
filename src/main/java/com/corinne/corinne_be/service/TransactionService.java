@@ -115,6 +115,11 @@ public class TransactionService {
             throw new CustomException(ErrorCode.WRONG_AMOUNT);
         }
 
+        if(buyRequestDto.getLeverage()!=1 && buyRequestDto.getLeverage()!=25 &&
+                buyRequestDto.getLeverage()!=50 && buyRequestDto.getLeverage()!=75 && buyRequestDto.getLeverage()!=100){
+            throw new CustomException(ErrorCode.WRONG_LEVERAGE);
+        }
+
         Quest quest;
 
         if(buyRequestDto.getLeverage()==1) {
@@ -206,6 +211,10 @@ public class TransactionService {
 
         if(!tikers.contains(sellRequestDto.getTiker())){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
+        }
+
+        if(sellRequestDto.getSellAmount()<=0){
+            throw new CustomException(ErrorCode.WRONG_AMOUNT);
         }
 
         Coin coin = coinRepository.findByTikerAndUser_UserIdAndLeverage(sellRequestDto.getTiker(), user.getUserId(), sellRequestDto.getLeverage()).orElse(null);

@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByLastFluctuationNotOrderByLastFluctuationDesc(double fluctuation);
 
-    List<User> findTop3ByOrderByLastFluctuationDesc();
+    List<User> findTop3ByLastFluctuationNotOrderByLastFluctuationDesc(double fluctuation);
 
     @Transactional
     @Modifying

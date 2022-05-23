@@ -129,10 +129,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthFilter jwtFilter() throws Exception {
         List<String> skipPathList = new ArrayList<>();
 
-        // Static 정보 접근 허용
-        skipPathList.add("GET,/images/**");
-        skipPathList.add("GET,/css/**");
-
         // h2-console 허용
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
@@ -142,6 +138,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/profile");
         skipPathList.add("POST,/user/kakao/**");
         skipPathList.add("POST,/user/login");
+
+        skipPathList.add("OPTIONS,/**");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,

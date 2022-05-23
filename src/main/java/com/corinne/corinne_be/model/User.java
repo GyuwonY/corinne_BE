@@ -2,6 +2,7 @@ package com.corinne.corinne_be.model;
 
 import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tbl_user")
 public class User {
 
@@ -24,7 +26,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String userEmail;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String nickname;
 
     @Column(nullable = false)
@@ -57,8 +59,7 @@ public class User {
     @Version
     private Integer version;
 
-    public User(String nickname, String password, String userEmail) {
-        this.nickname = nickname;
+    public User(String password, String userEmail) {
         this.password = password;
         this.userEmail = userEmail;
     }
@@ -104,7 +105,9 @@ public class User {
     public void alarmUpdate(boolean alarm) {this.alarm = alarm; }
 
     public void rewordUpdate(RewordDto rewordDto){
-        this.accountBalance += rewordDto.getAmount();
+        if(rewordDto.getAmount()!=null) {
+            this.accountBalance += rewordDto.getAmount();
+        }
         this.exp += rewordDto.getExp();
     }
 }

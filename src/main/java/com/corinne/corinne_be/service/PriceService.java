@@ -90,7 +90,7 @@ public class PriceService {
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
         }
 
-        List<DayCandle> entites = dateCandleRepository.findAllByTiker(tikerName);
+        List<DayCandle> entites = dateCandleRepository.findAllByTikerOrderByTradeDateAsc(tikerName);
         List<DatePageDto> dateCandles = new ArrayList<>();
         for(DayCandle dayCandle : entites){
 
