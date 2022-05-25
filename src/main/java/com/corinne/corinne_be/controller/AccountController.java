@@ -25,13 +25,13 @@ public class AccountController {
     // 보유 자산
     @GetMapping("/api/account/balance")
     public ResponseEntity<AccountResponseDto> getBalance(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return accountService.getBalance(userDetails.getUser());
+        return accountService.balance(userDetails.getUser());
     }
     
     // 모의 투자 페이지 자산
     @GetMapping("/api/account/balance/{tiker}")
     public ResponseEntity<AccountSimpleDto> getSimpleBalance(@PathVariable String tiker, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return accountService.getSimpleBalance(tiker, userDetails.getUser());
+        return accountService.simpleBalance(tiker, userDetails.getUser());
     }
 
     // 보유 자산 리셋

@@ -45,83 +45,15 @@ public class RankService {
 
     // 랭킹 리스트
     @Transactional
-    public ResponseEntity<MyRankResponseDto> getRank(int page, User loginUser) {
-        if(page <= 0) {
-            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
-        }
-        // 페이징 사이즈
-        int size = 20;
+    public ResponseEntity<List<RankInfoDto>> rankList(User loginUser) {
 
-        List<User> Users = userRepository.findAll();
-
-        List<RankDto> rankDtos = new ArrayList<>();
-
-        for(User user : Users){
-
-            Long totalBalance = 0L;
-
-            Long accountBalance = user.getAccountBalance();
-
-            List<Coin> coins = coinRepository.findAllByUser_UserId(user.getUserId());
-
-            // 보유 코인별 계산
-            totalBalance = rankUtil.getTotalCoinBalance(coins) +  accountBalance;
-
-            BigDecimal temp = new BigDecimal(totalBalance - 1000000);
-            BigDecimal rateCal = new BigDecimal(10000);
-            double fluctuationRate = temp.divide(rateCal,2,RoundingMode.HALF_EVEN).doubleValue();
-
-            boolean follow = followerRepository.existsByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId());
-
-            Calendar cal = Calendar.getInstance();
-            if(cal.get(Calendar.DAY_OF_WEEK)==1){
-                cal.add(Calendar.DATE, -1);
-            }
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-            String mondayDate = dateFormat.format(cal.getTime());
-            mondayDate += " 00:00:00.000";
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-            LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
-            LocalDateTime endDate = LocalDateTime.now();
-
-            int restCount = transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(user.getUserId(),"reset",startDate, endDate).intValue();
-
-            int exp = user.getExp();
-
-            RankDto rankListDto = new RankDto(user.getUserId(), user.getNickname(),user.getImageUrl(),totalBalance,fluctuationRate, follow,restCount,exp);
-
-            rankDtos.add(rankListDto);
-        }
-
-        rankDtos = rankDtos.stream().sorted(Comparator.comparing(RankDto::getTotalBalance).reversed()).collect(Collectors.toList());
-
-        int i = 1;
-        for(RankDto rankDto : rankDtos){
-            rankDto.setRank(i);
-            i++;
-        }
-
-        int fromIndex = (page - 1) * size;
-
-        int totalPage = rankDtos.size()/size + 1;
-        if(rankDtos.size()%size == 0){
-            totalPage -= 1;
-        }
-        if(rankDtos.size() <= fromIndex){
-            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
-        }
-
-        MyRankResponseDto myRankResponseDto = new MyRankResponseDto(rankDtos.subList(fromIndex,Math.min(fromIndex + size, rankDtos.size())), totalPage);
-
-        return new ResponseEntity<>(myRankResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(rankUtil.getRankList(), HttpStatus.OK);
     }
 
 
     // 상위 랭킹 리스트
     @Transactional
-    public ResponseEntity<RankTopDto> getRankTop3() {
+    public ResponseEntity<RankTopDto> rankTop3List() {
 
         List<User> users = userRepository.findTop3ByLastFluctuationNotOrderByLastFluctuationDesc(0.0);
         List<RankInfoDto> rankDtos = new ArrayList<>();
@@ -133,20 +65,14 @@ public class RankService {
 
     // 내 랭킹
     @Transactional
-    public ResponseEntity<MyRankDto> getMyRank(User loginUser) {
+    public ResponseEntity<MyRankDto> myRank(User loginUser) {
 
         return new ResponseEntity<>(rankUtil.getMyRank(loginUser.getUserId()), HttpStatus.OK);
     }
 
     // 지난주 랭킹 리스트
     @Transactional
-    public ResponseEntity<LaskweekRankDto> getLastweekRank(int page, User loginUser) {
-        if(page <= 0) {
-            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
-        }
-
-        // 페이징 사이즈
-        int size = 20;
+    public ResponseEntity<List<RankDto>> lastweekRankList(User loginUser) {
 
         List<User> Users = userRepository.findAllByLastFluctuationNotOrderByLastFluctuationDesc(0.0);
         List<RankDto> rankDtos = new ArrayList<>();
@@ -185,19 +111,7 @@ public class RankService {
         }
 
 
-        int fromIndex = (page - 1) * size;
-
-        int totalPage = rankDtos.size()/size + 1;
-        if(rankDtos.size()%size == 0){
-            totalPage -= 1;
-        }
-        if(rankDtos.size() <= fromIndex){
-            throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
-        }
-
-        LaskweekRankDto laskweekRankDto = new LaskweekRankDto(rankDtos.subList(fromIndex,Math.min(fromIndex + size, rankDtos.size())), totalPage);
-
-        return new ResponseEntity<>(laskweekRankDto, HttpStatus.OK);
+        return new ResponseEntity<>(rankDtos, HttpStatus.OK);
     }
 
 

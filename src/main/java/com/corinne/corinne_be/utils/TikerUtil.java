@@ -1,8 +1,11 @@
 package com.corinne.corinne_be.utils;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class TikerUtil {
 
-    public static String switchTiker(String tiker){
+    public String switchTiker(String tiker){
         switch (tiker){
             case "KRW-BTC":
                 return "비트코인";

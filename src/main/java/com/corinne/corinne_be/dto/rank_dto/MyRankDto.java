@@ -14,9 +14,9 @@ public class MyRankDto {
     public MyRankDto() {
     }
 
-    public MyRankDto(int myRank, double fluctuationRate, Long totalBalance) {
-        this.myRank = myRank;
-        this.fluctuationRate = fluctuationRate;
-        this.totalBalance = totalBalance;
+    public MyRankDto(RankInfoDto rankInfoDto){
+        this.myRank = rankInfoDto.getRank();
+        this.fluctuationRate = rankInfoDto.getFluctuationRate();
+        this.totalBalance = rankInfoDto.getTotalBalance();
     }
 }

@@ -52,7 +52,7 @@ public class TransactionService {
 
     //코인 거래 내역
     @Transactional
-    public ResponseEntity<Page<TransactionResponseDto>> getTransactional(int page, int size, String sortBy, User user) {
+    public ResponseEntity<Page<TransactionResponseDto>> transactionalList(int page, int size, String sortBy, User user) {
 
         if(page < 0) {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
@@ -70,7 +70,7 @@ public class TransactionService {
 
     // 해당 코인 거래내역
     @Transactional
-    public ResponseEntity<Page<TransactionResponseDto>> getSpecifiedTranstnal(int page, int size, String sortBy, String coinName, User user) {
+    public ResponseEntity<Page<TransactionResponseDto>> specifiedTransactional(int page, int size, String sortBy, String coinName, User user) {
 
         if(page < 0) {
             throw new CustomException(ErrorCode.WRONG_VALUE_PAGE);
@@ -290,7 +290,7 @@ public class TransactionService {
 
     // 상대방 최근 거래내역 보기
     @Transactional
-    public ResponseEntity<UserTranResponseDto> getUserTranstnal(Long userId) {
+    public ResponseEntity<UserTranResponseDto> userTranstnal(Long userId) {
 
         List<Transaction> transactionList = transactionRepository.findTop5ByUser_UserIdOrderByTradeAtDesc(userId);
         List<TransactionResponseDto> tranDtos = new ArrayList<>();
@@ -311,7 +311,7 @@ public class TransactionService {
 
     // 코린이 회원 중 특정 코인 매수 카운트
     @Transactional
-    public ResponseEntity<BuyCountDto> getBuyCount(String tiker) {
+    public ResponseEntity<BuyCountDto> buyCount(String tiker) {
 
         if(!tikers.contains(tiker)){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);

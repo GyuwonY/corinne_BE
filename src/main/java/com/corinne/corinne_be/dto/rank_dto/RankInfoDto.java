@@ -2,23 +2,27 @@ package com.corinne.corinne_be.dto.rank_dto;
 
 import com.corinne.corinne_be.model.User;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class RankInfoDto {
-
+    private int exp;
     private Long userId;
     private String nickname;
     private String imageUrl;
     private Long totalBalance;
     private double fluctuationRate;
+    private int rank;
 
     public RankInfoDto() {
     }
 
-    public RankInfoDto(Long userId, String nickname, String imageUrl, Long totalBalance, double fluctuationRate) {
-        this.userId = userId;
-        this.nickname = nickname;
-        this.imageUrl = imageUrl;
+    public RankInfoDto(User user, Long totalBalance, double fluctuationRate) {
+        this.userId = user.getUserId();
+        this.nickname = user.getNickname();
+        this.imageUrl = user.getImageUrl();
+        this.exp = user.getExp();
         this.totalBalance = totalBalance;
         this.fluctuationRate = fluctuationRate;
     }

@@ -27,26 +27,26 @@ public class PriceController {
 
     // 분봉
     @GetMapping("/api/price/minute/{tiker}")
-    public ResponseEntity<List<MinutePageDto>> getMinute(@PathVariable String tiker){
-        return priceService.getMinute(tiker);
+    public ResponseEntity<List<MinutePageDto>> minuteCandleList(@PathVariable String tiker){
+        return priceService.minuteCandleList(tiker);
     }
 
 
     // 일봉
     @GetMapping("/api/price/date/{tiker}")
-    public ResponseEntity<List<DatePageDto>> getDate(@PathVariable String tiker){
-        return priceService.getdate(tiker);
+    public ResponseEntity<List<DatePageDto>> dateCandleList(@PathVariable String tiker){
+        return priceService.dateCandleList(tiker);
     }
 
     // 일별 등락률 랭크
     @GetMapping("/api/price/rank")
-    public ResponseEntity<List<DateReponseDto>> getDateRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<List<DateReponseDto>> dateRankList(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return priceService.getDateRank(userDetails.getUser());
+        return priceService.dateRankList(userDetails.getUser());
     }
 
     @GetMapping("/api/price/tradeprice/{tiker}")
-    public ResponseEntity<PricePublishingDto> getTradePrice(@PathVariable String tiker){
-        return priceService.getTradePrice(tiker);
+    public ResponseEntity<PricePublishingDto> tradePrice(@PathVariable String tiker){
+        return priceService.tradePrice(tiker);
     }
 }

@@ -31,19 +31,22 @@ public class PriceService {
     private final DayCandleRepository dateCandleRepository;
     private final BookmarkRepository bookmarkRepository;
     private final RedisRepository redisRepository;
+    private final TikerUtil tikerUtil;
     List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
-    public PriceService(MinuteCandleRepository minuteCandleRepository, DayCandleRepository dateCandleRepository, BookmarkRepository bookmarkRepository, RedisRepository redisRepository) {
+    public PriceService(MinuteCandleRepository minuteCandleRepository, DayCandleRepository dateCandleRepository,
+                        BookmarkRepository bookmarkRepository, RedisRepository redisRepository, TikerUtil tikerUtil) {
         this.minuteCandleRepository = minuteCandleRepository;
         this.dateCandleRepository = dateCandleRepository;
         this.bookmarkRepository = bookmarkRepository;
         this.redisRepository = redisRepository;
+        this.tikerUtil = tikerUtil;
     }
 
     // 분봉 조회
     @Transactional
-    public ResponseEntity<List<MinutePageDto>> getMinute(String tikerName) {
+    public ResponseEntity<List<MinutePageDto>> minuteCandleList(String tikerName) {
 
         if(!tikers.contains(tikerName)){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
@@ -84,7 +87,7 @@ public class PriceService {
 
     // 일봉 조회
     @Transactional
-   public ResponseEntity<List<DatePageDto>> getdate(String tikerName) {
+   public ResponseEntity<List<DatePageDto>> dateCandleList(String tikerName) {
 
         if(!tikers.contains(tikerName)){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
@@ -110,13 +113,13 @@ public class PriceService {
 
     // 일별 등락률 랭킹
     @Transactional
-    public ResponseEntity<List<DateReponseDto>> getDateRank(User user) {
+    public ResponseEntity<List<DateReponseDto>> dateRankList(User user) {
         List<String> tikers = Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         List<DateReponseDto> dateReponseDtos = new ArrayList<>();
         for(String tiker : tikers){
             PricePublishingDto pricePublishingDto = redisRepository.getTradePrice(tiker);
 
-            String tikername = TikerUtil.switchTiker(tiker);
+            String tikername = tikerUtil.switchTiker(tiker);
 
             // 어제 일봉 종료값
             int endPrice = pricePublishingDto.getPrevClosingPrice();
@@ -140,7 +143,7 @@ public class PriceService {
         return new ResponseEntity<>(dateReponseDtos,HttpStatus.OK);
     }
 
-    public ResponseEntity<PricePublishingDto> getTradePrice(String tiker) {
+    public ResponseEntity<PricePublishingDto> tradePrice(String tiker) {
 
         if(!tikers.contains(tiker)){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);

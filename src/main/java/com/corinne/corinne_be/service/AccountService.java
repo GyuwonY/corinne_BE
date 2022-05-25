@@ -3,11 +3,13 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.account_dto.AccountResponseDto;
 import com.corinne.corinne_be.dto.account_dto.AccountSimpleDto;
 import com.corinne.corinne_be.dto.account_dto.CoinsDto;
+import com.corinne.corinne_be.dto.coin_dto.CoinBalanceDto;
 import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
+import com.corinne.corinne_be.utils.RankUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,24 +31,26 @@ public class AccountService {
     private final TransactionRepository transactionRepository;
     private final BookmarkRepository bookmarkRepository;
     private final QuestRepository questRepository;
+    private final RankUtil rankUtil;
     List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public AccountService(CoinRepository coinRepository, UserRepository userRepository,
                           RedisRepository redisRepository, TransactionRepository transactionRepository,
-                          BookmarkRepository bookmarkRepository, QuestRepository questRepository) {
+                          BookmarkRepository bookmarkRepository, QuestRepository questRepository, RankUtil rankUtil) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
         this.transactionRepository = transactionRepository;
         this.bookmarkRepository = bookmarkRepository;
         this.questRepository = questRepository;
+        this.rankUtil = rankUtil;
     }
 
 
     // 보유 자산
     @Transactional
-    public ResponseEntity<AccountResponseDto> getBalance(User user) {
+    public ResponseEntity<AccountResponseDto> balance(User user) {
 
         // 사용 가능한 포인트
         Long accountBalance = user.getAccountBalance();
@@ -56,45 +60,20 @@ public class AccountService {
         // 보유중인 코인 리스트
         List<Coin> haveCoins = coinRepository.findAllByUser_UserId(user.getUserId());
 
+        CoinBalanceDto coinBalanceDto = rankUtil.totalCoinBalance(haveCoins);
+
         // 보유중인 코인 정보 리스트
-        List<CoinsDto> coins = new ArrayList<>();
+        List<CoinsDto> coins = coinBalanceDto.getCoinsDtoList();
 
-        List<Long> coinBalances = new ArrayList<>();
-
-        for (Coin coin : haveCoins) {
-
-            String tiker = coin.getTiker();
-
-            // 살 당시 코인 현재가
-            BigDecimal buyPrice = BigDecimal.valueOf(coin.getBuyPrice());
-            // 현재가
-            BigDecimal currentPrice = BigDecimal.valueOf(redisRepository.getTradePrice(coin.getTiker()).getTradePrice());
-            // 래버리지
-            BigDecimal leverage = BigDecimal.valueOf(coin.getLeverage());
-            // 구매 총금액
-            BigDecimal amount = BigDecimal.valueOf(coin.getAmount());
-            // 래버리지 적용한 수익률
-            BigDecimal fluctuationRate = currentPrice.subtract(buyPrice).multiply(leverage).divide(buyPrice, 2, RoundingMode.HALF_UP);
-            // 현재 해당 코인의 가치
-            Long coinBalance = fluctuationRate.add(BigDecimal.valueOf(1)).multiply(amount).setScale(0, RoundingMode.CEILING).longValue();
-
-            totalCoinBalance += coinBalance;
-            coinBalances.add(coinBalance);
-
-            CoinsDto coinsDto = new CoinsDto(tiker, buyPrice.doubleValue(), currentPrice.intValue(), leverage.intValue(), fluctuationRate.doubleValue() * 100, coinBalance, coinBalance - coin.getAmount());
-            coins.add(coinsDto);
-        }
-
-        Long totalBalance = totalCoinBalance + accountBalance;
+        Long totalBalance = coinBalanceDto.getTotalcoinBalance() + accountBalance;
 
         // 수익률 계산
         BigDecimal temp = new BigDecimal(totalBalance - 1000000);
         BigDecimal rateCal = new BigDecimal(10000);
         double fluctuationRate = temp.divide(rateCal, 2, RoundingMode.HALF_EVEN).doubleValue();
 
-
         for (int i = 0; i < coins.size(); i++) {
-            long balance = coinBalances.get(i);
+            long balance = coins.get(i).getCoinBalance();
             // 원그래프 비중 계산
             BigDecimal importanceRateCal = new BigDecimal(balance * 100);
             double importanceRate = importanceRateCal.divide(new BigDecimal(totalCoinBalance), 2, RoundingMode.HALF_EVEN).doubleValue();
@@ -107,7 +86,7 @@ public class AccountService {
 
     // 모의투자페이지 자산
     @Transactional
-    public ResponseEntity<AccountSimpleDto> getSimpleBalance(String tiker, User user) {
+    public ResponseEntity<AccountSimpleDto> simpleBalance(String tiker, User user) {
 
         if(!tikers.contains(tiker)){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);

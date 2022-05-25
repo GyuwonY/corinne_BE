@@ -1,17 +1,20 @@
 package com.corinne.corinne_be.utils;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 
+@Component
 public class TimeUtil {
 
-    public static final int SEC = 60;
-    public static final int MIN = 60;
-    public static final int HOUR = 24;
-    public static final int DAY = 30;
-    public static final int MONTH = 12;
+    public final int SEC = 60;
+    public final int MIN = 60;
+    public final int HOUR = 24;
+    public final int DAY = 30;
+    public final int MONTH = 12;
 
 
-    public static String calculateTime(LocalDateTime Date)
+    public String calculateTime(LocalDateTime Date)
     {
 
         java.util.Date date = java.sql.Timestamp.valueOf(Date);

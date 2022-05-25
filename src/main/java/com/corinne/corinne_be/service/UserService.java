@@ -48,6 +48,8 @@ public class UserService {
     private final CoinRepository coinRepository;
     private final QuestRepository questRepository;
     private final LevelUtil levelUtil;
+    private final RewordUtil rewordUtil;
+    private final TimeUtil timeUtil;
 
     @Transactional
     public ResponseEntity<UserInfoResponesDto> userInfo(Long userId, User user){
@@ -113,7 +115,7 @@ public class UserService {
     }
 
     // 알림 리스트 조회
-    public ResponseEntity<List<AlarmDto>> getAlarmList(User user) {
+    public ResponseEntity<List<AlarmDto>> alarmList(User user) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -7);
@@ -128,7 +130,7 @@ public class UserService {
 
         List<AlarmDto> alarmDtos = new ArrayList<>();
         for(Alarm alarm : alarmList){
-            String createdAt = TimeUtil.calculateTime(alarm.getCreatedAt());
+            String createdAt = timeUtil.calculateTime(alarm.getCreatedAt());
             AlarmDto alarmDto = new AlarmDto(alarm.getAlarmNo(),alarm.getContent(),createdAt);
             alarmDtos.add(alarmDto);
         }
@@ -140,7 +142,7 @@ public class UserService {
     }
 
     // 1:1 매칭 상대, 수익률
-    public ResponseEntity<RivalDto> getRival(User user) {
+    public ResponseEntity<RivalDto> rival(User user) {
         Long rivalId = user.getRival();
 
         User rival = userRepository.findByUserId(rivalId).orElse(null);
@@ -151,7 +153,7 @@ public class UserService {
 
         // 라이벌 수익률
         List<Coin> rivalCoins = coinRepository.findAllByUser_UserId(rivalId);
-        Long rivalTotalBalance = rankUtil.getTotalCoinBalance(rivalCoins) + rival.getAccountBalance();
+        Long rivalTotalBalance = rankUtil.totalCoinBalance(rivalCoins).getTotalcoinBalance() + rival.getAccountBalance();
         BigDecimal temp = new BigDecimal(rivalTotalBalance - 1000000);
         BigDecimal rateCal = new BigDecimal(10000);
         double rivalFluctuationRate = temp.divide(rateCal,2, RoundingMode.HALF_EVEN).doubleValue();
@@ -165,7 +167,7 @@ public class UserService {
 
     // 퀘스트 리스트
 
-    public ResponseEntity<List<QuestDto>> getQuest(User user) {
+    public ResponseEntity<List<QuestDto>> quest(User user) {
         List<Quest> quests = questRepository.findAllByUser_UserId(user.getUserId());
 
         List<QuestDto> questDtos = new ArrayList<>();
@@ -181,7 +183,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<RewordResponseDto> reword(QuestRequestDto questRequestDto, User user){
         questRepository.findByUser_UserIdAndQuestNo(user.getUserId(), questRequestDto.getQuestNo()).orElseThrow(() -> new CustomException(ErrorCode.NON_EXIST_QUEST));
-        RewordDto rewordDto = RewordUtil.switchReword(questRequestDto.getQuestNo());
+        RewordDto rewordDto = rewordUtil.switchReword(questRequestDto.getQuestNo());
         User result = userRepository.findByUserId(user.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.NON_EXIST_USER));
         result.rewordUpdate(rewordDto);
         questRepository.deleteByUser_UserIdAndQuestNo(user.getUserId(), questRequestDto.getQuestNo());

@@ -1,9 +1,6 @@
 package com.corinne.corinne_be.controller;
 
-import com.corinne.corinne_be.dto.rank_dto.LaskweekRankDto;
-import com.corinne.corinne_be.dto.rank_dto.MyRankDto;
-import com.corinne.corinne_be.dto.rank_dto.MyRankResponseDto;
-import com.corinne.corinne_be.dto.rank_dto.RankTopDto;
+import com.corinne.corinne_be.dto.rank_dto.*;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.RankService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class RankController {
@@ -24,30 +23,30 @@ public class RankController {
     }
 
     // 랭킹리스트
-    @GetMapping("/api/rank/{page}")
-    public ResponseEntity<MyRankResponseDto> getRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    @GetMapping("/api/rank")
+    public ResponseEntity<List<RankInfoDto>> rankList(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return rankService.getRank(page, userDetails.getUser());
+        return rankService.rankList(userDetails.getUser());
     }
 
     // 상위 랭킹 리스트
     @GetMapping("/api/rank/top3")
-    public ResponseEntity<RankTopDto> getRankTop3(){
+    public ResponseEntity<RankTopDto> rankTop3List(){
 
-        return rankService.getRankTop3();
+        return rankService.rankTop3List();
     }
 
     // 내랭킹
     @GetMapping("/api/rank/myrank")
-    public ResponseEntity<MyRankDto> getMyRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<MyRankDto> myRank(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return rankService.getMyRank(userDetails.getUser());
+        return rankService.myRank(userDetails.getUser());
     }
 
     // 지난주 랭킹 리스트
-    @GetMapping("/api/rank/lastweek/{page}")
-    public ResponseEntity<LaskweekRankDto> getLastweekRank(@PathVariable int page, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return rankService.getLastweekRank(page, userDetails.getUser());
+    @GetMapping("/api/rank/lastweek")
+    public ResponseEntity<List<RankDto>> lastweekRankList(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return rankService.lastweekRankList(userDetails.getUser());
     }
 
 }

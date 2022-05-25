@@ -8,15 +8,13 @@ import java.util.List;
 public class MyRankResponseDto {
 
     private int myRank;
-    private List<RankDto> rank;
-    private int totalPage;
-
+    private List<RankInfoDto> rank;
 
     public MyRankResponseDto() {
     }
 
-    public MyRankResponseDto(List<RankDto> rank, int totalPage) {
+    public MyRankResponseDto(List<RankInfoDto> rank, int myRank) {
         this.rank = rank;
-        this.totalPage = totalPage;
+        this.myRank = myRank;
     }
 }

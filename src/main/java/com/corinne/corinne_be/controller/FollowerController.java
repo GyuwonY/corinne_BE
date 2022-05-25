@@ -2,6 +2,7 @@ package com.corinne.corinne_be.controller;
 
 
 import com.corinne.corinne_be.dto.follow_dto.FollowDto;
+import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.FollowerService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class FollowerController {
 
     // 팔로잉 조회
     @GetMapping
-    public ResponseEntity<List<FollowDto>> getFollowing(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return followerService.getfollowing(userDetails.getUser());
+    public ResponseEntity<List<RankInfoDto>> followingList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return followerService.followingList(userDetails.getUser());
     }
 }

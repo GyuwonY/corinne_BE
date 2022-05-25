@@ -64,20 +64,20 @@ public class UserRestController {
 
     // 유저 알림 리스트 조회
     @GetMapping("/api/user/alarm")
-    public ResponseEntity<List<AlarmDto>> getAlarmList(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.getAlarmList(userDetails.getUser());
+    public ResponseEntity<List<AlarmDto>> alarmList(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.alarmList(userDetails.getUser());
     }
 
     // 1:1 매칭 상대, 수익률
     @GetMapping("/api/user/rival")
-    public ResponseEntity<RivalDto> getRival(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.getRival(userDetails.getUser());
+    public ResponseEntity<RivalDto> rival(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.rival(userDetails.getUser());
     }
 
     // 퀘스트 리스트
     @GetMapping("/api/user/quest")
-    public ResponseEntity<List<QuestDto>> getQuest(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.getQuest(userDetails.getUser());
+    public ResponseEntity<List<QuestDto>> quest(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.quest(userDetails.getUser());
     }
 
     @PatchMapping("/api/quest")

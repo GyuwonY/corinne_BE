@@ -79,7 +79,7 @@ public class WeeklyScheduler {
             List<Coin> coins = coinRepository.findAllByUser_UserId(user.getUserId());
 
             // 보유 코인별 계산
-            Long totalBalance = rankUtil.getTotalCoinBalance(coins) +  accountBalance;
+            Long totalBalance = rankUtil.totalCoinBalance(coins).getTotalcoinBalance() +  accountBalance;
 
             BigDecimal temp = new BigDecimal(totalBalance - 1000000);
             BigDecimal rateCal = new BigDecimal(10000);
