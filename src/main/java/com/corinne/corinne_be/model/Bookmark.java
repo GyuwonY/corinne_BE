@@ -1,7 +1,6 @@
 package com.corinne.corinne_be.model;
 
 import lombok.Getter;
-
 import javax.persistence.*;
 
 @Getter

@@ -1,9 +1,6 @@
 package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.rank_dto.*;
-import com.corinne.corinne_be.exception.CustomException;
-import com.corinne.corinne_be.exception.ErrorCode;
-import com.corinne.corinne_be.model.Coin;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.utils.RankUtil;
@@ -12,30 +9,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RankService {
-
-    private final CoinRepository coinRepository;
     private final UserRepository userRepository;
     private final FollowerRepository followerRepository;
     private final TransactionRepository transactionRepository;
     private final RankUtil rankUtil;
 
     @Autowired
-    public RankService(CoinRepository coinRepository, UserRepository userRepository, FollowerRepository followerRepository, TransactionRepository transactionRepository, RankUtil rankUtil) {
-        this.coinRepository = coinRepository;
+    public RankService(UserRepository userRepository, FollowerRepository followerRepository, TransactionRepository transactionRepository, RankUtil rankUtil) {
         this.userRepository = userRepository;
         this.followerRepository = followerRepository;
         this.transactionRepository = transactionRepository;
@@ -45,7 +35,7 @@ public class RankService {
 
     // 랭킹 리스트
     @Transactional
-    public ResponseEntity<List<RankInfoDto>> rankList(User loginUser) {
+    public ResponseEntity<List<RankInfoDto>> rankList() {
 
         return new ResponseEntity<>(rankUtil.getRankList(), HttpStatus.OK);
     }

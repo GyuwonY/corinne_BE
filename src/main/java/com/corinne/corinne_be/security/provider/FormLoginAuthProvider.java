@@ -1,6 +1,5 @@
 package com.corinne.corinne_be.security.provider;
 
-
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

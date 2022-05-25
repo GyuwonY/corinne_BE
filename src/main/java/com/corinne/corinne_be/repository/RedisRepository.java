@@ -14,7 +14,6 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.HashMap;

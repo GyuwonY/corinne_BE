@@ -2,7 +2,6 @@ package com.corinne.corinne_be.repository;
 
 import com.corinne.corinne_be.model.Coin;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
 

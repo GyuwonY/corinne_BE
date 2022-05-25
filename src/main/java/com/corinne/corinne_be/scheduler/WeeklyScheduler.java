@@ -2,16 +2,13 @@ package com.corinne.corinne_be.scheduler;
 
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
+import com.corinne.corinne_be.utils.BalanceUtil;
 import com.corinne.corinne_be.utils.LevelUtil;
-import com.corinne.corinne_be.utils.RankUtil;
-import com.corinne.corinne_be.websocket.RedisPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -31,25 +28,23 @@ public class WeeklyScheduler {
     private final CoinRepository coinRepository;
     private final TransactionRepository transactionRepository;
     private final AlarmRepository alarmRepository;
-    private final RankUtil rankUtil;
     private final LevelUtil levelUtil;
-    private final RedisPublisher redisPublisher;
     private final QuestRepository questRepository;
+    private final BalanceUtil balanceUtil;
     private final List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public WeeklyScheduler(RedisRepository redisRepository, UserRepository userRepository, TransactionRepository transactionRepository,
-                           CoinRepository coinRepository, AlarmRepository alarmRepository, RankUtil rankUtil, LevelUtil levelUtil,
-                           RedisPublisher redisPublisher, QuestRepository questRepository) {
+                           CoinRepository coinRepository, AlarmRepository alarmRepository, LevelUtil levelUtil,
+                           QuestRepository questRepository, BalanceUtil balanceUtil) {
         this.redisRepository = redisRepository;
         this.userRepository = userRepository;
         this.coinRepository = coinRepository;
         this.alarmRepository = alarmRepository;
-        this.rankUtil = rankUtil;
         this.levelUtil = levelUtil;
         this.transactionRepository = transactionRepository;
-        this.redisPublisher = redisPublisher;
         this.questRepository = questRepository;
+        this.balanceUtil = balanceUtil;
     }
 
     @Scheduled(cron = "0 0 0 ? * MON")
@@ -79,7 +74,7 @@ public class WeeklyScheduler {
             List<Coin> coins = coinRepository.findAllByUser_UserId(user.getUserId());
 
             // 보유 코인별 계산
-            Long totalBalance = rankUtil.totalCoinBalance(coins).getTotalcoinBalance() +  accountBalance;
+            Long totalBalance = balanceUtil.totalCoinBalance(coins).getTotalcoinBalance() +  accountBalance;
 
             BigDecimal temp = new BigDecimal(totalBalance - 1000000);
             BigDecimal rateCal = new BigDecimal(10000);

@@ -2,7 +2,6 @@ package com.corinne.corinne_be.model;
 
 import com.corinne.corinne_be.dto.transaction_dto.BankruptcyDto;
 import lombok.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

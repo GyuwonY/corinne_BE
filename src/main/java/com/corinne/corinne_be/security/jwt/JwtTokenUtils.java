@@ -3,7 +3,6 @@ package com.corinne.corinne_be.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.corinne.corinne_be.security.UserDetailsImpl;
-
 import java.util.Date;
 
 public final class JwtTokenUtils {

@@ -1,9 +1,7 @@
 package com.corinne.corinne_be.model;
 
-
 import lombok.Getter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.*;
 
 @Getter

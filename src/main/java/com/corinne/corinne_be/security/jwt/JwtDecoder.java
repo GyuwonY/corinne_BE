@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.Optional;
-
 import static com.corinne.corinne_be.security.jwt.JwtTokenUtils.*;
 import static com.corinne.corinne_be.security.jwt.JwtTokenUtils.CLAIM_USER_ID;
 

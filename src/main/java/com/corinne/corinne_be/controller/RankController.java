@@ -6,10 +6,8 @@ import com.corinne.corinne_be.service.RankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -24,9 +22,9 @@ public class RankController {
 
     // 랭킹리스트
     @GetMapping("/api/rank")
-    public ResponseEntity<List<RankInfoDto>> rankList(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<List<RankInfoDto>> rankList(){
 
-        return rankService.rankList(userDetails.getUser());
+        return rankService.rankList();
     }
 
     // 상위 랭킹 리스트

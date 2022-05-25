@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -50,6 +49,7 @@ public class UserService {
     private final LevelUtil levelUtil;
     private final RewordUtil rewordUtil;
     private final TimeUtil timeUtil;
+    private final BalanceUtil balanceUtil;
 
     @Transactional
     public ResponseEntity<UserInfoResponesDto> userInfo(Long userId, User user){
@@ -153,7 +153,7 @@ public class UserService {
 
         // 라이벌 수익률
         List<Coin> rivalCoins = coinRepository.findAllByUser_UserId(rivalId);
-        Long rivalTotalBalance = rankUtil.totalCoinBalance(rivalCoins).getTotalcoinBalance() + rival.getAccountBalance();
+        Long rivalTotalBalance = balanceUtil.totalCoinBalance(rivalCoins).getTotalcoinBalance() + rival.getAccountBalance();
         BigDecimal temp = new BigDecimal(rivalTotalBalance - 1000000);
         BigDecimal rateCal = new BigDecimal(10000);
         double rivalFluctuationRate = temp.divide(rateCal,2, RoundingMode.HALF_EVEN).doubleValue();

@@ -1,7 +1,5 @@
 package com.corinne.corinne_be.controller;
 
-
-import com.corinne.corinne_be.dto.follow_dto.FollowDto;
 import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.FollowerService;

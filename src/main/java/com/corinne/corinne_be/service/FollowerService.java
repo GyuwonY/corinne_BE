@@ -1,6 +1,5 @@
 package com.corinne.corinne_be.service;
 
-import com.corinne.corinne_be.dto.follow_dto.FollowDto;
 import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
@@ -13,14 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +22,6 @@ public class FollowerService {
 
     private final UserRepository userRepository;
     private final FollowerRepository followerRepository;
-    private final CoinRepository coinRepository;
     private final AlarmRepository alarmRepository;
     private final RankUtil rankUtil;
     private final QuestRepository questRepository;

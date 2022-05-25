@@ -9,16 +9,14 @@ import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
-import com.corinne.corinne_be.utils.RankUtil;
+import com.corinne.corinne_be.utils.BalanceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,20 +29,20 @@ public class AccountService {
     private final TransactionRepository transactionRepository;
     private final BookmarkRepository bookmarkRepository;
     private final QuestRepository questRepository;
-    private final RankUtil rankUtil;
+    private final BalanceUtil balanceUtil;
     List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public AccountService(CoinRepository coinRepository, UserRepository userRepository,
                           RedisRepository redisRepository, TransactionRepository transactionRepository,
-                          BookmarkRepository bookmarkRepository, QuestRepository questRepository, RankUtil rankUtil) {
+                          BookmarkRepository bookmarkRepository, QuestRepository questRepository, BalanceUtil balanceUtil) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
         this.transactionRepository = transactionRepository;
         this.bookmarkRepository = bookmarkRepository;
         this.questRepository = questRepository;
-        this.rankUtil = rankUtil;
+        this.balanceUtil = balanceUtil;
     }
 
 
@@ -60,7 +58,7 @@ public class AccountService {
         // 보유중인 코인 리스트
         List<Coin> haveCoins = coinRepository.findAllByUser_UserId(user.getUserId());
 
-        CoinBalanceDto coinBalanceDto = rankUtil.totalCoinBalance(haveCoins);
+        CoinBalanceDto coinBalanceDto = balanceUtil.totalCoinBalance(haveCoins);
 
         // 보유중인 코인 정보 리스트
         List<CoinsDto> coins = coinBalanceDto.getCoinsDtoList();

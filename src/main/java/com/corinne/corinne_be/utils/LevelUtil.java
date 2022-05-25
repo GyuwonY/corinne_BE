@@ -3,7 +3,6 @@ package com.corinne.corinne_be.utils;
 import com.corinne.corinne_be.model.Alarm;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.AlarmRepository;
-import com.corinne.corinne_be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

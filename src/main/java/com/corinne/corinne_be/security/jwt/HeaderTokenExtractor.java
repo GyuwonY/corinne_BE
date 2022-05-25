@@ -1,7 +1,6 @@
 package com.corinne.corinne_be.security.jwt;
 
 import org.springframework.stereotype.Component;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
 
