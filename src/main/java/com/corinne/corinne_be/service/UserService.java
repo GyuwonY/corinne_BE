@@ -48,7 +48,6 @@ public class UserService {
     private final CoinRepository coinRepository;
     private final QuestRepository questRepository;
     private final LevelUtil levelUtil;
-    private final TimeUtil timeUtil;
 
     @Transactional
     public ResponseEntity<UserInfoResponesDto> userInfo(Long userId, User user){
@@ -129,7 +128,7 @@ public class UserService {
 
         List<AlarmDto> alarmDtos = new ArrayList<>();
         for(Alarm alarm : alarmList){
-            String createdAt = timeUtil.calculateTime(alarm.getCreatedAt());
+            String createdAt = TimeUtil.calculateTime(alarm.getCreatedAt());
             AlarmDto alarmDto = new AlarmDto(alarm.getAlarmNo(),alarm.getContent(),createdAt);
             alarmDtos.add(alarmDto);
         }
