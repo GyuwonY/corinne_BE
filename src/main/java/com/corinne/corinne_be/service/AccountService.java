@@ -36,7 +36,7 @@ public class AccountService {
     private final BalanceUtil balanceUtil;
     private final AlarmUtil alarmUtil;
 
-    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
+    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public AccountService(CoinRepository coinRepository, UserRepository userRepository,

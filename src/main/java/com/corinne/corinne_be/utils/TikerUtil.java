@@ -17,8 +17,6 @@ public class TikerUtil {
                 return "리플";
             case "KRW-ADA":
                 return "에이다";
-            case "KRW-DOGE":
-                return "도지코인";
             case "KRW-AVAX":
                 return "아발란체";
             case "KRW-DOT":

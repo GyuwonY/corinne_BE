@@ -34,7 +34,7 @@ public class PriceService {
     private final BookmarkRepository bookmarkRepository;
     private final RedisRepository redisRepository;
     private final TikerUtil tikerUtil;
-    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
+    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public PriceService(MinuteCandleRepository minuteCandleRepository, DayCandleRepository dateCandleRepository,
@@ -117,7 +117,6 @@ public class PriceService {
     // 일별 등락률 랭킹
     @Transactional
     public ResponseEntity<List<DateReponseDto>> dateRankList(User user) {
-        List<String> tikers = Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         List<DateReponseDto> dateReponseDtos = new ArrayList<>();
         for(String tiker : tikers){
             PricePublishingDto pricePublishingDto = redisRepository.getTradePrice(tiker);
