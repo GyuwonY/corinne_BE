@@ -57,8 +57,10 @@ public class RankUtil {
     }
 
     public Map<Long, RankInfoDto> getRankMap(){
-        Map<Long, RankInfoDto> rankInfoDtoMap = new LinkedHashMap<>();
+
         List<RankInfoDto> rankDtos = getRankList();
+
+        Map<Long, RankInfoDto> rankInfoDtoMap = new LinkedHashMap<>();
 
         for(RankInfoDto rankDto : rankDtos){
             rankInfoDtoMap.put(rankDto.getUserId(), rankDto);
