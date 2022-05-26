@@ -1,9 +1,11 @@
 package com.corinne.corinne_be.scheduler;
 
+import com.corinne.corinne_be.dto.util_dto.SearchTimeDto;
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.utils.BalanceUtil;
 import com.corinne.corinne_be.utils.LevelUtil;
+import com.corinne.corinne_be.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,12 +33,12 @@ public class WeeklyScheduler {
     private final LevelUtil levelUtil;
     private final QuestRepository questRepository;
     private final BalanceUtil balanceUtil;
-    private final List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
+    private final TimeUtil timeUtil;
 
     @Autowired
     public WeeklyScheduler(RedisRepository redisRepository, UserRepository userRepository, TransactionRepository transactionRepository,
                            CoinRepository coinRepository, AlarmRepository alarmRepository, LevelUtil levelUtil,
-                           QuestRepository questRepository, BalanceUtil balanceUtil) {
+                           QuestRepository questRepository, BalanceUtil balanceUtil, TimeUtil timeUtil) {
         this.redisRepository = redisRepository;
         this.userRepository = userRepository;
         this.coinRepository = coinRepository;
@@ -45,6 +47,7 @@ public class WeeklyScheduler {
         this.transactionRepository = transactionRepository;
         this.questRepository = questRepository;
         this.balanceUtil = balanceUtil;
+        this.timeUtil = timeUtil;
     }
 
     @Scheduled(cron = "0 0 0 ? * MON")
@@ -52,21 +55,9 @@ public class WeeklyScheduler {
     public void rankUpdate() {
 
         List<User> users = userRepository.findAll();
-        int userSize = users.size();
 
-        Calendar cal = Calendar.getInstance();
-        if(cal.get(Calendar.DAY_OF_WEEK)==1){
-            cal.add(Calendar.DATE, -1);
-        }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        String mondayDate = dateFormat.format(cal.getTime());
-        mondayDate += " 00:00:00.000";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
-        LocalDateTime endDate = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-
+        SearchTimeDto date = timeUtil.SearchTime("thisWeek");
 
         for(User user : users){
             Long accountBalance = user.getAccountBalance();
@@ -110,7 +101,7 @@ public class WeeklyScheduler {
                 }
             }
 
-            if(transactionRepository.countByUser_UserIdAndTradeAtBetween(user.getUserId(), startDate, endDate) != 0) {
+            if(transactionRepository.countByUser_UserIdAndTradeAtBetween(user.getUserId(), date.getStartDate(), date.getEndDate()) != 0) {
                 // 주간 모의 투자 참여자 보상
                 user.expUpdate(5000);
                 Alarm alarm = new Alarm(user, Alarm.AlarmType.RANK, "주간 랭킹 참여자 보상");

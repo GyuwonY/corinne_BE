@@ -3,6 +3,7 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.socket_dto.BankruptcyDto;
 import com.corinne.corinne_be.dto.socket_dto.ChatMessage;
 import com.corinne.corinne_be.dto.transaction_dto.*;
+import com.corinne.corinne_be.dto.util_dto.SearchTimeDto;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.Coin;
@@ -11,6 +12,7 @@ import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.utils.AlarmUtil;
+import com.corinne.corinne_be.utils.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,18 +46,20 @@ public class TransactionService {
     private final RedisRepository redisRepository;
     private final QuestRepository questRepository;
     private final AlarmUtil alarmUtil;
+    private final TimeUtil timeUtil;
     List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,
                               UserRepository userRepository, RedisRepository redisRepository, QuestRepository questRepository,
-                              AlarmUtil alarmUtil) {
+                              AlarmUtil alarmUtil, TimeUtil timeUtil) {
         this.transactionRepository = transactionRepository;
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
         this.questRepository = questRepository;
         this.alarmUtil = alarmUtil;
+        this.timeUtil = timeUtil;
     }
 
     //코인 거래 내역
@@ -327,22 +331,10 @@ public class TransactionService {
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
         }
 
-        // 초기화 시점인 월요일 9시 기준
-        Calendar cal = Calendar.getInstance();
-        if(cal.get(Calendar.DAY_OF_WEEK)==1){
-            cal.add(Calendar.DATE, -1);
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        String mondayDate = dateFormat.format(cal.getTime());
-        mondayDate += " 00:00:00.000";
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
-        LocalDateTime endDate = LocalDateTime.now();
+        SearchTimeDto date = timeUtil.SearchTime("thisWeek");
 
         //코린이 회원 중 특정 코인 매수 카운트
-        Long buyCount = transactionRepository.countByTikerAndTypeAndTradeAtBetween(tiker,"buy",startDate,endDate);
+        Long buyCount = transactionRepository.countByTikerAndTypeAndTradeAtBetween(tiker,"buy",date.getStartDate(),date.getEndDate());
 
         return new ResponseEntity<>(new BuyCountDto(buyCount),HttpStatus.OK);
     }
