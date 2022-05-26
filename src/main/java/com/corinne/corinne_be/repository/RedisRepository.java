@@ -23,6 +23,7 @@ public class RedisRepository {
     private final RedisTemplate<String, Object> redisTemplate;
     private ValueOperations<String, Object> tradePrice;
     private ListOperations<String,Object> prices;
+    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
 
     @Autowired
@@ -84,7 +85,7 @@ public class RedisRepository {
     }
 
     public void resetBankruptcy(Long userId) {
-        List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
+
         for (String tiker : tikers) {
             BankruptcyDto checkDto = objectMapper.convertValue(prices.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
             if (checkDto != null) {
@@ -100,7 +101,6 @@ public class RedisRepository {
     }
 
     public void deleteAllBankruptcy(){
-        List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
         for(String tiker : tikers){
             for(int i = 0; i<prices.size(tiker+"bankruptcy"); i++){
                 prices.leftPop(tiker+"bankruptcy");
