@@ -58,7 +58,7 @@ public class RankService {
 
         }
 
-        return new ResponseEntity<>(rankUtil.getRankList(), HttpStatus.OK);
+        return new ResponseEntity<>(rankInfoDtos, HttpStatus.OK);
     }
 
 
