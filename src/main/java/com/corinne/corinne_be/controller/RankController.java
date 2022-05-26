@@ -22,9 +22,9 @@ public class RankController {
 
     // 랭킹리스트
     @GetMapping("/api/rank")
-    public ResponseEntity<List<RankInfoDto>> rankList(){
+    public ResponseEntity<List<RankInfoDto>> rankList(@AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return rankService.rankList();
+        return rankService.rankList(userDetails.getUser());
     }
 
     // 상위 랭킹 리스트

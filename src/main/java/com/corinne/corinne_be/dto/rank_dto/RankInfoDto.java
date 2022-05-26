@@ -14,6 +14,8 @@ public class RankInfoDto {
     private Long totalBalance;
     private double fluctuationRate;
     private int rank;
+    private boolean follow;
+    private Long resetCount;
 
     public RankInfoDto() {
     }

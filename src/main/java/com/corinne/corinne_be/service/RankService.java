@@ -35,7 +35,28 @@ public class RankService {
 
     // 랭킹 리스트
     @Transactional
-    public ResponseEntity<List<RankInfoDto>> rankList() {
+    public ResponseEntity<List<RankInfoDto>> rankList(User user) {
+        List<RankInfoDto> rankInfoDtos = rankUtil.getRankList();
+
+        for(RankInfoDto rankInfoDto : rankInfoDtos){
+            rankInfoDto.setFollow(followerRepository.existsByUser_UserIdAndFollower_UserId(user.getUserId(), rankInfoDto.getUserId()));
+
+            Calendar cal = Calendar.getInstance();
+            if(cal.get(Calendar.DAY_OF_WEEK)==1){
+                cal.add(Calendar.DATE, -1);
+            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+            String mondayDate = dateFormat.format(cal.getTime());
+            mondayDate += " 00:00:00.000";
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+            LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
+            LocalDateTime endDate = LocalDateTime.now();
+
+            rankInfoDto.setResetCount(transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(rankInfoDto.getUserId(),"reset",startDate,endDate));
+
+        }
 
         return new ResponseEntity<>(rankUtil.getRankList(), HttpStatus.OK);
     }
@@ -75,7 +96,6 @@ public class RankService {
             double fluctuationRate = user.getLastFluctuation();
 
             boolean follow = followerRepository.existsByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId());
-
 
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, -7);
