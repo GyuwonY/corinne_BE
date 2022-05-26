@@ -1,7 +1,9 @@
 package com.corinne.corinne_be.utils;
 
 import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RewordUtil {
 
     public RewordDto switchReword(int questNo){
