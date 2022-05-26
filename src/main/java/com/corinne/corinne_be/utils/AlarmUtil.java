@@ -12,7 +12,6 @@ public class AlarmUtil {
     private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
 
-
     public void sendAlarm(String userId){
         ChatMessage alarm = new ChatMessage(ChatMessage.MessageType.ALARM, userId);
         redisTemplate.convertAndSend(channelTopic.getTopic(), alarm);

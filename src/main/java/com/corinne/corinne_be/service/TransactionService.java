@@ -217,6 +217,7 @@ public class TransactionService {
     // 매도
     @Transactional
     public ResponseEntity<SellResponseDto> sell(SellRequestDto sellRequestDto, User user) {
+        log.info("매도 요청 금액 : "+sellRequestDto.getSellAmount() + "     레버리지 : "+sellRequestDto.getLeverage());
 
         if(!tikers.contains(sellRequestDto.getTiker())){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
@@ -264,6 +265,8 @@ public class TransactionService {
         BigDecimal sellable = amount.multiply(fluctuation).add(amount);
         //판매 비율
         BigDecimal sellRate = sellAmount.divide(sellable, 2, RoundingMode.HALF_UP);
+
+        log.info("현재가 반영 판매 가능 금액 : "+sellable);
 
         Long leftover;
         if(sellable.intValue() >= sellRequestDto.getSellAmount()){
