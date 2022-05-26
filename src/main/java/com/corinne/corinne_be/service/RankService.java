@@ -1,9 +1,11 @@
 package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.rank_dto.*;
+import com.corinne.corinne_be.dto.util_dto.SearchTimeDto;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.utils.RankUtil;
+import com.corinne.corinne_be.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +25,15 @@ public class RankService {
     private final FollowerRepository followerRepository;
     private final TransactionRepository transactionRepository;
     private final RankUtil rankUtil;
+    private final TimeUtil timeUtil;
 
     @Autowired
-    public RankService(UserRepository userRepository, FollowerRepository followerRepository, TransactionRepository transactionRepository, RankUtil rankUtil) {
+    public RankService(UserRepository userRepository, FollowerRepository followerRepository, TransactionRepository transactionRepository, RankUtil rankUtil, TimeUtil timeUtil) {
         this.userRepository = userRepository;
         this.followerRepository = followerRepository;
         this.transactionRepository = transactionRepository;
         this.rankUtil = rankUtil;
+        this.timeUtil = timeUtil;
     }
 
 
@@ -41,20 +45,9 @@ public class RankService {
         for(RankInfoDto rankInfoDto : rankInfoDtos){
             rankInfoDto.setFollow(followerRepository.existsByUser_UserIdAndFollower_UserId(user.getUserId(), rankInfoDto.getUserId()));
 
-            Calendar cal = Calendar.getInstance();
-            if(cal.get(Calendar.DAY_OF_WEEK)==1){
-                cal.add(Calendar.DATE, -1);
-            }
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-            String mondayDate = dateFormat.format(cal.getTime());
-            mondayDate += " 00:00:00.000";
+            SearchTimeDto date = timeUtil.SearchTime("thisWeek");
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-            LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
-            LocalDateTime endDate = LocalDateTime.now();
-
-            rankInfoDto.setResetCount(transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(rankInfoDto.getUserId(),"reset",startDate,endDate));
+            rankInfoDto.setResetCount(transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(rankInfoDto.getUserId(),"reset",date.getStartDate(),date.getEndDate()));
 
         }
 
@@ -97,21 +90,10 @@ public class RankService {
 
             boolean follow = followerRepository.existsByUser_UserIdAndFollower_UserId(loginUser.getUserId(),user.getUserId());
 
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, -7);
-            if(cal.get(Calendar.DAY_OF_WEEK)==1){
-                cal.add(Calendar.DATE, -1);
-            }
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-            String mondayDate = dateFormat.format(cal.getTime());
-            mondayDate += " 00:00:00.000";
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-            LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
-            LocalDateTime endDate = LocalDateTime.now();
-
-            int restCount = transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(user.getUserId(),"reset", startDate,endDate ).intValue();
+            // 지난 주
+            SearchTimeDto date = timeUtil.SearchTime("lastWeek");
+            
+            int restCount = transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(user.getUserId(),"reset", date.getStartDate(),date.getEndDate() ).intValue();
 
             int exp = user.getExp();
 
