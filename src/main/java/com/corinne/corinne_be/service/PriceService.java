@@ -3,7 +3,7 @@ package com.corinne.corinne_be.service;
 import com.corinne.corinne_be.dto.candle_dto.DatePageDto;
 import com.corinne.corinne_be.dto.candle_dto.DateReponseDto;
 import com.corinne.corinne_be.dto.candle_dto.MinutePageDto;
-import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
+import com.corinne.corinne_be.dto.socket_dto.PricePublishingDto;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.DayCandle;

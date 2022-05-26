@@ -1,13 +1,17 @@
 package com.corinne.corinne_be.service;
 
 import com.corinne.corinne_be.dto.rank_dto.RankInfoDto;
+import com.corinne.corinne_be.dto.socket_dto.ChatMessage;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
 import com.corinne.corinne_be.security.UserDetailsImpl;
+import com.corinne.corinne_be.utils.AlarmUtil;
 import com.corinne.corinne_be.utils.RankUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,7 @@ public class FollowerService {
     private final AlarmRepository alarmRepository;
     private final RankUtil rankUtil;
     private final QuestRepository questRepository;
+    private final AlarmUtil alarmUtil;
 
     // 팔로우
     @Transactional
@@ -44,6 +49,7 @@ public class FollowerService {
         if(quest != null){
             if(!quest.isClear()){
                 quest.update(true);
+                alarmUtil.sendAlarm(userId.toString());
             }
         }
 

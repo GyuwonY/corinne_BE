@@ -3,7 +3,7 @@ package com.corinne.corinne_be.controller;
 import com.corinne.corinne_be.dto.candle_dto.DatePageDto;
 import com.corinne.corinne_be.dto.candle_dto.DateReponseDto;
 import com.corinne.corinne_be.dto.candle_dto.MinutePageDto;
-import com.corinne.corinne_be.dto.coin_dto.PricePublishingDto;
+import com.corinne.corinne_be.dto.socket_dto.PricePublishingDto;
 import com.corinne.corinne_be.security.UserDetailsImpl;
 import com.corinne.corinne_be.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;

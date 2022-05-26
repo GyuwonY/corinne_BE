@@ -1,4 +1,4 @@
-package com.corinne.corinne_be.dto.coin_dto;
+package com.corinne.corinne_be.dto.socket_dto;
 
 import lombok.*;
 

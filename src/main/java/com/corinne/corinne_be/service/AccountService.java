@@ -4,13 +4,17 @@ import com.corinne.corinne_be.dto.account_dto.AccountResponseDto;
 import com.corinne.corinne_be.dto.account_dto.AccountSimpleDto;
 import com.corinne.corinne_be.dto.account_dto.CoinsDto;
 import com.corinne.corinne_be.dto.coin_dto.CoinBalanceDto;
+import com.corinne.corinne_be.dto.socket_dto.ChatMessage;
 import com.corinne.corinne_be.dto.transaction_dto.TransactionDto;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.*;
 import com.corinne.corinne_be.repository.*;
+import com.corinne.corinne_be.utils.AlarmUtil;
 import com.corinne.corinne_be.utils.BalanceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,12 +34,15 @@ public class AccountService {
     private final BookmarkRepository bookmarkRepository;
     private final QuestRepository questRepository;
     private final BalanceUtil balanceUtil;
+    private final AlarmUtil alarmUtil;
+
     List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public AccountService(CoinRepository coinRepository, UserRepository userRepository,
                           RedisRepository redisRepository, TransactionRepository transactionRepository,
-                          BookmarkRepository bookmarkRepository, QuestRepository questRepository, BalanceUtil balanceUtil) {
+                          BookmarkRepository bookmarkRepository, QuestRepository questRepository, BalanceUtil balanceUtil,
+                          AlarmUtil alarmUtil) {
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
@@ -43,6 +50,7 @@ public class AccountService {
         this.bookmarkRepository = bookmarkRepository;
         this.questRepository = questRepository;
         this.balanceUtil = balanceUtil;
+        this.alarmUtil = alarmUtil;
     }
 
 
@@ -117,6 +125,7 @@ public class AccountService {
         if (quest != null) {
             if (!quest.isClear()) {
                 quest.update(true);
+                alarmUtil.sendAlarm(user.getUserId().toString());
             }
         }
 
@@ -140,6 +149,7 @@ public class AccountService {
         if (quest != null) {
             if (!quest.isClear()) {
                 quest.update(true);
+                alarmUtil.sendAlarm(user.getUserId().toString());
             }
         }
 

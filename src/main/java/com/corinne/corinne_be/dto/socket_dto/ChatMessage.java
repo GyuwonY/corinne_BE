@@ -1,6 +1,5 @@
-package com.corinne.corinne_be.model;
+package com.corinne.corinne_be.dto.socket_dto;
 
-import com.corinne.corinne_be.dto.transaction_dto.BankruptcyDto;
 import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -25,6 +24,8 @@ public class ChatMessage implements Serializable {
     private String topicName;
     private String nickname; // 메시지 보낸사람
     private String imageUrl;
+    private Long userId;
+    private boolean clear;
     private Long exp;
     private String message; // 메시지
 
@@ -32,13 +33,11 @@ public class ChatMessage implements Serializable {
         this.type = MessageType.BANKRUPTCY;
         this.sendTime = LocalDateTime.now().plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.topicName = Long.toString(dto.getUserId());
-        this.message = "종목 : " + dto.getTiker() + "\n청산가 : " + dto.getBankruptcyPrice() + "원이 되어 청산되었습니다.";
+        this.message = "종목 : " + dto.getTiker() + "<br/>\n청산가 : " + dto.getBankruptcyPrice() + "원이 되어 청산되었습니다.";
     }
 
-    public ChatMessage(MessageType type, String sendTime, String topicName){
+    public ChatMessage(MessageType type, String topicName){
         this.type = type;
-        this.sendTime = sendTime;
         this.topicName = topicName;
-        this.message = message;
     }
 }
