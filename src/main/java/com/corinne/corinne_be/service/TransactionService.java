@@ -1,5 +1,7 @@
 package com.corinne.corinne_be.service;
 
+import com.corinne.corinne_be.dto.socket_dto.BankruptcyDto;
+import com.corinne.corinne_be.dto.socket_dto.ChatMessage;
 import com.corinne.corinne_be.dto.transaction_dto.*;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
@@ -8,12 +10,15 @@ import com.corinne.corinne_be.model.Quest;
 import com.corinne.corinne_be.model.Transaction;
 import com.corinne.corinne_be.model.User;
 import com.corinne.corinne_be.repository.*;
+import com.corinne.corinne_be.utils.AlarmUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,16 +43,19 @@ public class TransactionService {
     private final UserRepository userRepository;
     private final RedisRepository redisRepository;
     private final QuestRepository questRepository;
+    private final AlarmUtil alarmUtil;
     List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,
-                              UserRepository userRepository, RedisRepository redisRepository, QuestRepository questRepository) {
+                              UserRepository userRepository, RedisRepository redisRepository, QuestRepository questRepository,
+                              AlarmUtil alarmUtil) {
         this.transactionRepository = transactionRepository;
         this.coinRepository = coinRepository;
         this.userRepository = userRepository;
         this.redisRepository = redisRepository;
         this.questRepository = questRepository;
+        this.alarmUtil = alarmUtil;
     }
 
     //코인 거래 내역
@@ -131,6 +139,7 @@ public class TransactionService {
         if (quest != null) {
             if (!quest.isClear()) {
                 quest.update(true);
+                alarmUtil.sendAlarm(user.getUserId().toString());
             }
         }
 
@@ -240,6 +249,7 @@ public class TransactionService {
         if (quest != null) {
             if (!quest.isClear()) {
                 quest.update(true);
+                alarmUtil.sendAlarm(user.getUserId().toString());
             }
         }
 
