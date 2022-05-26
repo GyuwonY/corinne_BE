@@ -14,6 +14,7 @@ import com.corinne.corinne_be.repository.DayCandleRepository;
 import com.corinne.corinne_be.repository.MinuteCandleRepository;
 import com.corinne.corinne_be.repository.RedisRepository;
 import com.corinne.corinne_be.utils.TikerUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class PriceService {
 
     private final MinuteCandleRepository minuteCandleRepository;
@@ -65,6 +67,7 @@ public class PriceService {
 
             SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
             SimpleDateFormat newDtFormat = new SimpleDateFormat("yyyy-MM-dd");
+
             Date formatDate = null;
             try {
                 formatDate = dtFormat.parse(date);
