@@ -5,6 +5,7 @@ import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
 import com.corinne.corinne_be.dto.Quest_dto.RewordResponseDto;
 import com.corinne.corinne_be.dto.alarm_dto.AlarmQueryDto;
 import com.corinne.corinne_be.dto.user_dto.*;
+import com.corinne.corinne_be.dto.util_dto.SearchTimeDto;
 import com.corinne.corinne_be.exception.CustomException;
 import com.corinne.corinne_be.exception.ErrorCode;
 import com.corinne.corinne_be.model.Alarm;
@@ -74,21 +75,10 @@ public class UserService {
     private UserInfoResponesDto getUserInfo(Long userId){
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NON_EXIST_USER));
 
-        Calendar cal = Calendar.getInstance();
-        if(cal.get(Calendar.DAY_OF_WEEK)==1){
-            cal.add(Calendar.DATE, -1);
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        String mondayDate = dateFormat.format(cal.getTime());
-        mondayDate += " 00:00:00.000";
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        LocalDateTime startDate = LocalDateTime.parse(mondayDate, formatter);
-        LocalDateTime endDate = LocalDateTime.now();
+        SearchTimeDto date = timeUtil.SearchTime("thisWeek");
 
         return new UserInfoResponesDto(user, rankUtil.getMyRank(userId),
-                transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(userId, "reset",startDate,endDate), followerRepository.countAllByUser(user),
+                transactionRepository.countByUser_UserIdAndTypeAndTradeAtBetween(userId, "reset",date.getStartDate(),date.getEndDate()), followerRepository.countAllByUser(user),
                 followerRepository.countAllByFollower(user));
     }
 
