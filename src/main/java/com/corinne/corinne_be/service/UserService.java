@@ -47,9 +47,9 @@ public class UserService {
     private final CoinRepository coinRepository;
     private final QuestRepository questRepository;
     private final LevelUtil levelUtil;
+    private final BalanceUtil balanceUtil;
     private final RewordUtil rewordUtil;
     private final TimeUtil timeUtil;
-    private final BalanceUtil balanceUtil;
 
     @Transactional
     public ResponseEntity<UserInfoResponesDto> userInfo(Long userId, User user){
@@ -126,7 +126,7 @@ public class UserService {
         LocalDateTime startDate = LocalDateTime.parse(date, formatter);
         LocalDateTime endDate = LocalDateTime.now();
 
-        List<Alarm> alarmList =alarmRepository.findAllByUser_UserIdAndCreatedAtBetween(user.getUserId(),startDate,endDate);
+        List<Alarm> alarmList =alarmRepository.findAllByUser_UserIdAndCreatedAtBetweenOrderByCreatedAtDesc(user.getUserId(),startDate,endDate);
 
         List<AlarmDto> alarmDtos = new ArrayList<>();
         for(Alarm alarm : alarmList){

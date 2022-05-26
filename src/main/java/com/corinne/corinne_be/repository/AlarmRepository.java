@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
-    List<Alarm> findAllByUser_UserIdAndCreatedAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+    List<Alarm> findAllByUser_UserIdAndCreatedAtBetweenOrderByCreatedAtDesc(Long userId, LocalDateTime startDate, LocalDateTime endDate);
     Long countAllByUser_UserIdAndContent(Long userId, String content);
 
     @Query(nativeQuery = true,value = "select * from \n" +
