@@ -47,7 +47,7 @@ public class TransactionService {
     private final QuestRepository questRepository;
     private final AlarmUtil alarmUtil;
     private final TimeUtil timeUtil;
-    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
+    List<String> tikers = Arrays.asList("KRW-BTC", "KRW-SOL", "KRW-ETH", "KRW-XRP", "KRW-ADA", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, CoinRepository coinRepository,
