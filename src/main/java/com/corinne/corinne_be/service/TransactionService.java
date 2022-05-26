@@ -221,7 +221,6 @@ public class TransactionService {
     // 매도
     @Transactional
     public ResponseEntity<SellResponseDto> sell(SellRequestDto sellRequestDto, User user) {
-        log.info("매도 요청 금액 : "+sellRequestDto.getSellAmount() + "     레버리지 : "+sellRequestDto.getLeverage());
 
         if(!tikers.contains(sellRequestDto.getTiker())){
             throw new CustomException(ErrorCode.NON_EXIST_TIKER);
