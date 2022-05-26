@@ -270,9 +270,8 @@ public class TransactionService {
         //판매 비율
         BigDecimal sellRate = sellAmount.divide(sellable, 2, RoundingMode.HALF_UP);
 
-        log.info("현재가 반영 판매 가능 금액 : "+sellable.intValue() + "      비교문 결과 : "+ (sellable.intValue() > sellRequestDto.getSellAmount()));
         Long leftover;
-        if(sellable.intValue() >= sellRequestDto.getSellAmount()){
+        if(sellable.longValue() >= sellRequestDto.getSellAmount()){
             leftover = amount.subtract(amount.multiply(sellRate)).longValue();
             if (leftover == 0L){
                 coinRepository.delete(coin);
