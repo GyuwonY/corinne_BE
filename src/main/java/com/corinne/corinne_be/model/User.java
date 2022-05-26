@@ -2,6 +2,7 @@ package com.corinne.corinne_be.model;
 
 import com.corinne.corinne_be.dto.Quest_dto.RewordDto;
 import com.corinne.corinne_be.dto.user_dto.UserRequestdto;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,6 +57,7 @@ public class User {
     @Column(nullable = false)
     private Long rival = 0L;
 
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Coin> coin;
 

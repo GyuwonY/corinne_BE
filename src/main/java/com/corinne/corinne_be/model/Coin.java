@@ -1,6 +1,7 @@
 package com.corinne.corinne_be.model;
 
 import com.corinne.corinne_be.dto.transaction_dto.BuyRequestDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ public class Coin {
     @Column
     private Long coinId;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
