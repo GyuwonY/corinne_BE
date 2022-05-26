@@ -61,8 +61,6 @@ public class AccountService {
         // 사용 가능한 포인트
         Long accountBalance = user.getAccountBalance();
 
-        // 총  보유 코인 재산
-        Long totalCoinBalance = 0L;
         // 보유중인 코인 리스트
         List<Coin> haveCoins = coinRepository.findAllByUser_UserId(user.getUserId());
 
@@ -82,7 +80,7 @@ public class AccountService {
             long balance = coins.get(i).getCoinBalance();
             // 원그래프 비중 계산
             BigDecimal importanceRateCal = new BigDecimal(balance * 100);
-            double importanceRate = importanceRateCal.divide(new BigDecimal(totalCoinBalance), 2, RoundingMode.HALF_EVEN).doubleValue();
+            double importanceRate = importanceRateCal.divide(new BigDecimal(coinBalanceDto.getTotalcoinBalance()), 2, RoundingMode.HALF_EVEN).doubleValue();
             coins.get(i).setImportanceRate(importanceRate);
         }
 
