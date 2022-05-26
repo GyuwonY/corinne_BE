@@ -45,7 +45,7 @@ public class RankUtil {
             rankDtos.add(rankDto);
         }
 
-        rankDtos.stream().sorted(Comparator.comparing(RankInfoDto::getTotalBalance).reversed()).collect(Collectors.toList());
+        rankDtos = rankDtos.stream().sorted(Comparator.comparing(RankInfoDto::getTotalBalance).reversed()).collect(Collectors.toList());
 
         int i = 1;
         for(RankInfoDto rankDto : rankDtos){
