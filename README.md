@@ -58,7 +58,8 @@ corinne는 코인 초보자분들이 쉽고 재미있게 접할 수 있도록 �
 | Frontend Github Link | https://github.com/suns2131/corinne_fe |
 | 윤선식VL             | https://github.com/suns2131            | FE / React  |
 | 원동환               | https://github.com/endol007            | FE / React  |
-| Backend Github Link  | https://github.com/GyuwonY/corinne_BE  |
+| Backend Github Link  | https://github.com/GyuwonY/corinne_BE  | API Repository |
+|                      | https://github.com/GyuwonY/coin_data   | Socket client Repository |
 | 유규원L              | https://github.com/GyuwonY             | BE / Spring |
 | 정제무               | https://github.com/Jemoo1060           | BE / Spring |     |
 
