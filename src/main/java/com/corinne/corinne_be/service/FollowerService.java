@@ -17,8 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -93,6 +95,9 @@ public class FollowerService {
         for (Follower follower : followerList) {
             followingDtoList.add(rankDtos.get(follower.getFollower().getUserId()));
         }
+
+        // 랭킹 순으로 정렬 해주기
+        followingDtoList = followingDtoList.stream().sorted(Comparator.comparing(RankInfoDto::getRank)).collect(Collectors.toList());
 
         return new ResponseEntity<>(followingDtoList, HttpStatus.OK);
     }

@@ -23,6 +23,7 @@ public class RankUtil {
         this.balanceUtil = balanceUtil;
     }
 
+    // 랭크순으로 정렬, 랭크리스트 출력
     public List<RankInfoDto> getRankList(){
         List<User> Users = userRepository.findAllJPQLFetch();
         List<RankInfoDto> rankDtos = new ArrayList<>();
