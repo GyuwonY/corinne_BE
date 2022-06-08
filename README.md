@@ -28,42 +28,39 @@ corinne는 코인 초보자분들이 쉽고 재미있게 접할 수 있도록 �
 
 #### :boom: Frontend
 
-<img src="https://img.shields.io/badge/next.js-000000?style=flat&logo=next.js&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/vercel-000000?style=flat&logo=vercel&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/redux-764abc?style=flat&logo=redux&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/tailwindCSS-06b6d4?style=flat&logo=tailwindCSS&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/PostCSS-dd3a0a?style=flat&logo=POSTCSS&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/sockjs-1877F2?style=flat&logo=ssockjs&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/stomp-1877F2?style=flat&logo=stomp&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/ApexChart-1877F2?style=flat&logo=ApexChart&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/Chart.js-ff6384?style=flat&logo=Chart.js&logoColor=white"><br/>
+next.js, vercel, redux, tailwindCSS, PostCSS, sockjs, stomp, ApexChart, Chart.js
 
 #### :boom: Back-end
 
-<img src="https://img.shields.io/badge/SpringBoot-6db33f?style=flat&logo=SpringBoot&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/Spring Security-6db33f?style=flat&logo=Spring Security&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/Socket.io-010101?style=flat&logo=Socket.io&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/MySQL-4479a1?style=flat&logo=MySQL&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/Redis-dc382d?style=flat&logo=Redis&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/AWS S3-232f3e?style=flat&logo=Amazon AWS&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/GitHub Actions-2088ff?style=flat&logo=GitHub Actions&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/AWS CodeDeploy-232f3e?style=flat&logo=Amazon AWS&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/NGINX-009639?style=flat&logo=NGINX&logoColor=white"><br/>
-<img src="https://img.shields.io/badge/AWS EC2-232f3e?style=flat&logo=Amazon AWS&logoColor=white"><br/>
+SpringBoot, SpringSecurity, Socket.io, MySQL, Redis, AWS S3, Github Actions,  AWS CodeDeploy,  NGINX,  AWS EC2
 
-## 팀원소개
+## Trouble Shooting
+<details>
+<summary>Front-End</summary>
+<div markdown="1">   
+문제 : 코인 종목 교체 선택 시 기존에 구독하고 있던 종목에 대한 실시간 데이터 구독이 해제되지 않아 차트에 2가지 종목에 대한 현재가 정보 입력</br>
+원인 : 구독 상태에서 데이터가 수신되는 시점에 구독 해제를 위한 subsrcibe ID를 교체하도록 되어 있어 데이터가 수신되지 않을 경우 useRef의 ID 교체 불가</br>
+해결 : 구독 시작 시점에 ID 정보를 useRef에 저장 시킨 후 구독하여 데이터 수신이 없어도 구독 해제가 정상적으로 이루어질 수 있도록 변경</br></br>
+  
+문제 : 모의투자 페이지 이용 시 채팅 및 현재가 정보가 페이지 로드 후 새로고침해야 정상 동작</br>
+원인 : 웹소켓 커넥트가 완료되기 전 구독을 시도하는 경우 구독이 이루어지지 않은 상태로 유지</br>
+해결 : Redux에 웹소켓 연결 여부를 체크하는 상태 값(chkConneted)를 추가하여 상태 변경이 되는 경우 데이터를 수신하는 컴포넌트에서 구독을 진행하도록 개선</br>
 
-| Name                 | GitHub / Contact                       | Position    |
-| -------------------- | -------------------------------------- | ----------- |
-| Frontend Github Link | https://github.com/suns2131/corinne_fe |
-| 윤선식VL             | https://github.com/suns2131            | FE / React  |
-| 원동환               | https://github.com/endol007            | FE / React  |
-| Backend Github Link  | https://github.com/GyuwonY/corinne_BE  | API Repository |
-|                      | https://github.com/GyuwonY/coin_data   | Socket client Repository |
-| 유규원L              | https://github.com/GyuwonY             | BE / Spring |
-| 정제무               | https://github.com/Jemoo1060           | BE / Spring |     |
+</div>
+</details>
+
+<details>
+<summary>Back-End</summary>
+<div markdown="1">   
+  
+</div>
+</details>
 
 ## UI
+
+<details>
+<summary>여기를 눌러주세요</summary>
+<div markdown="1">   
 
 #### 메인페이지
 
@@ -80,3 +77,18 @@ corinne는 코인 초보자분들이 쉽고 재미있게 접할 수 있도록 �
 #### 마이페이지
 
 ![마이페이지](https://user-images.githubusercontent.com/93954839/170641538-59df30c8-a305-4006-8b44-c2abade7a418.PNG)
+  
+</div>
+</details>
+
+## 팀원소개
+
+| Name                 | GitHub / Contact                       | Position    |
+| -------------------- | -------------------------------------- | ----------- |
+| Frontend Github Link | https://github.com/suns2131/corinne_fe |
+| 윤선식VL             | https://github.com/suns2131            | FE / React  |
+| 원동환               | https://github.com/endol007            | FE / React  |
+| Backend Github Link  | https://github.com/GyuwonY/corinne_BE  | API Repository |
+|                      | https://github.com/GyuwonY/coin_data   | Socket client Repository |
+| 유규원L              | https://github.com/GyuwonY             | BE / Spring |
+| 정제무               | https://github.com/Jemoo1060           | BE / Spring |     |
