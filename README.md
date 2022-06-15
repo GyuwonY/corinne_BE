@@ -38,13 +38,6 @@ SpringBoot, SpringSecurity, Socket.io, MySQL, Redis, AWS S3, Github Actions,  AW
 <details>
 <summary>Front-End</summary>
 <div markdown="1">   
-문제 : 코인 종목 교체 선택 시 기존에 구독하고 있던 종목에 대한 실시간 데이터 구독이 해제되지 않아 차트에 2가지 종목에 대한 현재가 정보 입력</br>
-원인 : 구독 상태에서 데이터가 수신되는 시점에 구독 해제를 위한 subsrcibe ID를 교체하도록 되어 있어 데이터가 수신되지 않을 경우 useRef의 ID 교체 불가</br>
-해결 : 구독 시작 시점에 ID 정보를 useRef에 저장 시킨 후 구독하여 데이터 수신이 없어도 구독 해제가 정상적으로 이루어질 수 있도록 변경</br></br>
-  
-문제 : 모의투자 페이지 이용 시 채팅 및 현재가 정보가 페이지 로드 후 새로고침해야 정상 동작</br>
-원인 : 웹소켓 커넥트가 완료되기 전 구독을 시도하는 경우 구독이 이루어지지 않은 상태로 유지</br>
-해결 : Redux에 웹소켓 연결 여부를 체크하는 상태 값(chkConneted)를 추가하여 상태 변경이 되는 경우 데이터를 수신하는 컴포넌트에서 구독을 진행하도록 개선</br>
 
 </div>
 </details>
